@@ -50,3 +50,8 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+.idea/
+[C+c][M+m]ake*
+**/Tests/**
+!**/Tests/Makefile
