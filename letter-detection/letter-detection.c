@@ -33,63 +33,87 @@ void save_image(SDL_Surface *image, char *path){
     }
 }
 
+//Sub function wich return the row number of the firsst average >128 white pixel
+int detect_column(SDL_Surface *image, int isBlack, int x){
+    int i;
+    int average = 0;
+    Uint8 r, g, b;
+    for(i = x; i < image->h; i++){
+        get_pixel_rgb(image, x, i, &r, &g, &b);
+        average += (r + g + b);
+    }
+    average /= image->h;
+    printf("Average: %d\n", average);
+    if(isBlack == 0 && average > 128){
+        return i;
+    }
+    if(isBlack == 1 && average < 128){
+        return i;
+    }
+    
+    return -1;
+}
+
+int detect_row(SDL_Surface *image, int isBlack, int y){
+    int i;
+    int average = 0;
+    Uint8 r, g, b;
+    for(i = y; i < image->w; i++){
+        get_pixel_rgb(image, i, y, &r, &g, &b);
+        average += (r + g + b);
+    }
+    average /= image->w;
+    printf("AVERAGE: %d\n", average);
+    if(isBlack == 0 && average > 128){
+        return i;
+    }
+    if(isBlack == 1 && average < 128){
+        return i;
+    }
+    
+    return -1;
+}
+
 // Function which processes the image and detects the letter
 void detect_letter(SDL_Surface *image){
-    int i, j;
-    Uint8 r, g, b;
-    int startCol = 0;
-    int endCol = 0;
-    int startRow = 0;
-    int endRow = 0;
-    int isInit = 1;
+    int colStart = 0;
+    int colEnd = 0;
+    int rowStart = 0;
+    int rowEnd = 0;
+    int count = 0;
 
-    for(i = 0; i < image->w; i++){
-        float average = 0;
-        for(j = 0; j < image->h; j++){
-            get_pixel_rgb(image, i, j, &r, &g, &b);
-            average += (r + g + b) / 3;
-        }
-
-        if(startCol == 0 && average / image->h < 128){ 
-            startCol = i;
-            isInit = 1;
+    while(colStart < image->w){
+        colStart = detect_column(image, 0, colStart);
+        if(colStart == -1) {
+            colStart = 0;
             continue;
-        } else if (isInit == 1 && average / image->h > 128){
-            endCol = i;
-            break;
-        }
-    }
-
-    for(i = 0; i < image->h; i++){
-        float average = 0;
-        for(j = 0; j < image->w; j++){
-            get_pixel_rgb(image, j, i, &r, &g, &b);
-            average += (r + g + b) / 3;
         }
 
-        if(startRow == 0 && average / image->w < 128){ 
-            startRow = i;
-            continue;
-        } else if (startRow != 0 && average / image->w > 128){
-            endRow = i;
-            break;
+        colEnd = detect_column(image, 1, colStart);
+        if(colEnd == -1) errx(1, "Error: Couldn't detect the end of the column :(\n");
+
+        while(rowStart < image->h){
+            rowStart = detect_row(image, 0, rowStart);
+            if(rowStart == -1) {
+                colStart = 0;
+                continue;
+            }
+
+            rowEnd = detect_row(image, 1, rowStart);
+            if(rowEnd == -1) errx(1, "Error: Couldn't detect the end of the row :(\n");
+
+            SDL_Surface *letter = SDL_CreateRGBSurface(0, colEnd - colStart, rowEnd - rowStart, 32, 0, 0, 0, 0);
+            SDL_Rect rect = {colStart, rowStart, colEnd - colStart, rowEnd - rowStart};
+            SDL_BlitSurface(image, &rect, letter, NULL);
+            //The image have to be save in the letter.bmp file according to the count value
+            char path[100];
+            sprintf(path, "letter%d.bmp", count);
+            save_image(letter, path);
+            count++;
+            rowStart = rowEnd;
         }
+        colStart = colEnd;
     }
-
-    if (endCol <= startCol || endRow <= startRow) {
-        printf("%d %d %d %d\n", startCol, endCol, startRow, endRow);
-        errx(1, "Error: Couldn't detect the letter");
-        return;
-    }
-
-    SDL_Surface *letter = SDL_CreateRGBSurface(0, endCol - startCol, endRow - startRow, 32, 0, 0, 0, 0);
-    if (letter == NULL) {
-        errx(1, "Error: Couldn't create surface for the letter. SDL_Error: %s\n", SDL_GetError());
-        return;
-    }
-
-    save_image(letter, "letter.bmp");
-    SDL_FreeSurface(letter);
 }
 
 int main(int argc, char *argv[]){

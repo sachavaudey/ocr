@@ -1,17 +1,8 @@
-CC = gcc
-CFLAGS = -Wall -Wextra -std=c99
-LDFLAGS = -lSDL2
-
-SRC = letter-detection.c
-OBJ = $(SRC:.c=.o)
-EXEC = test.out
-
-all: $(EXEC)
-
-$(EXEC): $(OBJ)
-	$(CC) $(CFLAGS) -o $(EXEC)
+test.out : letter_detection.c
+	gcc letter-detection.c -Wall -Wextra -o test.out
 
 clean:
-    rm -f $(OBJ) $(EXEC)
+    rm -f test.out
+	rm -f 
 
 .PHONY: all clean
