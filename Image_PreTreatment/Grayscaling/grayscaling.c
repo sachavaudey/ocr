@@ -1,36 +1,38 @@
-//
-// Created by arthur_wambst on 13/09/24.
-//
-#include <grayscaling.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <stdio.h>
-#include <err.h>
+#include "grayscaling.h"
 
-// Fonction pour convertir l'image en niveaux de gris
+// Function converting a given surface to grey scale
 void grayscaling(SDL_Surface *surface) {
 
-    printf("Starting grayscaling\n");
+    printf("---------------\n"
+           "Starting grayscaling...\n");
 
-    Uint32 *pixels = (Uint32 *)surface->pixels;
-    int pixelCount = (surface->w * surface->h);
+    const int pixelCount = (surface->w * surface->h);
+
+    Uint32 *pixels = surface->pixels;
+    SDL_LockSurface(surface);
+
+    Uint8 r, g, b, gray;
 
     for (int i = 0; i < pixelCount; ++i) {
-        Uint8 r, g, b;
+
+        // init and get pixels rgb values
         SDL_GetRGB(pixels[i], surface->format, &r, &g, &b);
 
-        // Calculer la valeur moyenne pour le gris
-        Uint8 gray = (Uint8)(0.299 * r + 0.587 * g + 0.114 * b);
+        // Computing rgb average to scale it on 0-255 grey color
+        gray = (Uint8)(0.299 * r + 0.587 * g + 0.114 * b);
 
-        // Assigner la nouvelle couleur grise au pixel
+        // Assign grey value to pixel
         pixels[i] = SDL_MapRGB(surface->format, gray, gray, gray);
     }
 
-    printf("image grayscaled\n");
+    SDL_UnlockSurface(surface);
+    printf("image grayscaled\n---------------\n");
 }
 
 int main(int argc, char *argv[]) {
 
+    (void)argc;
+    (void)argv;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         errx(-1, "Erreur d'initialisation SDL: %s\n", SDL_GetError());
@@ -53,7 +55,7 @@ int main(int argc, char *argv[]) {
     IMG_Init(IMG_INIT_PNG);
 
     // Charger une image
-    SDL_Surface *image = IMG_Load("level_1_image_1.png");
+    SDL_Surface *image = loadImage("level_1_image_1.png");
     if (!image) {
         SDL_DestroyWindow(window);
         SDL_Quit();

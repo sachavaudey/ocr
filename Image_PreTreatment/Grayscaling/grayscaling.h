@@ -5,7 +5,11 @@
 
 #ifndef GRAYSCALING_H
 #define GRAYSCALING_H
+#include <err.h>
 #include <SDL2/SDL.h>
-void grayscaling(SDL_Surface *surface);
 
-#endif //GRAYSCALING_H
+#include "../../Common/SDL/images.h"
+
+void grayscaling(const SDL_Surface *surface);
+
+#endif

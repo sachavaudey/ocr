@@ -1,36 +1,37 @@
-//
-// Created by arthur_wambst on 13/09/24.
-//
-
 #include "blackWhite.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <stdio.h>
-#include <err.h>
-
 
 void blackWhite(SDL_Surface *surface) {
 
-    printf("Starting conversion to black or white\n");
+    printf("---------------\n"
+           "Starting conversion to black or white...\n");
 
-    Uint32 *pixels = (Uint32 *)surface->pixels;
-    int pixelCount = (surface->w * surface->h);
+    const int pixelCount = (surface->w * surface->h);
+
+    Uint32 *pixels = surface->pixels;
+    SDL_LockSurface(surface);
+
+    Uint8 gray;
 
     for (int i = 0; i < pixelCount; ++i) {
-        Uint8 r, g, b;
-        SDL_GetRGB(pixels[i], surface->format, &r, &g, &b);
-        //r == g == b donc on teste avec r
-        if (r > 128) {
+
+        //r == g == b
+        SDL_GetRGB(pixels[i], surface->format, &gray, &gray, &gray);
+
+        if (gray > 128) {
             pixels[i] = SDL_MapRGB(surface->format, 0, 0, 0);
         } else {
             pixels[i] = SDL_MapRGB(surface->format, 255, 255, 255);
         }
     }
 
-    printf("image grayscaled\n");
+    SDL_UnlockSurface(surface);
+    printf("Image converted to black or white.\n""---------------\n");
 }
 
 int main(int argc, char *argv[]) {
+
+    (void)argc;
+    (void)argv;
 
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
