@@ -7,8 +7,8 @@
 #define GRAYSCALING_H
 #include <err.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
-#include "../../Common/SDL/images.h"
 
 void grayscaling(const SDL_Surface *surface);
 

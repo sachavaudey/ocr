@@ -5,9 +5,8 @@
 #ifndef BLACKWHITE_H
 #define BLACKWHITE_H
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <err.h>
-
-#include "../../Common/SDL/images.h"
 
 void blackWhite(const SDL_Surface *surface);
 
