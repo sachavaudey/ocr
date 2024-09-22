@@ -1,8 +1,10 @@
-test.out : letter_detection.c
-	gcc letter-detection.c -Wall -Wextra -o test.out
+main : letter-detection.c
+	gcc letter-detection.c -Wall -Wextra -o main -lSDL2
+
+
 
 clean:
-    rm -f test.out
-	rm -f 
+	rm -rf main
+	rm -rf result.bmp
 
-.PHONY: all clean
+.PHONY: clean
