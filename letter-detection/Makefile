@@ -1,5 +1,5 @@
 main : letter-detection.c
-	gcc letter-detection.c -Wall -Wextra -o main -lSDL2
+	gcc letter-detection.c -Wall -Wextra -o main -lSDL2 -lSDL2_image
 
 
 

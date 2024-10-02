@@ -1,77 +1,84 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <err.h>
+#include <SDL2/SDL_image.h>
 #include "letter-detection.h"
-
-// Function which loads a bitmap image
-SDL_Surface* load_image(char *path) {
-    printf("Trying to load image: %s\n", path); // Message de débogage
-    SDL_Surface *image = SDL_LoadBMP(path);
-    if (image == NULL) {
-        errx(1, "Error: couldn't load %s. SDL_Error: %s", path, SDL_GetError());
-    }
-    printf("Image loaded successfully\n"); // Message de débogage
-    return image;
-}
+#include "pixel-tools.c"
+#include "image-tools.c"
 
 
-//get the color of a specific pixel
-void get_pixel_rgb(SDL_Surface *surface, int x, int y, Uint8 *r, Uint8 *g, Uint8 *b) {
-    
-    if (x >= 0 && x < surface->w && y >= 0 && y < surface->h) {
-        Uint32 pixel = ((Uint32*)surface->pixels)[(y * surface->w) + x];
-        SDL_GetRGB(pixel, surface->format, r, g, b);
-    } else {
-        errx(1, "Error: Pixel coordinates (%d, %d) are out of bounds\n", x, y);
-    }
-}
 
 
-//set a specific color to a specifi pixel
-void set_pixel_rgb(SDL_Surface *surface, int x, int y, Uint8 r, Uint8 g, Uint8 b) {
-    
-    if (x >= 0 && x < surface->w && y >= 0 && y < surface->h) {
-        ((Uint32*)surface->pixels)[(y * surface->w) + x] = SDL_MapRGB(surface->format, r, g, b);
-    } else {
-        errx(1, "Error: Pixel coordinates (%d, %d) are out of bounds\n", x, y);
-    }
-}
 
-// TEMP function (NOT TESTED YET)
-void auxilary(SDL_Surface *surface){
+/*
+Function wich detect the correct colum for letter
+@param *surface : surface to process
+*/
+void detect_column(SDL_Surface *surface){
     int weight = surface->w;
     int height = surface->h;
+    int isPass = 0;
+    int nextColumn = 0;
     Uint8 r,g,b;
 
     for(int x = 0; x < weight; x++){
         double pixAverage = 0;
         for(int y = 0; y < height; y++){
             get_pixel_rgb(surface, x, y, &r, &g, &b);
-            printf("RGB : (%d, %d, %d)\n", r, g, b);
-            pixAverage += (r+g+b)/3;
+            pixAverage += r;
 
             
         }
-        if (pixAverage/height > 128){
+        if (pixAverage/height >= 20 && isPass == 0 && x > nextColumn){
+            isPass = 1;
+            for(int y = 0; y < height; y++){
+                set_pixel_rgb(surface, x - 3, y, 124, 252, 0);
+            }
+            nextColumn = x + 20;
+        }
+        else if (pixAverage/height < 20 && isPass == 1 && x > nextColumn){
+            isPass = 0;
             for(int y = 0; y < height; y++){
                 set_pixel_rgb(surface, x, y, 124, 252, 0);
             }
         }
 
+        pixAverage = 0;
+
     }
 }
 
+void detect_line(SDL_Surface *surface){
+    int weight = surface->w;
+    int height = surface->h;
+    int isPass = 0;
+    int nextLine = 0;
+    Uint8 r,g,b;
 
-/*
-* Function wich save image according his actual surface version
-* @param *image : pointer to the image to save
-* @param *path : pointer to the path where save image
-*/
-void save_image(SDL_Surface *image, char *path){
-    if (SDL_SaveBMP(image, path) != 0) {
-        errx(1, "Error: Couldn't save image to %s. SDL_Error: %s\n", path, SDL_GetError());
-    } else {
-        printf("Image saved successfully to %s\n", path);
+    for(int y = 0; y < height; y++){
+        double pixAverage = 0;
+        for(int x = 0; x < weight; x++){
+            get_pixel_rgb(surface, x, y, &r, &g, &b);
+            pixAverage += r;
+
+            
+        }
+        if (pixAverage/weight >= 7 && isPass == 0 && y > nextLine){
+            isPass = 1;
+            for(int x = 0; x < weight; x++){
+                set_pixel_rgb(surface, x, y - 3, 255, 0, 0);
+            }
+            nextLine = y + 20;
+        }
+        else if (pixAverage/weight < 7 && isPass == 1 && y > nextLine){
+            isPass = 0;
+            for(int x = 0; x < weight; x++){
+                set_pixel_rgb(surface, x, y, 255, 0, 0);
+            }
+        }
+
+        pixAverage = 0;
+
     }
 }
 
@@ -86,8 +93,9 @@ int main(int argc, char *argv[]){
         SDL_Quit();
         return 1;
     }
-    auxilary(image);
-    save_image(image, "result.bmp");
+    detect_column(image);
+    detect_line(image);
+    save_image(image, "result.png");
     SDL_Quit();
     return 0;
 }
