@@ -46,7 +46,7 @@ void shuffle(int *array, size_t n) {
 }
 
 #define nbInput 30
-#define nbHiddenNode 300
+#define nbHiddenNode 100
 #define output 10
 #define nbTest 10
 
@@ -94,7 +94,7 @@ void remplirTestAvecImages(double test[nbTest][nbInput], char* images[nbTest]) {
 }
 
 int main(void) {
-    int repet = 1000000;
+    int repet = 100000;
     const double lr = 0.1f;
 
     double hiddenLayer[nbHiddenNode];
@@ -115,7 +115,7 @@ int main(void) {
 */
 
                                              
-    double training_output[nbTest][output] = {{1,0,0,0,0,0,0,0,0,0},
+    double training_output[nbTest][output] = {  {1,0,0,0,0,0,0,0,0,0},
                                                 {0,1,0,0,0,0,0,0,0,0},
                                                 {0,0,1,0,0,0,0,0,0,0},
                                                 {0,0,0,1,0,0,0,0,0,0},
@@ -284,30 +284,30 @@ int main(void) {
             }
 
             // Rétropropagation : Couche cachée
-            double deltaHidden[nbHiddenNode];
-            for (size_t j = 0; j < nbHiddenNode; j++) {
-                double error = 0.0f;
-                for (size_t k = 0; k < output; k++) {
-                    error += DeltaOuput[k] * outPutWeight[j][k];
-                }
-                deltaHidden[j] = error * dsigmoid(hiddenLayer[j]);
-            }
+double DeltaHidden[nbHiddenNode];
+for (size_t j = 0; j < nbHiddenNode; j++) {
+    double error = 0.0;
+    for (size_t k = 0; k < output; k++) {
+        error += DeltaOuput[k] * outPutWeight[j][k];
+    }
+    DeltaHidden[j] = error * dsigmoid(hiddenLayer[j]);  // Calculer l'erreur avec la dérivée de la sigmoïde
+}
 
-            // Mise à jour des poids et des biais de la couche de sortie
-            for (size_t j = 0; j < output; j++) {
-                outputLayerBias[j] += DeltaOuput[j] * lr;
-                for (size_t k = 0; k < nbHiddenNode; k++) {
-                    outPutWeight[k][j] += hiddenLayer[k] * DeltaOuput[j] * lr;
-                }
-            }
+// Mise à jour des poids entre la couche cachée et la couche de sortie
+for (size_t j = 0; j < output; j++) {
+    outputLayerBias[j] += lr * DeltaOuput[j];  // Mise à jour des biais de la couche de sortie
+    for (size_t k = 0; k < nbHiddenNode; k++) {
+        outPutWeight[k][j] += lr * hiddenLayer[k] * DeltaOuput[j];  // Mise à jour des poids
+    }
+}
 
-            // Mise à jour des poids et des biais de la couche cachée
-            for (size_t j = 0; j < nbHiddenNode; j++) {
-                hiddenLayerBias[j] += deltaHidden[j] * lr;
-                for (size_t k = 0; k < nbInput; k++) {
-                    hiddenWeight[k][j] += training_input[i][k] * deltaHidden[j] * lr;
-                }
-            }
+// Mise à jour des poids entre la couche d'entrée et la couche cachée
+for (size_t j = 0; j < nbHiddenNode; j++) {
+    hiddenLayerBias[j] += lr * DeltaHidden[j];  // Mise à jour des biais de la couche cachée
+    for (size_t k = 0; k < nbInput; k++) {
+        hiddenWeight[k][j] += lr * training_input[i][k] * DeltaHidden[j];  // Mise à jour des poids
+    }
+}
         }
     }
 

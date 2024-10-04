@@ -1,59 +1,76 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <stdio.h>
 
-
-//clang $(pkg-config --cflags --libs sdl2 SDL2_image) -o p traitement_image.c
-
-
-
+// Fonction qui charge une image
 SDL_Surface* load_image(const char* filename) {
-    
     if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) == 0) {
         printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
         return NULL;
     }
 
-    
     SDL_Surface* surface = IMG_Load(filename);
     if (!surface) {
         printf("Failed to load image %s! SDL_image Error: %s\n", filename, IMG_GetError());
         return NULL;
     }
 
-    
     return surface;
 }
 
-
-
+// Fonction de traitement d'image avec rognage et redimensionnement
 double* traitements(char* filename) {
-    int width, height, channels;
-    
-    
     SDL_Surface *image = load_image(filename);
-    width = image->w;
-    height = image->h;
-    channels = image->format->BytesPerPixel;
+    if (!image) {
+        return NULL;
+    }
+
+    int width = image->w;
+    int height = image->h;
+    int channels = image->format->BytesPerPixel;
+    
+   
+    int min_x = width, max_x = 0;
+    int min_y = height, max_y = 0;
+
+    
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            unsigned char *pixel = (unsigned char *)image->pixels + (y * width + x) * channels;
+            
+            if (pixel[0] > 50 || pixel[1] > 50 || pixel[2] > 50) {
+                if (x < min_x) min_x = x;
+                if (x > max_x) max_x = x;
+                if (y < min_y) min_y = y;
+                if (y > max_y) max_y = y;
+            }
+        }
+    }
+
+    
+    int crop_width = max_x - min_x + 1;
+    int crop_height = max_y - min_y + 1;
+
+   
+    if (crop_width <= 0 || crop_height <= 0) {
+        printf("Image is completely black!\n");
+        SDL_FreeSurface(image);
+        return NULL;
+    }
 
     
     unsigned char *resized_image = (unsigned char *)malloc(30 * 30 * channels);
-    int pixel_table[30][30]; 
+    int pixel_table[30][30];
 
-    
+   
     for (int y = 0; y < 30; ++y) {
         for (int x = 0; x < 30; ++x) {
-            
-            int src_x = x * width / 30;
-            int src_y = y * height / 30;
+           
+            int src_x = min_x + x * crop_width / 30;
+            int src_y = min_y + y * crop_height / 30;
 
-            
             unsigned char *src_pixel = (unsigned char *)image->pixels + (src_y * width + src_x) * channels;
-
-            
             unsigned char *dst_pixel = resized_image + (y * 30 + x) * channels;
 
             
@@ -62,108 +79,114 @@ double* traitements(char* filename) {
             }
 
             
-            int is_black = (dst_pixel[0] < 50 && dst_pixel[1] < 50 && dst_pixel[2] < 50) ? 1 : 0; 
-            pixel_table[y][x] = is_black; 
+            int is_black = (dst_pixel[0] < 50 && dst_pixel[1] < 50 && dst_pixel[2] < 50) ? 1 : 0;
+            pixel_table[y][x] = is_black;
         }
     }
 
-    // Afficher le tableau de pixels 
-    printf("Tableau des pixels noirs:\n");
-    for (int y = 0; y < 30; ++y) {
-        for (int x = 0; x < 30; ++x) {
-            printf("%d", pixel_table[y][x]); 
+    
+    double* res = (double*)malloc(30 * 30 * sizeof(double));
+    int c = 0;
+    for (size_t i = 0; i < 30; ++i) {
+        for (size_t j = 0; j < 30; ++j) {
+            res[c] = (double)pixel_table[i][j];
+            c++;
+            printf("%d",pixel_table[i][j]);
         }
         printf("\n");
     }
 
-    for (size_t i = 0; i < 30; i++)
-    {
-        double e=0;
-        for (size_t j = 0; j < 30; j++)
-        {
-            e+=pixel_table[i][j];
-        }
-        printf("%.2f,",e/30); 
-        
-    }
     
-
     free(resized_image);
+    SDL_FreeSurface(image);
 
-    double* res = (double*)malloc(30 * 30 * sizeof(double));
-    
-    
-
-    int c = 0;
-    for (size_t i = 0; i < 30; i++) {
-        for (size_t j = 0; j < 30; j++) {
-            res[c] = (double)pixel_table[i][j];
-            c++;
-        }
-    }
-
-    double* res1=malloc(30*sizeof( double));
-
-    for (size_t i = 0; i < 30; i++)
-    {
-        double e=0;
-        for (size_t j = 0; j < 30; j++)
-        {
-            e+=pixel_table[i][j];
-        }
-        res1[i]=e/30;
-        printf("%.2f,",e/30); 
-        
-    }
-    printf("\n");
-
-    
-    return res1;
-
-    
+    return res;
 }
 
 
 
-/*double* longueur(int** input) {
-    // Allocation dynamique de la mémoire pour 30*30 doubles
-    double* res = (double*)malloc(30 * 30 * sizeof(double));
-    
-    if (res == NULL) {
-        printf("Erreur d'allocation mémoire\n");
+double* traitements_test(char* filename) {
+    SDL_Surface *image = load_image(filename);
+    if (!image) {
         return NULL;
     }
 
-    int c = 0;
-    for (size_t i = 0; i < 30; i++) {
-        for (size_t j = 0; j < 30; j++) {
-            res[c] = (double)input[i][j];
-            c++;
+    int width = image->w;
+    int height = image->h;
+    int channels = image->format->BytesPerPixel;
+    
+   
+    int min_x = width, max_x = 0;
+    int min_y = height, max_y = 0;
+
+   
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            unsigned char *pixel = (unsigned char *)image->pixels + (y * width + x) * channels;
+            
+          
+            if (pixel[0] > 50 || pixel[1] > 50 || pixel[2] > 50) {
+                if (x < min_x) min_x = x;
+                if (x > max_x) max_x = x;
+                if (y < min_y) min_y = y;
+                if (y > max_y) max_y = y;
+            }
         }
     }
 
-    for (size_t i = 0; i < 30 * 30; i++) {
-        printf("%f ", res[i]);  // Utilisation de %f pour imprimer les doubles
+    
+    int crop_width = max_x - min_x + 1;
+    int crop_height = max_y - min_y + 1;
+
+    
+    if (crop_width <= 0 || crop_height <= 0) {
+        printf("Image is completely black!\n");
+        SDL_FreeSurface(image);
+        return NULL;
     }
 
+   
+    unsigned char *resized_image = (unsigned char *)malloc(30 * 30 * channels);
+    int pixel_table[30][30];
+
+   
+    for (int y = 0; y < 30; ++y) {
+        for (int x = 0; x < 30; ++x) {
+            
+            int src_x = min_x + x * crop_width / 30;
+            int src_y = min_y + y * crop_height / 30;
+
+            unsigned char *src_pixel = (unsigned char *)image->pixels + (src_y * width + src_x) * channels;
+            unsigned char *dst_pixel = resized_image + (y * 30 + x) * channels;
+
+            
+            for (int i = 0; i < channels; ++i) {
+                dst_pixel[i] = src_pixel[i];
+            }
+
+            
+            int is_black = (dst_pixel[0] < 50 && dst_pixel[1] < 50 && dst_pixel[2] < 50) ? 0 : 1;
+            pixel_table[y][x] = is_black;
+        }
+    }
+
+  
+    double* res = (double*)malloc(30 * 30 * sizeof(double));
+    int c = 0;
+    for (size_t i = 0; i < 30; ++i) {
+        for (size_t j = 0; j < 30; ++j) {
+            res[c] = (double)pixel_table[i][j];
+            c++;
+            printf("%d",pixel_table[i][j]);
+        }
+        printf("\n");
+    }
+
+    
+    free(resized_image);
+    SDL_FreeSurface(image);
+
     return res;
-}*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*int main(int argc, char** argv )
-{
-    (traitements(argv[1]));
-    return 0;
 }
-*/
+
+
