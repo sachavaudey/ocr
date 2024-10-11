@@ -22,9 +22,7 @@ SDL_Surface* load_image(const char* filename) {
 // Fonction de traitement d'image avec rognage et redimensionnement
 double* traitements(char* filename) {
     SDL_Surface *image = load_image(filename);
-    if (!image) {
-        return NULL;
-    }
+    
 
     int width = image->w;
     int height = image->h;
@@ -35,10 +33,10 @@ double* traitements(char* filename) {
     int min_y = height, max_y = 0;
 
     
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            unsigned char *pixel = (unsigned char *)image->pixels + (y * width + x) * channels;
-            
+    for (int y = 0; y < width; ++y) {
+        for (int x = 0; x < height; ++x) {
+            //unsigned char *pixel = (unsigned char *)image->pixels + (y * width + x) * channels;
+            unsigned char *pixel = (unsigned char *)image->pixels + (x * width + y) * channels;
             if (pixel[0] > 50 || pixel[1] > 50 || pixel[2] > 50) {
                 if (x < min_x) min_x = x;
                 if (x > max_x) max_x = x;
@@ -49,8 +47,8 @@ double* traitements(char* filename) {
     }
 
     
-    int crop_width = max_x - min_x + 1;
-    int crop_height = max_y - min_y + 1;
+    int crop_width = width;  //max_x - min_x + 1;
+    int crop_height = height;  //max_y - min_y + 1;
 
    
     if (crop_width <= 0 || crop_height <= 0) {
@@ -91,9 +89,9 @@ double* traitements(char* filename) {
         for (size_t j = 0; j < 30; ++j) {
             res[c] = (double)pixel_table[i][j];
             c++;
-            printf("%d",pixel_table[i][j]);
+            //printf("%d",pixel_table[i][j]);
         }
-        printf("\n");
+        //printf("\n");
     }
 
     
@@ -120,11 +118,10 @@ double* traitements_test(char* filename) {
     int min_y = height, max_y = 0;
 
    
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            unsigned char *pixel = (unsigned char *)image->pixels + (y * width + x) * channels;
-            
-          
+    for (int y = 0; y < width; ++y) {
+        for (int x = 0; x < height; ++x) {
+            //unsigned char *pixel = (unsigned char *)image->pixels + (y * width + x) * channels;
+            unsigned char *pixel = (unsigned char *)image->pixels + (x * width + y) * channels;
             if (pixel[0] > 50 || pixel[1] > 50 || pixel[2] > 50) {
                 if (x < min_x) min_x = x;
                 if (x > max_x) max_x = x;
@@ -135,8 +132,8 @@ double* traitements_test(char* filename) {
     }
 
     
-    int crop_width = max_x - min_x + 1;
-    int crop_height = max_y - min_y + 1;
+    int crop_width = width;  //max_x - min_x + 1;
+    int crop_height = height;  //max_y - min_y + 1;
 
     
     if (crop_width <= 0 || crop_height <= 0) {
@@ -177,10 +174,11 @@ double* traitements_test(char* filename) {
         for (size_t j = 0; j < 30; ++j) {
             res[c] = (double)pixel_table[i][j];
             c++;
-            printf("%d",pixel_table[i][j]);
+            //printf("%d",pixel_table[i][j]);
         }
-        printf("\n");
+        //printf("\n");
     }
+    //printf("\n");
 
     
     free(resized_image);
