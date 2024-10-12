@@ -7,10 +7,10 @@
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
 #define HIDDEN_SIZE 16       
-#define OUTPUT_SIZE 26         
-#define BATCH_SIZE 26           
+#define OUTPUT_SIZE 26       
+#define BATCH_SIZE 26          
 #define LEARNING_RATE 0.1     
-#define EPOCHS 10000   
+#define EPOCHS 1000  
   
 
 
@@ -245,12 +245,26 @@ void save_weights(double hiddenWeight[INPUT_SIZE][HIDDEN_SIZE],
 
 
 void remplir_chemins_images(char* images[BATCH_SIZE], const char* prefixe, const char* suffixe) {
-    char lettres[BATCH_SIZE] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+    char lettres[BATCH_SIZE] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+                                'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+
+
     
     for (size_t i = 0; i < BATCH_SIZE; i++) {
         
         images[i] = (char*)malloc(FILENAME_SIZE * sizeof(char));
         snprintf(images[i], FILENAME_SIZE, "%s/%c/%c%s.PNG", prefixe, lettres[i] + 32, lettres[i], suffixe);
+    }
+}
+
+void shuffle(int *array, size_t n) {
+    if (n > 1) {
+        for (size_t i = 0; i < n - 1; i++) {
+            size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+            int t = array[j];
+            array[j] = array[i];
+            array[i] = t;
+        }
     }
 }
 
@@ -351,7 +365,11 @@ int main(int argc,char** argv) {
     char* images38[BATCH_SIZE];
     char* images39[BATCH_SIZE];
     char* images40[BATCH_SIZE];
-    char* images41[BATCH_SIZE];
+    //char* images41[BATCH_SIZE];
+    char* images42[BATCH_SIZE];
+    char* images43[BATCH_SIZE];
+    char* images44[BATCH_SIZE];
+    
 
 
 
@@ -396,7 +414,12 @@ int main(int argc,char** argv) {
     double batch_input38[BATCH_SIZE][INPUT_SIZE];
     double batch_input39[BATCH_SIZE][INPUT_SIZE];
     double batch_input40[BATCH_SIZE][INPUT_SIZE];
-    double batch_input41[BATCH_SIZE][INPUT_SIZE];
+    //double batch_input41[BATCH_SIZE][INPUT_SIZE];
+    
+    double batch_input42[BATCH_SIZE][INPUT_SIZE];
+    double batch_input43[BATCH_SIZE][INPUT_SIZE];
+    double batch_input44[BATCH_SIZE][INPUT_SIZE];
+    
 
 
     remplir_chemins_images(images1, "images_test/dataset", "1");
@@ -439,10 +462,19 @@ int main(int argc,char** argv) {
     //remplir_chemins_images(images38, "images_test/dataset", "38");
     remplir_chemins_images(images39, "images_test/dataset", "39");
     //remplir_chemins_images(images40, "images_test/dataset", "40");
+    //remplir_chemins_images(images41, "images_test/dataset", "41");
+    remplir_chemins_images(images42, "images_test/dataset", "42");
+    remplir_chemins_images(images43, "images_test/dataset", "43");
+    remplir_chemins_images(images44, "images_test/dataset", "44");
+    
     
 
 
     
+    remplirTestAvecImages_black(batch_input44,images44);
+    remplirTestAvecImages_black(batch_input43,images43);
+    remplirTestAvecImages_black(batch_input42,images42);
+    //remplirTestAvecImages_black(batch_input41,images41);
     //remplirTestAvecImages_black(batch_input40,images40);
     remplirTestAvecImages_black(batch_input39,images39);
     //remplirTestAvecImages_black(batch_input38,images38);
@@ -486,9 +518,10 @@ int main(int argc,char** argv) {
 
 
 
-
+    int trainingsetorder[] = {0, 1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26};
     // Entraînement du réseau
     for (int epoch = 0; epoch < EPOCHS; epoch++) {
+        shuffle(trainingsetorder, OUTPUT_SIZE);
         double batch_hidden[BATCH_SIZE][HIDDEN_SIZE];
         double batch_output[BATCH_SIZE][OUTPUT_SIZE];
         if (epoch%100==0) printf("%d\n",EPOCHS-epoch);
@@ -686,6 +719,20 @@ int main(int argc,char** argv) {
         backpropagation_batch(batch_input39, batch_hidden, batch_output, batch_target,
                               weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
         
+        forward_batch(batch_input42, weights_input_hidden, hidden_bias, batch_hidden,
+                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
+        backpropagation_batch(batch_input42, batch_hidden, batch_output, batch_target,
+                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
+        
+        forward_batch(batch_input43, weights_input_hidden, hidden_bias, batch_hidden,
+                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
+        backpropagation_batch(batch_input43, batch_hidden, batch_output, batch_target,
+                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
+        
+        forward_batch(batch_input44, weights_input_hidden, hidden_bias, batch_hidden,
+                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
+        backpropagation_batch(batch_input44, batch_hidden, batch_output, batch_target,
+                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
         
         
 
@@ -693,40 +740,11 @@ int main(int argc,char** argv) {
     }
 
     
-    save_weights(weights_input_hidden, weights_hidden_output,  hidden_bias, output_bias);
+    //save_weights(weights_input_hidden, weights_hidden_output,  hidden_bias, output_bias);
 
-/*char* res[BATCH_SIZE]=
-    {
-        "images_test/dataset/A/A3.PNG",
-        "images_test/dataset/B/B2.PNG",
-        "images_test/dataset/C/C2.PNG",
-        "images_test/dataset/D/D2.PNG",
-        "images_test/dataset/E/E2.PNG",
-        "images_test/dataset/F/F2.PNG",
-        "images_test/dataset/G/G2.PNG",
-        "images_test/dataset/H/H2.PNG",
-        "images_test/dataset/I/I2.PNG",
-        "images_test/dataset/J/J2.PNG",
-        "images_test/dataset/K/K2.PNG",
-        "images_test/dataset/L/L2.PNG",
-        "images_test/dataset/M/M2.PNG",
-        "images_test/dataset/N/N2.PNG",
-        "images_test/dataset/O/O2.PNG",
-        "images_test/dataset/P/P2.PNG",
-        "images_test/dataset/Q/Q2.PNG",
-        "images_test/dataset/R/R2.PNG",
-        "images_test/dataset/S/S2.PNG",
-        "images_test/dataset/T/T2.PNG",
-        "images_test/dataset/U/U2.PNG",
-        "images_test/dataset/V/V2.PNG",
-        "images_test/dataset/W/W2.PNG",
-        "images_test/dataset/X/X2.PNG",
-        "images_test/dataset/Y/Y2.PNG",
-        "images_test/dataset/Z/Z2.PNG",
-        
-    };*/
+
     char* res[BATCH_SIZE];
-    remplir_chemins_images(res,"images_test/dataset","40");
+    remplir_chemins_images(res,"images_test/dataset","10");
 
     int pourc=0;
     for (size_t i = 0; i < 26; i++)
@@ -755,8 +773,9 @@ int main(int argc,char** argv) {
                 j=a;
             }
         }
-        for (int i = 0; i < OUTPUT_SIZE; i++) {
-        //printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
+        for (int i = 0; i < OUTPUT_SIZE; i++) 
+        {
+            //printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
         }
         printf("La lettre %c = %c\n",lettre[i],lettre[j]);
         if (lettre[i]==lettre[j]) pourc++;
