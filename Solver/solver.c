@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 
 char (*lire_grille(char *nom_fichier, int *lignes, int *colonnes))[100] {
@@ -29,77 +30,35 @@ char (*lire_grille(char *nom_fichier, int *lignes, int *colonnes))[100] {
 
     return grille;
 }
-
-
-void solver(char *nom_fichier,char *word) 
-{
-    int lignes, colonnes;
-    char (*matrice)[100] = lire_grille(nom_fichier, &lignes, &colonnes);
-    int x=0;
-    while (word[x]!=0) 
+int search_right(char** matrice, char* word ,int i,int j,int x)
     {
-        if (word[x]>96 && word[x]<123) word[x]-=32;
-        
-        x++;
-    }
-    
-    
-
-    // size of first dim
-    int n=1;
-    while(matrice[n-1][0]!=0) n++;
-    // size of second dim
-    int m=1;
-    while(matrice[0][m-1]!=0) m++;
-    
-    
-    
-    for (int i = 0; i < n; i++)        // start of search
-    {            
-        
-       for (int j = 0; j < m; j++)
+        int c=0;
+        int q=j;
+        for (size_t t = 0; t < x; t++)
         {
-            
-             if (matrice[i][j]==word[0] || matrice[i][j]+32==word[0])
-            {
-                
-                if (j-x+1>=0) //search_left
-                {       
-                    int c=0;
-                    int q=j;
-                    for (size_t t = 0; t < x; t++)
-                    {
-                        if (matrice[i][q]==word[t]) q--;
-                        else break;
-                        c++;
-                    }
-                    if (c==x)
-                    {
-                        printf("(%d,%d),(%d,%d)",j,i,j-x+1,i);
-                        return;
-                    }
-                }
-                if (j+x+1<=m) //search_right 
-                {
-                    int c=0;
-                    int q=j;
-                    for (size_t t = 0; t < x; t++)
-                    {
-                        if (matrice[i][q]==word[t]) q++;
-                        else break;
-                        c++;
-                    }
-                    if (c==x)
-                    {
-                        printf("(%d,%d),(%d,%d)",j,i,j+x-1,i);
-                        return;
-                    }
-                    
-                }
-                if (i-x+1>=0) //search_up
-                {
-                    
-                    int c=0;
+            if (matrice[i][q]==word[t]) q++;
+            else break;
+            c++;
+        }
+        if (c==x) return 1;
+        else return 0;           
+    }
+int search_left(char** matrice, char* word ,int i,int j,int x)
+{
+    int c=0;
+    int q=j;
+    for (size_t t = 0; t < x; t++)
+    {
+        if (matrice[i][q]==word[t]) q--;
+        else break;
+        c++;
+    }
+    if (c==x) return 1;
+    return 0;
+}                    
+int search_up(char** matrice, char* word ,int i,int j,int x)
+{
+int c=0;
                     int q=i;
                     for (size_t t = 0; t < x; t++)
                     {
@@ -107,7 +66,139 @@ void solver(char *nom_fichier,char *word)
                         else break;
                         c++;
                     }
-                    if (c==x)
+                    if (c==x) return 1;
+                    return 0;
+}
+int search_down(char** matrice, char* word ,int i,int j,int x)
+{
+int c=0;
+                    int q=i;
+                    for (size_t t = 0; t < x; t++)
+                    {
+                        if (matrice[q][j]==word[t]) q++;
+                        else break;
+                        c++;
+                    }
+                    if (c==x) return 1;
+                    return 0;
+}
+int search_up_left(char** matrice, char* word ,int i,int j,int x)
+{
+    int c=0;
+                    int q=i;
+                    int l=j;
+                    for (size_t t = 0; t < x; t++)
+                    {
+                        if (matrice[q][l]==word[t]) q--,l--;
+                        else break;
+                        c++;
+                    }
+                    if (c==x) return 1;
+                    return 0;
+}
+int search_up_right(char** matrice, char* word ,int i,int j,int x)
+{
+    int c=0;
+                    int q=i;
+                    int l=j;
+                    for (size_t t = 0; t < x; t++)
+                    {
+                        if (matrice[q][l]==word[t]) q--,l++;
+                        else break;
+                        c++;
+                    }
+                    if (c==x) return 1;
+                    return 0;
+}
+int search_down_left(char** matrice, char* word ,int i,int j,int x)
+{
+int c=0;
+                    int q=i;
+                    int l=j;
+                    for (size_t t = 0; t < x; t++)
+                    {
+                        if (matrice[q][l]==word[t]) q++,l--;
+                        else break;
+                        c++;
+                    }
+                    if (c==x) return 1;
+                    return 0;
+}
+int search_down_right(char** matrice, char* word ,int i,int j,int x)
+{
+    int c=0;
+                    int q=i;
+                    int l=j;
+                    for (size_t t = 0; t < x; t++)
+                    {
+                        if (matrice[q][l]==word[t]) q++,l++;
+                        else break;
+                        c++;
+                    }
+                    if (c==x) return 1;
+                    return 0;
+}
+
+void solver(char *nom_fichier,char *word) 
+{
+    int lignes, colonnes;
+    char (*ma)[100] = lire_grille(nom_fichier, &lignes, &colonnes); 
+    int x=0;
+    while (word[x]!=0) 
+    {
+        if (word[x]>96 && word[x]<123) word[x]-=32;
+        
+        x++;
+    }
+    // size of first dim
+    int n=1;
+    while(ma[n-1][0]!=0) n++;
+    // size of second dim
+    int m=1;
+    while(ma[0][m-1]!=0) m++;
+
+    char** matrice=malloc(n*sizeof(char*));
+    for (size_t i = 0; i < n; i++)
+    {
+        matrice[i]=malloc(m*sizeof(char*));
+        for (size_t j = 0; j < m; j++)
+        {
+            matrice[i][j]=ma[i][j];
+            printf("%c",matrice[i][j]);
+
+        }
+        printf("\n");
+        
+    }
+    for (int i = 0; i < n; i++)        // start of search
+    {            
+        
+       for (int j = 0; j < m; j++)
+        {
+            
+             if (matrice[i][j]==word[0] || matrice[i][j]+32==word[0])
+            {        
+                if (j-x+1>=0) //search_left
+                {       
+                    if (search_left(matrice, word ,i, j, x)==1)
+                    {
+                        printf("(%d,%d),(%d,%d)",j,i,j-x+1,i);
+                        return;
+                    }
+                }
+                if (j+x+1<=m) //search_right 
+                {
+                    if (search_right(matrice, word ,i, j, x)==1)
+                    {
+                        printf("(%d,%d),(%d,%d)",j,i,j+x-1,i);
+                        return;
+                    } 
+                    
+                }
+                if (i-x+1>=0) //search_up
+                {
+                    
+                    if (search_up(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j,i+1-x);
                         return;
@@ -118,15 +209,7 @@ void solver(char *nom_fichier,char *word)
                 }
                 if (i+x+1<=n) //search_down 
                 {
-                    int c=0;
-                    int q=i;
-                    for (size_t t = 0; t < x; t++)
-                    {
-                        if (matrice[q][j]==word[t]) q++;
-                        else break;
-                        c++;
-                    }
-                    if (c==x)
+                    if (search_down(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j,i+x-1);
                         return;
@@ -135,16 +218,7 @@ void solver(char *nom_fichier,char *word)
                 }
                 if (i-x+1>=0 && j-x+1>=0) //search_up_left
                 {
-                    int c=0;
-                    int q=i;
-                    int l=j;
-                    for (size_t t = 0; t < x; t++)
-                    {
-                        if (matrice[q][l]==word[t]) q--,l--;
-                        else break;
-                        c++;
-                    }
-                    if (c==x)
+                    if (search_up_left(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j-x+1,i-x+1);
                         return;
@@ -153,16 +227,7 @@ void solver(char *nom_fichier,char *word)
                 }
                 if (i-x+1>=0 && j+x+1<=m) //search_up_right
                 {
-                    int c=0;
-                    int q=i;
-                    int l=j;
-                    for (size_t t = 0; t < x; t++)
-                    {
-                        if (matrice[q][l]==word[t]) q--,l++;
-                        else break;
-                        c++;
-                    }
-                    if (c==x)
+                    if (search_up_right(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j+x-1,i-x+1);
                         return;
@@ -171,16 +236,7 @@ void solver(char *nom_fichier,char *word)
                 }
                 if (i+x+1<=n && j-x+1>=0) //search_down_left
                 {
-                    int c=0;
-                    int q=i;
-                    int l=j;
-                    for (size_t t = 0; t < x; t++)
-                    {
-                        if (matrice[q][l]==word[t]) q++,l--;
-                        else break;
-                        c++;
-                    }
-                    if (c==x)
+                    if (search_down_left(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j-x+1,i+x-1);
                         return;
@@ -188,18 +244,9 @@ void solver(char *nom_fichier,char *word)
                 }
                 if (i+x+1<=n && j+x+1<=m) //search_down_right
                 {
-                    int c=0;
-                    int q=i;
-                    int l=j;
-                    for (size_t t = 0; t < x; t++)
+                    if (search_down_right(matrice, word ,i, j, x)==1)
                     {
-                        if (matrice[q][l]==word[t]) q++,l++;
-                        else break;
-                        c++;
-                    }
-                    if (c==x)
-                    {
-                        printf("(%d,%d),(%d,%d)",j,i,j-x+1,i-x-1);
+                        printf("(%d,%d),(%d,%d)",j,i,-(j-x+1),-(i-x-1));
                         return;
                     }
                 }
@@ -223,6 +270,9 @@ int main(int argc, char *argv[]) {
     char *word = argv[2];
     
     solver(filename,word);
+
+
+   
     return 0;
     
 }
