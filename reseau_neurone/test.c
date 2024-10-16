@@ -325,6 +325,10 @@ int main(int argc,char** argv) {
     for (int i = 0; i < NBTEST; i++) { // Remplir uniquement les 10 premiers cas
         remplirTestAvecImages_black(batch_inputs[i], images[i]);
     }
+/*
+    for (size_t i = 0; i < BATCH_SIZE; i++) {
+    free(images[i]);
+    }*/
 
 
 
@@ -350,6 +354,11 @@ int main(int argc,char** argv) {
                                 weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
         }
     }
+
+    for (size_t i = 0; i < BATCH_SIZE; i++) {
+        free(images[i]);
+    }
+    
 
 
 

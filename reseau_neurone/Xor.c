@@ -38,7 +38,7 @@ void shuffle(int *array, size_t n) {
 
 #define nbInput 2
 #define nbHiddenNode 2
-#define output 2  // Changer à 2 sorties pour la classification binaire avec softmax
+#define output 2  
 #define nbTest 4
 
 
@@ -71,7 +71,7 @@ void predict(double input1, double input2, double hiddenWeight[nbInput][nbHidden
 
 
 int main(void) {
-    int repet = 10000;
+    size_t repet = 10000;
     const double lr = 0.1f;
 
     double hiddenLayer[nbHiddenNode];
@@ -87,10 +87,10 @@ int main(void) {
                                               {0.0f, 1.0f},
                                               {1.0f, 1.0f}};
 
-    double training_output[nbTest][output] = {{1.0f, 0.0f},  // Classe 0
-                                              {0.0f, 1.0f},  // Classe 1
-                                              {0.0f, 1.0f},  // Classe 1
-                                              {1.0f, 0.0f}}; // Classe 0
+    double training_output[nbTest][output] = {{1.0f, 0.0f},  
+                                              {0.0f, 1.0f},  
+                                              {0.0f, 1.0f},  
+                                              {1.0f, 0.0f}}; 
 
     // Initialisation des poids
     for (size_t i = 0; i < nbInput; i++) {
@@ -144,7 +144,7 @@ int main(void) {
             softmax(outputRaw, outputLayer, output);
 
             // Impression des résultats périodiquement
-            if (epoch % 1000 == 0) {
+            if (epoch % 2000 == 0) {
                 printf("Epoch: %zu, Input: %g %g, Output: %g %g, Predicted output: %g %g\n",
                        epoch, training_input[i][0], training_input[i][1],
                        outputLayer[0], outputLayer[1],
@@ -155,7 +155,7 @@ int main(void) {
             double DeltaOuput[output];
             for (size_t j = 0; j < output; j++) {
                 double error = training_output[i][j] - outputLayer[j];
-                DeltaOuput[j] = error;  // Le gradient de softmax avec entropie croisée est simplifié
+                DeltaOuput[j] = error;  
             }
 
             // Rétropropagation : Couche cachée
@@ -186,14 +186,16 @@ int main(void) {
         }
     }
 
-double input1, input2;
-    printf("Enter two input values (0 or 1): ");
+    double input1, input2;
+    printf("Enter two values (0 or 1): ");
     scanf("%lf %lf", &input1, &input2);
     
     double predictedOutput[output];
     predict(input1, input2, hiddenWeight, outPutWeight, hiddenLayerBias, outputLayerBias, predictedOutput);
+    if (predictedOutput[0]<0.1) printf("Predicted output: 0\n");
+    else printf("Predicted output: 1\n");
     
-    printf("Predicted output: %g %g\n", predictedOutput[0], predictedOutput[1]);
+    
     
 
     return 0;
