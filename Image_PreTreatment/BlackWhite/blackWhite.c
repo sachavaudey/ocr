@@ -9,15 +9,14 @@ void blackWhite(SDL_Surface *surface) {
 
 	SDL_LockSurface(surface);
 
-    const int pixelCount = (surface->w * surface->h);
-
+	printf("---------------\nStarting conversion to black or white...\n");
+   
+	const int pixelCount = (surface->w * surface->h);
     Uint32 *pixels = surface->pixels;
-
     Uint8 gray;
     
 	for (int i = 0; i < pixelCount; ++i)
     {
-        Uint8 gray;
         //r == g == b
         SDL_GetRGB(pixels[i], surface->format, &gray, &gray, &gray);
 
@@ -53,5 +52,6 @@ void blackWhite(SDL_Surface *surface) {
 	}
 
 	SDL_UnlockSurface(surface);
+	printf("Surface successfully converted to Black&White !\n---------------\n");
 }
 
