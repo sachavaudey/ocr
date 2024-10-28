@@ -1,10 +1,15 @@
-main : letter-detection.c
-	gcc letter-detection.c -Wall -Wextra -o main -lSDL2 -lSDL2_image
+CC = gcc
+CFLAGS = -Wall -Wextra -O2
+LDFLAGS = -lm -lSDL2 -lSDL2_image
+TARGET = main
+SRC = canny.c tools.c
 
+all: $(TARGET)
 
+$(TARGET): $(SRC)
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)
 
 clean:
-	rm -rf main
-	rm -rf result.bmp
+	rm -f $(TARGET)
 
-.PHONY: clean
+.PHONY: all clean
