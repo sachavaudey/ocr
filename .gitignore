@@ -1,6 +1,6 @@
 # Prerequisites
 *.d
-
+.vscode
 # Object files
 *.o
 *.ko
@@ -38,16 +38,3 @@
 
 # Debug files
 *.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-.DS_Store
