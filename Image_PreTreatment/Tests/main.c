@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     }
 
 	if (!strcmp(argv[1],"rotate"))
-		rotate(surface, 20);
+		rotate(surface, -25);
 
 	if (!strcmp(argv[1],"grayscale") || !strcmp(argv[1],"all"))
 		grayscaling(surface);
