@@ -19,7 +19,7 @@ void grayscaling(SDL_Surface *surface) {
         SDL_GetRGB(pixels[i], surface->format, &r, &g, &b);
 
         // Computing rgb average to scale it on 0-255 grey color
-        gray = (Uint8)(0.299 * r + 0.587 * g + 0.114 * b);
+        gray = (Uint8)(0.2126 * r + 0.7152* g + 0.0722 * b);
 
         // Assign grey value to pixel
         pixels[i] = SDL_MapRGB(surface->format, gray, gray, gray);
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
     IMG_Init(IMG_INIT_PNG);
 
     // Charger une image
-    SDL_Surface *image = loadImage("level_1_image_1.png");
+    SDL_Surface *image = IMG_Load("level_4_image_1.png");
     if (!image) {
         SDL_DestroyWindow(window);
         SDL_Quit();
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
     // Convertir l'image en niveaux de gris
     grayscaling(image);
 
-    IMG_SavePNG(image, "../../BlackWhite/Tests/level_1_image_1_grayscaled.png");
+    IMG_SavePNG(image, "../../BlackWhite/Tests/level_4_image_1_grayscaled.png");
 
     // Créer une texture à partir de la surface modifiée
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);

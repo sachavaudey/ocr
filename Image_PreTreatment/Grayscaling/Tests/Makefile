@@ -1,6 +1,6 @@
 CC := gcc -fsanitize=address -g
 CFLAGS := -Wall -Wextra -Wvla -pedantic -std=c99 -lSDL2main -lSDL2_image -lSDL2
-OBJS = ../grayscaling.o ../../../Common/SDL/images.o
+OBJS = ../grayscaling.o
 DEP= ${SRC:.c=.d}
 TARGET = grayscaling
 

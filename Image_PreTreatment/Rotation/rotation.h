@@ -3,13 +3,13 @@
 //
 
 
-#ifndef GRAYSCALING_H
-#define GRAYSCALING_H
+#ifndef ROTATION_H
+#define ROTATION_H
 #include <err.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
 
-void grayscaling(SDL_Surface *surface);
+void rotate(SDL_Surface *surface, int angle);
 
 #endif

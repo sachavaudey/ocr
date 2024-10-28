@@ -10,20 +10,102 @@ void blackWhite(SDL_Surface *surface) {
     Uint32 *pixels = surface->pixels;
     SDL_LockSurface(surface);
 
-    Uint8 gray;
 
-    for (int i = 0; i < pixelCount; ++i) {
 
+    for (int i = 0; i < pixelCount; ++i)
+    {
+        Uint8 gray;
         //r == g == b
         SDL_GetRGB(pixels[i], surface->format, &gray, &gray, &gray);
 
-        if (gray > 128) {
+        Uint8 tempL, tempR, tempU, tempD;
+        if (i % surface->w != surface->w - 1)
+        {
+            SDL_GetRGB(pixels[i+1], surface->format, &tempR, &tempR, &tempR);
+        }
+
+        if (i % surface->w != 0)
+        {
+            SDL_GetRGB(pixels[i-1], surface->format, &tempL, &tempL, &tempL);
+        }
+
+        if (i - surface->w > 0)
+        {
+            SDL_GetRGB(pixels[i-surface->w], surface->format, &tempU, &tempU, &tempU);
+        }
+        if (i + surface->w < pixelCount)
+        {
+            SDL_GetRGB(pixels[i+surface->w], surface->format, &tempD, &tempD, &tempD);
+        }
+
+
+        if (gray > 190) {
             pixels[i] = SDL_MapRGB(surface->format, 0, 0, 0);
         } else {
             pixels[i] = SDL_MapRGB(surface->format, 255, 255, 255);
         }
     }
+    /*
 
+    for (int i = surface->w; i < pixelCount; ++i)
+    {
+        Uint8 gray;
+        //r == g == b
+        SDL_GetRGB(pixels[i], surface->format, &gray, &gray, &gray);
+
+        Uint8 temp[3][3];
+        for (int i1 = 0; i1 < 3; i1++)
+        {
+            for (int i2 = 0; i2 < 3; i2++)
+            {
+                (temp[i1][i2] = 0);
+
+            }
+        }
+        if (i - surface->w - 1 >= 0)
+        {
+            SDL_GetRGB(pixels[i- surface->w-1], surface->format, &temp[0][0], &temp[0][0], &temp[0][0]);
+            SDL_GetRGB(pixels[i- surface->w], surface->format, &temp[0][1], &temp[0][1], &temp[0][1]);
+            SDL_GetRGB(pixels[i-1], surface->format, &temp[1][0], &temp[1][0], &temp[1][0]);
+        }
+
+        if (i + surface->w + 1 < pixelCount)
+        {
+            SDL_GetRGB(pixels[i + 1], surface->format, &temp[1][2], &temp[1][2], &temp[1][2]);
+            SDL_GetRGB(pixels[i + surface->w], surface->format, &temp[2][1], &temp[2][1], &temp[2][1]);
+            SDL_GetRGB(pixels[i + surface->w + 1], surface->format, &temp[2][2], &temp[2][2], &temp[2][2]);
+        }
+
+
+
+        if ((i + surface->w - 1)< pixelCount)
+        {
+            SDL_GetRGB(pixels[i + surface->w - 1], surface->format, &temp[2][0], &temp[2][0], &temp[2][0]);
+        }
+
+        if (i - surface->w + 1 >= 0)
+        {
+            SDL_GetRGB(pixels[i- surface->w +1], surface->format, &temp[0][2], &temp[0][2], &temp[0][2]);
+        }
+        int whiteSides = 0;
+        if (temp[0][0] == 255 && temp[0][1] == 255 && temp[0][2] == 255)
+            whiteSides++;
+        if (temp[2][0] == 255 && temp[2][1] == 255 && temp[2][2] == 255)
+            whiteSides++;
+        if (temp[0][0] == 255 && temp[1][0] == 255 && temp[2][0] == 255)
+            whiteSides++;
+        if (temp[0][2] == 255 && temp[1][2] == 255 && temp[2][2] == 255)
+            whiteSides++;
+
+
+        //int multBlack = tempD > 0 + tempL > 0 + tempR > 0 + tempU > 0;
+        if (whiteSides <= 0)
+            gray = 0;
+
+
+        pixels[i] = SDL_MapRGB(surface->format, gray, gray, gray);
+
+    }*/
     SDL_UnlockSurface(surface);
     printf("Image converted to black or white.\n""---------------\n");
 }
@@ -55,7 +137,7 @@ int main(int argc, char *argv[]) {
     IMG_Init(IMG_INIT_PNG);
 
     // Charger une image
-    SDL_Surface *image = IMG_Load("level_1_image_1_grayscaled.png");
+    SDL_Surface *image = IMG_Load("level_4_image_2_grayscaled.png");
     if (!image) {
         SDL_DestroyWindow(window);
         SDL_Quit();
@@ -65,7 +147,7 @@ int main(int argc, char *argv[]) {
     // Convertir l'image en niveaux de gris
     blackWhite(image);
 
-    IMG_SavePNG(image, "level_1_image_1_blackwhite.png");
+    IMG_SavePNG(image, "level_4_image_2_blackwhite.png");
 
     // Créer une texture à partir de la surface modifiée
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image);

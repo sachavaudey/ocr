@@ -1,6 +1,6 @@
 CC := gcc -fsanitize=address -g
 CFLAGS := -Wall -Wextra -Wvla -pedantic -std=c99 -lSDL2main -lSDL2_image -lSDL2
-OBJS = ../blackWhite.o ../../../Common/SDL/images.o
+OBJS = ../blackWhite.o
 
 DEP= ${SRC:.c=.d}
 TARGET = blackWhite
