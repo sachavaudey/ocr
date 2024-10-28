@@ -25,7 +25,8 @@ int pointInArr(int x, int y, int* rectangle)
  *	Computes X coordinate from pixel number of 
  *	an image of given width
  *
- *	x		: pixel number in image pixels' array
+ *	x		: pixel number in image's pixels array
+ *  width	: image's width
  *
  *	returns	: coordinate on X axis (from LEFT to RIGHT) 
  */
@@ -42,6 +43,8 @@ int getXFromPixelNb(int x, unsigned int width)
  *	an image of given width and height
  *
  *	x		: pixel number in image pixels' array
+ *	width	: image's width
+ *	height	: image's heigth
  *
  *	returns	: coordinate on Y axis (from TOP to BOTTOM) 
  */
