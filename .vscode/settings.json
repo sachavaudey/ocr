@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "sdl.h": "c",
-        "sdl_image.h": "c",
-        "math.h": "c",
-        "err.h": "c"
-    }
-}
