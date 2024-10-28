@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -O2
 LDFLAGS = -lSDL2 -lSDL2_image -lm
 TARGET = pre-treatment
-SRC = main.c BlackWhite/blackWhite.c Grayscaling/grayscaling.c NoiseReduction/noisereduction.c Tools/tools.c
+SRC = main.c ../BlackWhite/blackWhite.c ../Grayscaling/grayscaling.c ../NoiseReduction/noisereduction.c ../Tools/tools.c ../Rotation/rotation.c
 
 all: $(TARGET)
 

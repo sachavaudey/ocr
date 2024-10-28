@@ -55,4 +55,4 @@ dkms.conf
 [C+c][M+m]ake*
 **/Tests/**
 !**/Tests/Makefile
-!**/Tests/main.c
+!**/Tests/main.[c,h]
