@@ -1,7 +1,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <err.h>
@@ -13,6 +12,7 @@
 #include "../NoiseReduction/noisereduction.h"
 #include "../Rotation/rotation.h"
 #include "../Tools/tools.h"
+#include "../../Common/ocr.h"
 
 int main(int argc, char *argv[]);
 

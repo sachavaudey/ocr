@@ -1,8 +1,6 @@
 #include "main.h"
-#include <string.h>
 
 //Main file of the pre-treatment part of the OCR project
-
 int main(int argc, char *argv[]) {
     if (argc != 3) {
         errx(EXIT_FAILURE, "Invalid number of arguments!\n./pre-treatment <all/rotate/blackwhite/grayscale/> <input_image_path>\n");
@@ -27,17 +25,20 @@ int main(int argc, char *argv[]) {
 		blackWhite(surface);
    
 	if (!strcmp(argv[1],"grayscale") || !strcmp(argv[1],"all"))
-	{noise_reduction(surface, 100);
-    printf("noise reduction\n");
-	}
-    
+	{
+		noise_reduction(surface, 100);
+		printf("noise reduction\n");
+	}   
 
 	save_image(surface, "result.png");//argv[2]);
-    printf("image saved\n");
+    
+	if (LOG_LEVEL)
+		printf("Image (result.png) saved\n");
 
     SDL_FreeSurface(surface);
     SDL_Quit();
 
-    printf("Pre-treatment done!\n");
+    if (LOG_LEVEL)
+		printf("Pre-treatment done!\n");
     return EXIT_SUCCESS;
 }
