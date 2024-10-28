@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "sdl.h": "c",
+        "sdl_image.h": "c",
+        "letter-detection.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "enabled"
+}
