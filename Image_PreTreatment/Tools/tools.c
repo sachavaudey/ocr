@@ -1,4 +1,8 @@
 #include "tools.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 // This file contain all the tools function for letter-detection script detailed under
 
@@ -20,9 +24,9 @@ This function set the rgb value of a specific pixel according to the surface giv
 @param y y coordinate of the pixel
 @param color color to set
 */
-void set_pixel_color(SDL_Surface *surface, int x, int y, Uint32 color) {
+void set_pixel_color(SDL_Surface *surface, int x, int y, Uint32 r, Uint32 g, Uint32 b) {
     Uint32 *pixels = (Uint32 *)surface->pixels;
-    pixels[(y * surface->w) + x] = color;
+    pixels[(y * surface->w) + x] = SDL_MapRGB(surface->format, r, g, b);
 }
 
 /*

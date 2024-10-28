@@ -10,6 +10,6 @@
 #include <SDL2/SDL_image.h>
 
 
-void grayscaling(const SDL_Surface *surface);
+void grayscaling(SDL_Surface *surface);
 
 #endif

@@ -8,6 +8,6 @@
 #include <SDL2/SDL_image.h>
 #include <err.h>
 
-void blackWhite(const SDL_Surface *surface);
+void blackWhite(SDL_Surface *surface);
 
 #endif //BLACKWHITE_H

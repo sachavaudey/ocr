@@ -1,4 +1,4 @@
-#include "canny.h"
+#include "noisereduction.h"
 
 /*
 This function applies a noise reduction algorithm on a given surface (image).
@@ -10,7 +10,7 @@ void noise_reduction(SDL_Surface *surface, int threshold) {
     int height = surface->h;
     Uint32 *pixels = (Uint32 *)surface->pixels;
     Uint32 *new_pixels = (Uint32 *)malloc(width * height * sizeof(Uint32));
-    if (new_pixels != 0) {
+    if (new_pixels == 0) {
         errx(EXIT_FAILURE, "Memory allocation failed\n");
         return;
     }
@@ -50,34 +50,4 @@ void noise_reduction(SDL_Surface *surface, int threshold) {
 
     memcpy(pixels, new_pixels, width * height * sizeof(Uint32));
     free(new_pixels);
-}
-
-int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        errx(EXIT_FAILURE, "The number of parameter given is invalid!");
-    }
-
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        errx(EXIT_FAILURE, "%s\n", SDL_GetError());
-    }
-
-    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        errx(EXIT_FAILURE, "%s\n", IMG_GetError());
-    }
-
-    SDL_Surface *surface = IMG_Load(argv[1]);
-    if (!surface) {
-        errx(EXIT_FAILURE, "%s\n", IMG_GetError());
-    }
-
-    noise_reduction(surface, 100);
-
-    if (IMG_SavePNG(surface, argv[2]) != 0) {
-        errx(EXIT_FAILURE, "%s\n", SDL_GetError());
-    }
-
-    SDL_FreeSurface(surface);
-    IMG_Quit();
-    SDL_Quit();
-    return EXIT_SUCCESS;
 }
