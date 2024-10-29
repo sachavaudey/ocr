@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 `sdl2-config --cflags`
-LDFLAGS = `sdl2-config --libs` -lSDL2_image
+CFLAGS = -Wall -Wextra -O2
+LDFLAGS = -lSDL2 -lSDL2_image -lm
 SRC = $(wildcard *.c)
 OBJ = $(SRC:.c=.o)
 EXEC = programme
@@ -15,5 +15,6 @@ $(EXEC): $(OBJ)
 
 clean:
 	rm -f $(OBJ) $(EXEC)
+	clear
 
 .PHONY: clean

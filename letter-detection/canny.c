@@ -1,17 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <err.h>
-#include <math.h>
-#include "hysteresis.h"
-#include "boxes.h"
-
+#include "canny.h"
 
 #define PI 3.1415926535
 
 
-void calculate_gradients(SDL_Surface *surface, float **gradient_magnitude, float **gradient_direction)
+void sobel_filter(unsigned char **image, int width, int height, float **gradient_magnitude, float **gradient_direction)
 {
     int Gx[3][3] = {
         {-1, 0, 1},
@@ -22,55 +14,29 @@ void calculate_gradients(SDL_Surface *surface, float **gradient_magnitude, float
         {0, 0, 0},
         {1, 2, 1}};
 
-    int width = surface->w;
-    int height = surface->h;
-    Uint32 *pixels = (Uint32 *)surface->pixels;
-
-    for (unsigned int y = 1; y < (unsigned int)height - 1; y++)
+    for (int y = 1; y < height - 1; y++)
     {
-        for (unsigned int x = 1; x < (unsigned int)width - 1; x++)
+        for (int x = 1; x < width - 1; x++)
         {
-            int gx_r = 0, gy_r = 0;
-            int gx_g = 0, gy_g = 0;
-            int gx_b = 0, gy_b = 0;
+            int gx = 0, gy = 0;
 
             for (int ky = -1; ky <= 1; ky++)
             {
                 for (int kx = -1; kx <= 1; kx++)
                 {
-                    int pixel_index = (y + ky) * width + (x + kx);
-                    Uint32 pixel = pixels[pixel_index];
-
-                    Uint8 r, g, b;
-                    SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-
-                    gx_r += r * Gx[ky + 1][kx + 1];
-                    gy_r += r * Gy[ky + 1][kx + 1];
-
-                    gx_g += g * Gx[ky + 1][kx + 1];
-                    gy_g += g * Gy[ky + 1][kx + 1];
-
-                    gx_b += b * Gx[ky + 1][kx + 1];
-                    gy_b += b * Gy[ky + 1][kx + 1];
+                    gx += image[y + ky][x + kx] * Gx[ky + 1][kx + 1];
+                    gy += image[y + ky][x + kx] * Gy[ky + 1][kx + 1];
                 }
             }
 
-            float grad_r = sqrt(gx_r * gx_r + gy_r * gy_r);
-            float grad_g = sqrt(gx_g * gx_g + gy_g * gy_g);
-            float grad_b = sqrt(gx_b * gx_b + gy_b * gy_b);
-
-            gradient_magnitude[y][x] = (grad_r + grad_g + grad_b) / 3.0;
-
-            gradient_direction[y][x] = atan2(gy_r + gy_g + gy_b, gx_r + gx_g + gx_b) * 180 / PI;
+            gradient_magnitude[y][x] = sqrt(gx * gx + gy * gy);
+            gradient_direction[y][x] = atan2(gy, gx) * 180 / PI;
         }
     }
 }
 
-void non_max_suppression(SDL_Surface *surface, float **gradient_magnitude, float **gradient_direction, float **edges)
+void nm_filter(int width, int height, float **gradient_magnitude, float **gradient_direction, float **edges)
 {
-    int width = surface->w;
-    int height = surface->h;
-
     for (int y = 1; y < height - 1; y++)
     {
         for (int x = 1; x < width - 1; x++)
@@ -105,35 +71,85 @@ void non_max_suppression(SDL_Surface *surface, float **gradient_magnitude, float
     }
 }
 
-void dilate(SDL_Surface *input_surface, SDL_Surface *output_surface)
+void dilate_filter(unsigned char **input, unsigned char **output, int width, int height)
 {
-    int width = input_surface->w;
-    int height = input_surface->h;
-
-    Uint32 *input_pixels = (Uint32 *)input_surface->pixels;
-    Uint32 *output_pixels = (Uint32 *)output_surface->pixels;
-
     for (int y = 0; y < height; y++)
         for (int x = 0; x < width; x++)
-            output_pixels[y * width + x] = 0;
+            output[y][x] = 0;
 
     for (int y = 1; y < height - 1; y++)
         for (int x = 1; x < width - 1; x++)
         {
-            Uint8 r, g, b;
-            SDL_GetRGB(input_pixels[y * width + x], input_surface->format, &r, &g, &b);
-
-            if (r == 255 && g == 255 && b == 255)
+            if (input[y][x] == 255)
                 for (int dy = -1; dy <= 1; dy++)
                     for (int dx = -1; dx <= 1; dx++)
-                        output_pixels[(y + dy) * width + (x + dx)] = SDL_MapRGB(output_surface->format, 255, 255, 255);
+                        output[y + dy][x + dx] = 255;
         }
 }
 
-void apply_canny(SDL_Surface *surface)
+void hysteresis_filter(float **edges, int width, int height, float low_thresh, float high_thresh, unsigned char **edge_map) {
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            edge_map[y][x] = 0;
+        }
+    }
+
+    for (int y = 1; y < height - 1; y++) {
+        for (int x = 1; x < width - 1; x++) {
+            if (edges[y][x] >= high_thresh) {
+                edge_map[y][x] = 255;
+            } else if (edges[y][x] >= low_thresh) {
+                edge_map[y][x] = 128;
+            }
+        }
+    }
+
+    for (int y = 1; y < height - 1; y++) {
+        for (int x = 1; x < width - 1; x++) {
+            if (edge_map[y][x] == 255) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    for (int dx = -1; dx <= 1; dx++) {
+                        int ny = y + dy;
+                        int nx = x + dx;
+                        if (ny >= 0 && ny < height && nx >= 0 && nx < width && edge_map[ny][nx] == 128) {
+                            edge_map[ny][nx] = 255;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (edge_map[y][x] == 128) {
+                edge_map[y][x] = 0;
+            }
+        }
+    }
+}
+
+
+void process(SDL_Surface *surface)
 {
     int width = surface->w;
     int height = surface->h;
+
+    unsigned char **image = (unsigned char **)malloc(height * sizeof(unsigned char *));
+    for (int i = 0; i < height; i++)
+    {
+        image[i] = (unsigned char *)malloc(width * sizeof(unsigned char));
+    }
+
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            Uint8 r, g, b;
+            get_pixel_color(surface, x, y, &r, &g, &b);
+            image[y][x] = (r + g + b) / 3;
+        }
+    }
 
     float **gradient_magnitude = (float **)malloc(height * sizeof(float *));
     float **gradient_direction = (float **)malloc(height * sizeof(float *));
@@ -142,54 +158,61 @@ void apply_canny(SDL_Surface *surface)
         gradient_magnitude[i] = (float *)malloc(width * sizeof(float));
         gradient_direction[i] = (float *)malloc(width * sizeof(float));
     }
-    calculate_gradients(surface, gradient_magnitude, gradient_direction);
+
+    sobel_filter(image, width, height, gradient_magnitude, gradient_direction);
 
     float **edges = (float **)malloc(height * sizeof(float *));
     for (int i = 0; i < height; i++)
     {
         edges[i] = (float *)malloc(width * sizeof(float));
     }
-    non_max_suppression(surface, gradient_magnitude, gradient_direction, edges);
+
+    nm_filter(width, height, gradient_magnitude, gradient_direction, edges);
 
     unsigned char **edge_map = (unsigned char **)malloc(height * sizeof(unsigned char *));
     for (int i = 0; i < height; i++)
     {
         edge_map[i] = (unsigned char *)malloc(width * sizeof(unsigned char));
     }
-    float low_thresh = 20.0;
-    float high_thresh = 50.0;
-    hysteresis_thresholding(surface, edges, low_thresh, high_thresh, edge_map);
+
+    float low_thresh = 100.0;
+    float high_thresh = 200.0;
+    hysteresis_filter(edges, width, height, low_thresh, high_thresh, edge_map);
 
     unsigned char **dilated_edge_map = (unsigned char **)malloc(height * sizeof(unsigned char *));
     for (int i = 0; i < height; i++)
     {
         dilated_edge_map[i] = (unsigned char *)malloc(width * sizeof(unsigned char));
     }
-    dilate(edge_map, dilated_edge_map);
+
+    dilate_filter(edge_map, dilated_edge_map, width, height);
 
     BoundingBox *boxes;
     int num_boxes;
-    find_bounding_boxes(dilated_edge_map, &boxes, &num_boxes);
+    find_bounding_boxes(dilated_edge_map, width, height, &boxes, &num_boxes);
 
-    Color red = {255, 0, 0};
+    merge_bounding_boxes(boxes, &num_boxes);
+
     for (int i = 0; i < num_boxes; i++)
     {
         int box_width = boxes[i].max_x - boxes[i].min_x;
         int box_height = boxes[i].max_y - boxes[i].min_y;
         if (box_width > 5 && box_height > 5)
         {
-            draw_rectangle(surface, boxes[i].min_x, boxes[i].min_y, boxes[i].max_x, boxes[i].max_y, red);
+            draw_rectangle(surface, boxes[i].min_x, boxes[i].min_y, boxes[i].max_x, boxes[i].max_y);
         }
     }
 
     for (int i = 0; i < height; i++)
     {
+        free(image[i]);
         free(gradient_magnitude[i]);
         free(gradient_direction[i]);
         free(edges[i]);
         free(edge_map[i]);
         free(dilated_edge_map[i]);
     }
+    free(image);
     free(gradient_magnitude);
     free(gradient_direction);
     free(edges);

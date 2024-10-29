@@ -4,26 +4,13 @@
 
 
 int main(int argc, char* argv[]){
-    if(argc != 2){
-        errx(1, "Usage: %s <image.bmp>", argv[0]);
-    }
+    if(argc != 3) errx(EXIT_FAILURE, "Usage : ./main <image_source_path> <image_dest_path>");
 
     SDL_Surface *image = IMG_Load(argv[1]);
-    if(image == NULL){
-        errx(1, "Could not load image %s", argv[1]);
-    }
+    if(image == NULL) errx(EXIT_FAILURE, "Could not load image %s", argv[1]);
 
-    SDL_Surface *edges = SDL_CreateRGBSurface(0, image->w, image->h, 32, 0, 0, 0, 0);
-    if(edges == NULL){
-        errx(1, "Could not create edges surface");
-    }
-
-    apply_canny(image);
-
-    IMG_SavePNG(image, "result.png");
-
+    process(image);
+    IMG_SavePNG(image, argv[2]);
     SDL_FreeSurface(image);
-    SDL_FreeSurface(edges);
-
-    return 0;
+    return EXIT_SUCCESS;
 }
