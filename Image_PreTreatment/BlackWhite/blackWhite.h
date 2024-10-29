@@ -10,8 +10,9 @@
 //#include <SDL2/SDL_surface.h>
 //#include <stdio.h>
 //#include <SDL2/SDL_image.h>
-//#include "../Tools/tools.h"
 
+//#include "../Tools/tools.h"
+#include "../../Common/ocr.h"
 
 void blackWhite(SDL_Surface *surface);
 

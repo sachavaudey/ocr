@@ -10,7 +10,8 @@ void noise_reduction(SDL_Surface *surface, int threshold) {
     int height = surface->h;
     Uint32 *pixels = (Uint32 *)surface->pixels;
     Uint32 *new_pixels = (Uint32 *)malloc(width * height * sizeof(Uint32));
-    if (new_pixels == 0) {
+    if (new_pixels == 0) 
+	{
         errx(EXIT_FAILURE, "Memory allocation failed\n");
         return;
     }

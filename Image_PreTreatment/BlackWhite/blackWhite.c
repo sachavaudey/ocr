@@ -1,15 +1,24 @@
 #include "blackWhite.h"
-#include <SDL2/SDL_surface.h>
-#include <stdio.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include "../Tools/tools.h"
 
-void blackWhite(SDL_Surface *surface) {
 
+
+/*	Function : grayscaling
+ *
+ *	--------------------------
+ *
+ *	Transforms a grayscaled surface to a black&white suface.
+ *	Thresold defined in Common/ocr.
+ *
+ *	surface	: target surface
+ *
+ *	returns	: void 
+ */
+void blackWhite(SDL_Surface *surface) 
+{
 	SDL_LockSurface(surface);
 
-	printf("---------------\nStarting conversion to black or white...\n");
+	if (LOG_LEVEL)
+		printf("---------------\nStarting conversion to black or white...\n");
    
 	const int pixelCount = (surface->w * surface->h);
     Uint32 *pixels = surface->pixels;
@@ -19,7 +28,7 @@ void blackWhite(SDL_Surface *surface) {
     {
         //r == g == b
         SDL_GetRGB(pixels[i], surface->format, &gray, &gray, &gray);
-
+		/*
         Uint8 tempL, tempR, tempU, tempD;
         if (i % surface->w != surface->w - 1)
         {
@@ -38,10 +47,10 @@ void blackWhite(SDL_Surface *surface) {
         if (i + surface->w < pixelCount)
         {
             SDL_GetRGB(pixels[i+surface->w], surface->format, &tempD, &tempD, &tempD);
-        }
+        }*/
 
 
-		if (gray > 190) 
+		if (gray > GRAY_THRESOLD) 
 		{
             pixels[i] = SDL_MapRGB(surface->format, 0, 0, 0);
         }
@@ -52,6 +61,8 @@ void blackWhite(SDL_Surface *surface) {
 	}
 
 	SDL_UnlockSurface(surface);
-	printf("Surface successfully converted to Black&White !\n---------------\n");
+
+	if (LOG_LEVEL)
+		printf("Surface successfully converted to Black&White !\n---------------\n");
 }
 

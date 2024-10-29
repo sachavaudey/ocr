@@ -10,6 +10,7 @@
 #include "../BlackWhite/blackWhite.h"
 #include "../Grayscaling/grayscaling.h"
 #include "../NoiseReduction/noisereduction.h"
+#include "../NoiseReduction/denoise.h"
 #include "../Rotation/rotation.h"
 #include "../Tools/tools.h"
 #include "../../Common/ocr.h"

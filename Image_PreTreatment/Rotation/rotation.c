@@ -84,8 +84,17 @@ long getPixelNbFromXY(int x, int y, unsigned int width, unsigned int height)
 }
 
 
-
-// Function converting a given surface to grey scale
+ /*	Function : rotate
+ *
+ *	--------------------------
+ *
+ *	Rotates a surface of <angle> degrees
+ *
+ *	surface	: surface to rotate
+ *	angle	: angle (degrees) to rotate the surface with
+ *
+ *	returns	: void
+ */
 void rotate(SDL_Surface *surface, int angle) 
 {   
 	if (LOG_LEVEL)

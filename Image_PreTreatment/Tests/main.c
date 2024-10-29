@@ -24,8 +24,10 @@ int main(int argc, char *argv[]) {
 	if (!strcmp(argv[1],"blackwhite") || !strcmp(argv[1],"all"))
 		blackWhite(surface);
    
-	if (!strcmp(argv[1],"grayscale") || !strcmp(argv[1],"all"))
+	if (!strcmp(argv[1],"denoise"))
 	{
+		for (int i =0; i<2; i++)
+		{denoise_simple(surface);}
 		noise_reduction(surface, 100);
 		printf("noise reduction\n");
 	}   

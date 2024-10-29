@@ -1,10 +1,22 @@
 #include "grayscaling.h"
 
-// Function converting a given surface to grey scale
+
+/*	Function : grayscaling
+ *
+ *	--------------------------
+ *
+ *	Transforms a surface by grayscaling its pixels
+ *
+ *	surface	: target surface
+ *
+ *	returns	: void 
+ */
 void grayscaling(SDL_Surface *surface) 
 {
 	SDL_LockSurface(surface);
-    printf("---------------\nStarting grayscaling...\n");
+    
+	if (LOG_LEVEL)
+		printf("---------------\nStarting grayscaling...\n");
 
     const int pixelCount = (surface->w * surface->h);
     Uint32 *pixels = surface->pixels; 
@@ -23,5 +35,7 @@ void grayscaling(SDL_Surface *surface)
     }
 
     SDL_UnlockSurface(surface);
-    printf("Image successfully grayscaled !\n---------------\n");
+    
+	if (LOG_LEVEL)
+		printf("Image successfully grayscaled !\n---------------\n");
 }
