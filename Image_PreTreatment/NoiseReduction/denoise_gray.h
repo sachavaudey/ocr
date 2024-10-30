@@ -1,5 +1,5 @@
-#ifndef DENOISE_H
-#define DENOISE_H
+#ifndef DENOISE_GRAY_H
+#define DENOISE_GRAY_H
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -8,10 +8,9 @@
 #include "../Tools/tools.h"
 #include "../../Common/ocr.h"
 #include "patterns.h"
+#include "denoise.h"
 
-
-long OnSide(long index, long width, long height);
-void denoise_simple(SDL_Surface *surface);
+void mean_denoising(SDL_Surface *surface);
 
 
 #endif

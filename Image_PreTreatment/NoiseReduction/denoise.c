@@ -16,7 +16,7 @@
  *
  *	returns	: void 
  */
-int OnSide(long pixel, long width, long height)
+long OnSide(long pixel, long width, long height)
 {
 	return (pixel%width == 0) || ((pixel+1)%width == 0) || (pixel <= width) || (pixel >= (width * (height-1)));
 }
@@ -91,11 +91,11 @@ void denoise_simple(SDL_Surface *surface)
 		{
 			losange(surface, pixelI, 1);
 		}
-		if (!OnSide5(pixelI, W, H) && color ==  255)
+		/*if (!OnSide5(pixelI, W, H) && color ==  255)
 		{ 
-			//line5(surface, pixelI, 1.0/5.0);
-			//row5(surface, pixelI, 1.0/5.0);
-		}
+			line5(surface, pixelI, 1.0/5.0);
+			row5(surface, pixelI, 1.0/5.0);
+		}*/
 		if (!OnSide(pixelI, W, H) && color == 255 && neighbours_count(pixelI, surface) >= 8)
 		{
 			pixels[pixelI] = SDL_MapRGB(surface->format, 255, 255, 255);

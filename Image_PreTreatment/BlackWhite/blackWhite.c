@@ -28,28 +28,7 @@ void blackWhite(SDL_Surface *surface)
     {
         //r == g == b
         SDL_GetRGB(pixels[i], surface->format, &gray, &gray, &gray);
-		/*
-        Uint8 tempL, tempR, tempU, tempD;
-        if (i % surface->w != surface->w - 1)
-        {
-            SDL_GetRGB(pixels[i+1], surface->format, &tempR, &tempR, &tempR);
-        }
-
-        if (i % surface->w != 0)
-        {
-            SDL_GetRGB(pixels[i-1], surface->format, &tempL, &tempL, &tempL);
-        }
-
-        if (i - surface->w > 0)
-        {
-            SDL_GetRGB(pixels[i-surface->w], surface->format, &tempU, &tempU, &tempU);
-        }
-        if (i + surface->w < pixelCount)
-        {
-            SDL_GetRGB(pixels[i+surface->w], surface->format, &tempD, &tempD, &tempD);
-        }*/
-
-
+		
 		if (gray > GRAY_THRESOLD) 
 		{
             pixels[i] = SDL_MapRGB(surface->format, 0, 0, 0);
