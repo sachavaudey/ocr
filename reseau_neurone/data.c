@@ -4,28 +4,26 @@
 #include "traitement_image.c"
 
 
+
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
-#define HIDDEN_SIZE 16       
-#define OUTPUT_SIZE 26       
-#define BATCH_SIZE 26          
-#define LEARNING_RATE 0.1     
-#define EPOCHS 1000  
+#define HIDDEN_SIZE 20       
+#define OUTPUT_SIZE 52       
+#define BATCH_SIZE 52        
+#define LEARNING_RATE 0.01 
+#define NBTEST 21    
+#define EPOCHS 1000
   
 
 
 //ne pas oublier de passer les images en noir
 
-double sigmoid(double x) {
-    return 1 / (1 + exp(-x));
-}
+double sigmoid(double x) {return 1 / (1 + exp(-x));}
+
+double sigmoid_derivative(double x) {return x * (1 - x);}
 
 
-double sigmoid_derivative(double x) {
-    return x * (1 - x);
-}
 
-// Initialisation aléatoire des poids
 void init_weights(double weights[][HIDDEN_SIZE], int rows, int cols) {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
@@ -34,13 +32,23 @@ void init_weights(double weights[][HIDDEN_SIZE], int rows, int cols) {
     }
 }
 
-// Initialisation aléatoire des biais
 void init_bias(double bias[], int size) {
     for (int i = 0; i < size; i++) {
         bias[i] = ((double)rand() / RAND_MAX) * 2 - 1;
     }
 }
 
+void init_target(double batch_target[BATCH_SIZE][OUTPUT_SIZE])
+{
+    for (int i = 0; i < BATCH_SIZE; i++) {
+        // Parcourir chaque colonne (output_size)
+        for (int j = 0; j < OUTPUT_SIZE; j++) {
+            // Mettre 1 uniquement à l'index correspondant à i, sinon 0
+            batch_target[i][j] = (i == j) ? 1.0 : 0.0;
+        }
+    }
+    
+}
 // Propagation avant pour un lot d'images
 void forward_batch(double batch_input[][INPUT_SIZE], double weights_input_hidden[][HIDDEN_SIZE], 
                    double hidden_bias[], double batch_hidden[][HIDDEN_SIZE], 
@@ -200,62 +208,81 @@ void remplirTestAvecImages_black(double test[BATCH_SIZE][INPUT_SIZE], char* imag
 }
 
 
-void save_weights(double hiddenWeight[INPUT_SIZE][HIDDEN_SIZE], 
-                  double outPutWeight[HIDDEN_SIZE][OUTPUT_SIZE], 
+void save_weights(double hiddenoutput[HIDDEN_SIZE][OUTPUT_SIZE], 
+                  double outPutWeight[INPUT_SIZE][HIDDEN_SIZE], 
                   double hiddenLayerBias[HIDDEN_SIZE], 
                   double outputLayerBias[OUTPUT_SIZE]) {
-    FILE *file = fopen("hiddenWeight.txt", "w");
-    for (int i = 0; i < INPUT_SIZE; i++) {
-        for (int j = 0; j < HIDDEN_SIZE; j++) {
-            // Écrire chaque élément de la matrice dans le fichier
-            fprintf(file, "%f ", hiddenWeight[i][j]);
-        }
-        // Ajouter un saut de ligne après chaque ligne de la matrice
-        fprintf(file, "\n");
+    
+    FILE *file = fopen("save_value/weight_hidden_output.txt", "w");
+    if (file == NULL) {
+        perror("Error opening file for hidden-output weights");
+        return;
     }
-
-    FILE *file2 = fopen("outPutWeight", "w");
     for (int i = 0; i < HIDDEN_SIZE; i++) {
         for (int j = 0; j < OUTPUT_SIZE; j++) {
-            // Écrire chaque élément de la matrice dans le fichier
-            fprintf(file2, "%f ", outPutWeight[i][j]);
+            fprintf(file, "%f ", hiddenoutput[i][j]);
         }
-        // Ajouter un saut de ligne après chaque ligne de la matrice
         fprintf(file, "\n");
     }
+    fclose(file); 
 
-    FILE *file3 = fopen("hiddenLayerBias", "w");
+    FILE *file2 = fopen("save_value/weight_hidden_input.txt", "w");  
+    if (file2 == NULL) {
+        perror("Error opening file for hidden-input weights");
+        return;
+    }
+    for (int i = 0; i < INPUT_SIZE; i++) {
+        for (int j = 0; j < HIDDEN_SIZE; j++) {
+            fprintf(file2, "%f ", outPutWeight[i][j]);
+        }
+        fprintf(file2, "\n");  
+    }
+    fclose(file2);  
+
+    FILE *file3 = fopen("save_value/hiddenLayerBias.txt", "w");  
+    if (file3 == NULL) {
+        perror("Error opening file for hidden layer bias");
+        return;
+    }
     for (int i = 0; i < HIDDEN_SIZE; i++) {
-        
-            // Écrire chaque élément de la matrice dans le fichier
         fprintf(file3, "%f ", hiddenLayerBias[i]);
     }
+    fprintf(file3, "\n");  
+    fclose(file3);  
 
-    FILE *file4 = fopen("OutputLayerBias", "w");
+    FILE *file4 = fopen("save_value/OutputLayerBias.txt", "w"); 
+    if (file4 == NULL) {
+        perror("Error opening file for output layer bias");
+        return;
+    }
     for (int i = 0; i < OUTPUT_SIZE; i++) {
-        
         fprintf(file4, "%f ", outputLayerBias[i]);
     }
-
-    fclose(file);
-    fclose(file2);
-    fclose(file3);
-    fclose(file4);
+    fprintf(file4, "\n");  
+    fclose(file4);  
 }
 
 
 void remplir_chemins_images(char* images[BATCH_SIZE], const char* prefixe, const char* suffixe) {
+    char* lettres_min[BATCH_SIZE] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+                                "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "aa", "bb", "cc", "dd","ee","ff","gg","hh","ii","jj","kk","ll","mm","nn","oo","pp","qq","rr","ss","tt","uu","vv","ww","xx","yy","zz"};
+    
     char lettres[BATCH_SIZE] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-                                'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-
-
+    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
     
     for (size_t i = 0; i < BATCH_SIZE; i++) {
         
         images[i] = (char*)malloc(FILENAME_SIZE * sizeof(char));
-        snprintf(images[i], FILENAME_SIZE, "%s/%c/%c%s.PNG", prefixe, lettres[i] + 32, lettres[i], suffixe);
+        snprintf(images[i], FILENAME_SIZE, "%s/%s/%c%s.PNG", prefixe, lettres_min[i], lettres[i], suffixe);
+        
+
     }
 }
+
+
+
 
 void shuffle(int *array, size_t n) {
     if (n > 1) {
@@ -270,14 +297,34 @@ void shuffle(int *array, size_t n) {
 
 
 
-
 int main(int argc,char** argv) {
     // Initialisation des poids et des biais
     
-    double weights_input_hidden[INPUT_SIZE][HIDDEN_SIZE];
+    /*double weights_input_hidden[INPUT_SIZE][HIDDEN_SIZE];
     double weights_hidden_output[HIDDEN_SIZE][OUTPUT_SIZE];
     double hidden_bias[HIDDEN_SIZE];
     double output_bias[OUTPUT_SIZE];
+    double batch_target[BATCH_SIZE][OUTPUT_SIZE];*/
+
+    
+    double **weights_input_hidden = malloc(INPUT_SIZE * sizeof(double *));
+    for (int i = 0; i < INPUT_SIZE; i++) {
+        weights_input_hidden[i] = malloc(HIDDEN_SIZE * sizeof(double));
+    }
+
+    double **weights_hidden_output = malloc(HIDDEN_SIZE * sizeof(double *));
+    for (int i = 0; i < HIDDEN_SIZE; i++) {
+        weights_hidden_output[i] = malloc(OUTPUT_SIZE * sizeof(double));
+    }
+
+    double *hidden_bias = malloc(HIDDEN_SIZE * sizeof(double));
+    double *output_bias = malloc(OUTPUT_SIZE * sizeof(double));
+    
+    double **batch_target = malloc(BATCH_SIZE * sizeof(double *));
+    for (int i = 0; i < BATCH_SIZE; i++) {
+        batch_target[i] = malloc(OUTPUT_SIZE * sizeof(double));
+    }
+
 
     // Initialisation aléatoire des poids
     
@@ -285,240 +332,48 @@ int main(int argc,char** argv) {
     init_weights(weights_hidden_output, HIDDEN_SIZE, OUTPUT_SIZE);
     init_bias(hidden_bias, HIDDEN_SIZE);
     init_bias(output_bias, OUTPUT_SIZE);
+    init_target(batch_target);
 
    
-    double batch_target[BATCH_SIZE][OUTPUT_SIZE] = {    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
-                                                        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1}
- 
-                                                      
-                                                      
-                                                      
-                                                       };
 
+
+
+    double batch_inputs[NBTEST][BATCH_SIZE][INPUT_SIZE];
+    char* images[NBTEST][BATCH_SIZE]; 
+        
+    for (int i = 0; i < NBTEST+1; i++) {
+        char index[3]; // Assurez-vous que la taille est suffisante pour le numéro d'index
+        snprintf(index, sizeof(index), "%d", i + 1); 
+        remplir_chemins_images(images[i], "images_test/dataset", index);
+    }
+
+    for (int i = 0; i < NBTEST; i++) { 
+        remplirTestAvecImages_black(batch_inputs[i], images[i]);
+    }
+
+    for (size_t i = 0; i < NBTEST; i++)
+    {
+        for (size_t j = 0; j < BATCH_SIZE; j++)
+        {
+            free(images[i][j]);
+        }
+        
+    }
 
     
     
-    
-
-
-    char* images1[BATCH_SIZE];
-    char* images2[BATCH_SIZE];
-    char* images3[BATCH_SIZE];
-    char* images4[BATCH_SIZE];
-    char* images5[BATCH_SIZE];
-    char* images6[BATCH_SIZE];
-    char* images7[BATCH_SIZE];
-    char* images8[BATCH_SIZE];
-    char* images9[BATCH_SIZE];
-    char* images10[BATCH_SIZE];
-    char* images11[BATCH_SIZE];
-    char* images12[BATCH_SIZE];
-    char* images13[BATCH_SIZE];
-    char* images14[BATCH_SIZE];
-    char* images15[BATCH_SIZE];
-    char* images16[BATCH_SIZE];
-    char* images17[BATCH_SIZE];
-    char* images18[BATCH_SIZE];
-    char* images19[BATCH_SIZE];
-    char* images20[BATCH_SIZE];
-    char* images21[BATCH_SIZE];
-    char* images22[BATCH_SIZE];
-    char* images23[BATCH_SIZE];
-    char* images24[BATCH_SIZE];
-    char* images25[BATCH_SIZE];
-    char* images26[BATCH_SIZE];
-    char* images27[BATCH_SIZE];
-    char* images28[BATCH_SIZE];
-    char* images29[BATCH_SIZE];
-    char* images30[BATCH_SIZE];
-    char* images31[BATCH_SIZE];
-    char* images32[BATCH_SIZE];
-    char* images33[BATCH_SIZE];
-    char* images34[BATCH_SIZE];
-    char* images35[BATCH_SIZE];
-    char* images36[BATCH_SIZE];
-    char* images37[BATCH_SIZE];
-    char* images38[BATCH_SIZE];
-    char* images39[BATCH_SIZE];
-    char* images40[BATCH_SIZE];
-    //char* images41[BATCH_SIZE];
-    char* images42[BATCH_SIZE];
-    char* images43[BATCH_SIZE];
-    char* images44[BATCH_SIZE];
-    
 
 
 
 
-    double batch_input1[BATCH_SIZE][INPUT_SIZE];
-    double batch_input2[BATCH_SIZE][INPUT_SIZE];
-    double batch_input3[BATCH_SIZE][INPUT_SIZE];
-    double batch_input4[BATCH_SIZE][INPUT_SIZE];
-    double batch_input5[BATCH_SIZE][INPUT_SIZE];
-    double batch_input6[BATCH_SIZE][INPUT_SIZE];
-    double batch_input7[BATCH_SIZE][INPUT_SIZE];
-    double batch_input8[BATCH_SIZE][INPUT_SIZE];
-    double batch_input9[BATCH_SIZE][INPUT_SIZE];
-    double batch_input10[BATCH_SIZE][INPUT_SIZE];
-    double batch_input11[BATCH_SIZE][INPUT_SIZE];
-    double batch_input12[BATCH_SIZE][INPUT_SIZE];
-    double batch_input13[BATCH_SIZE][INPUT_SIZE];
-    double batch_input14[BATCH_SIZE][INPUT_SIZE];
-    double batch_input15[BATCH_SIZE][INPUT_SIZE];
-    double batch_input16[BATCH_SIZE][INPUT_SIZE];
-    double batch_input17[BATCH_SIZE][INPUT_SIZE];
-    double batch_input18[BATCH_SIZE][INPUT_SIZE];
-    double batch_input19[BATCH_SIZE][INPUT_SIZE];
-    double batch_input20[BATCH_SIZE][INPUT_SIZE];
-    double batch_input21[BATCH_SIZE][INPUT_SIZE];
-    double batch_input22[BATCH_SIZE][INPUT_SIZE];
-    double batch_input23[BATCH_SIZE][INPUT_SIZE];
-    double batch_input24[BATCH_SIZE][INPUT_SIZE];
-    double batch_input25[BATCH_SIZE][INPUT_SIZE];
-    double batch_input26[BATCH_SIZE][INPUT_SIZE];
-    double batch_input27[BATCH_SIZE][INPUT_SIZE];
-    double batch_input28[BATCH_SIZE][INPUT_SIZE];
-    double batch_input29[BATCH_SIZE][INPUT_SIZE];
-    double batch_input30[BATCH_SIZE][INPUT_SIZE];
-    double batch_input31[BATCH_SIZE][INPUT_SIZE];
-    double batch_input32[BATCH_SIZE][INPUT_SIZE];
-    double batch_input33[BATCH_SIZE][INPUT_SIZE];
-    double batch_input34[BATCH_SIZE][INPUT_SIZE];
-    double batch_input35[BATCH_SIZE][INPUT_SIZE];
-    double batch_input36[BATCH_SIZE][INPUT_SIZE];
-    double batch_input37[BATCH_SIZE][INPUT_SIZE];
-    double batch_input38[BATCH_SIZE][INPUT_SIZE];
-    double batch_input39[BATCH_SIZE][INPUT_SIZE];
-    double batch_input40[BATCH_SIZE][INPUT_SIZE];
-    //double batch_input41[BATCH_SIZE][INPUT_SIZE];
-    
-    double batch_input42[BATCH_SIZE][INPUT_SIZE];
-    double batch_input43[BATCH_SIZE][INPUT_SIZE];
-    double batch_input44[BATCH_SIZE][INPUT_SIZE];
-    
-
-
-    remplir_chemins_images(images1, "images_test/dataset", "1");
-    remplir_chemins_images(images2, "images_test/dataset", "2");
-    remplir_chemins_images(images3, "images_test/dataset", "3");
-    remplir_chemins_images(images4, "images_test/dataset", "4");
-    remplir_chemins_images(images5, "images_test/dataset", "5");
-    remplir_chemins_images(images6, "images_test/dataset", "6");
-    remplir_chemins_images(images7, "images_test/dataset", "7");
-    remplir_chemins_images(images8, "images_test/dataset", "8");
-    remplir_chemins_images(images9, "images_test/dataset", "9");
-    remplir_chemins_images(images10, "images_test/dataset", "10");
-    remplir_chemins_images(images11, "images_test/dataset", "11");
-    remplir_chemins_images(images12, "images_test/dataset", "12");
-    remplir_chemins_images(images13, "images_test/dataset", "13");
-    remplir_chemins_images(images14, "images_test/dataset", "14");
-    remplir_chemins_images(images15, "images_test/dataset", "15");
-    remplir_chemins_images(images16, "images_test/dataset", "16");
-    remplir_chemins_images(images17, "images_test/dataset", "17");
-    remplir_chemins_images(images18, "images_test/dataset", "18");
-    remplir_chemins_images(images19, "images_test/dataset", "19");
-    remplir_chemins_images(images20, "images_test/dataset", "20");
-    remplir_chemins_images(images21, "images_test/dataset", "21");
-    remplir_chemins_images(images22, "images_test/dataset", "22");
-    remplir_chemins_images(images23, "images_test/dataset", "23");
-    remplir_chemins_images(images24, "images_test/dataset", "24");
-    remplir_chemins_images(images25, "images_test/dataset", "25");
-    remplir_chemins_images(images26, "images_test/dataset", "26");
-    remplir_chemins_images(images27, "images_test/dataset", "27");
-    remplir_chemins_images(images28, "images_test/dataset", "28");
-    remplir_chemins_images(images29, "images_test/dataset", "29");
-    remplir_chemins_images(images30, "images_test/dataset", "30");
-    remplir_chemins_images(images31, "images_test/dataset", "31");
-    remplir_chemins_images(images32, "images_test/dataset", "32");
-    remplir_chemins_images(images33, "images_test/dataset", "33");
-    remplir_chemins_images(images34, "images_test/dataset", "34");
-    remplir_chemins_images(images35, "images_test/dataset", "35");
-    remplir_chemins_images(images36, "images_test/dataset", "36");
-    remplir_chemins_images(images37, "images_test/dataset", "37");
-    //remplir_chemins_images(images38, "images_test/dataset", "38");
-    remplir_chemins_images(images39, "images_test/dataset", "39");
-    //remplir_chemins_images(images40, "images_test/dataset", "40");
-    //remplir_chemins_images(images41, "images_test/dataset", "41");
-    remplir_chemins_images(images42, "images_test/dataset", "42");
-    remplir_chemins_images(images43, "images_test/dataset", "43");
-    remplir_chemins_images(images44, "images_test/dataset", "44");
-    
-    
-
-
-    
-    remplirTestAvecImages_black(batch_input44,images44);
-    remplirTestAvecImages_black(batch_input43,images43);
-    remplirTestAvecImages_black(batch_input42,images42);
-    //remplirTestAvecImages_black(batch_input41,images41);
-    //remplirTestAvecImages_black(batch_input40,images40);
-    remplirTestAvecImages_black(batch_input39,images39);
-    //remplirTestAvecImages_black(batch_input38,images38);
-    remplirTestAvecImages_black(batch_input37,images37);
-    remplirTestAvecImages_black(batch_input36,images36);
-    remplirTestAvecImages_black(batch_input35,images35);
-    remplirTestAvecImages_black(batch_input34,images34);
-    remplirTestAvecImages_black(batch_input33,images33);
-    remplirTestAvecImages_black(batch_input32,images32);
-    remplirTestAvecImages_black(batch_input31,images31);
-    remplirTestAvecImages_black(batch_input30,images30);
-    remplirTestAvecImages_black(batch_input29,images29);
-    remplirTestAvecImages_black(batch_input28,images28);
-    remplirTestAvecImages_black(batch_input27,images27);
-    remplirTestAvecImages_black(batch_input26,images26);
-    remplirTestAvecImages_black(batch_input25,images25);
-    remplirTestAvecImages_black(batch_input24,images24);
-    remplirTestAvecImages_black(batch_input23,images23);
-    remplirTestAvecImages_black(batch_input22,images22);
-    remplirTestAvecImages_black(batch_input21,images21);
-    remplirTestAvecImages_black(batch_input20,images20);
-    remplirTestAvecImages_black(batch_input19,images19);
-    remplirTestAvecImages_black(batch_input18,images18);
-    remplirTestAvecImages_black(batch_input17,images17);
-    remplirTestAvecImages_black(batch_input16,images16);
-    remplirTestAvecImages_black(batch_input15,images15);
-    remplirTestAvecImages_black(batch_input14,images14);
-    remplirTestAvecImages_black(batch_input13,images13);
-    remplirTestAvecImages_black(batch_input12,images12);
-    remplirTestAvecImages_black(batch_input11,images11);
-    remplirTestAvecImages_black(batch_input10,images10);
-    remplirTestAvecImages_black(batch_input9,images9);
-    remplirTestAvecImages_black(batch_input8,images8);
-    remplirTestAvecImages_black(batch_input7,images7);
-    remplirTestAvecImages_black(batch_input6,images6);
-    remplirTestAvecImages_black(batch_input5,images5);
-    remplirTestAvecImages_black(batch_input4,images4);
-    remplirTestAvecImages_black(batch_input3,images3);
-    remplirTestAvecImages_black(batch_input2,images2);
-    remplirTestAvecImages_black(batch_input1,images1);
 
 
 
-    int trainingsetorder[] = {0, 1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26};
+   
+
+
+
+    int trainingsetorder[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52};
     // Entraînement du réseau
     for (int epoch = 0; epoch < EPOCHS; epoch++) {
         shuffle(trainingsetorder, OUTPUT_SIZE);
@@ -526,294 +381,47 @@ int main(int argc,char** argv) {
         double batch_output[BATCH_SIZE][OUTPUT_SIZE];
         if (epoch%100==0) printf("%d\n",EPOCHS-epoch);
         
-        forward_batch(batch_input1, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input1, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-    
-        forward_batch(batch_input2, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input2, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-    
-        forward_batch(batch_input3, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input3, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input4, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input4, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input5, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input5, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input6, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input6, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input7, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input7, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input8, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input8, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-         forward_batch(batch_input9, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input9, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input10, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input10, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input11, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input11, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-    
-        forward_batch(batch_input12, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input12, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-    
-        forward_batch(batch_input13, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input13, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input14, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input14, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input15, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input15, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input16, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input16, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input17, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input17, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input18, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input18, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input19, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input19, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input20, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input20, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input21, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input21, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input22, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input22, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input23, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input23, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input24, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input24, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input25, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input25, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input26, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input26, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input27, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input27, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input28, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input28, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input29, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input29, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input30, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input30, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input31, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input31, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input32, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input32, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input33, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input33, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input34, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input34, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input35, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input35, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-
-
-        forward_batch(batch_input36, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input36, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input37, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input37, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        
-        forward_batch(batch_input39, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input39, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input42, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input42, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input43, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input43, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        forward_batch(batch_input44, weights_input_hidden, hidden_bias, batch_hidden,
-                      weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-        backpropagation_batch(batch_input44, batch_hidden, batch_output, batch_target,
-                              weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
-        
-        
-
-
+        for (int i = 0; i < NBTEST; i++) 
+        {
+            forward_batch(batch_inputs[i], weights_input_hidden, hidden_bias, batch_hidden,
+                        weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
+            backpropagation_batch(batch_inputs[i], batch_hidden, batch_output, batch_target,
+                                weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
+        }
     }
 
     
-    //save_weights(weights_input_hidden, weights_hidden_output,  hidden_bias, output_bias);
 
+    
 
-    char* res[BATCH_SIZE];
-    remplir_chemins_images(res,"images_test/dataset","10");
+    
+    save_weights(weights_hidden_output,weights_input_hidden,   hidden_bias, output_bias);
 
-    int pourc=0;
-    for (size_t i = 0; i < 26; i++)
-    {
-            double new_input[INPUT_SIZE];
-            
-            double* resultats = traitements_test(res[i]);
-            for (size_t j = 0; j < INPUT_SIZE; j++) 
-            {
-                new_input[j] = resultats[j];
-            }               
-            double prediction[OUTPUT_SIZE];
-            predict(new_input, weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, prediction);
-            char lettre[26]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
-            
-        
-        // Afficher les résultats de la prédiction
-        
-        int j=0;
-        double max=prediction[0];
-        for (size_t a = 0; a < OUTPUT_SIZE; a++)
-        {
-            if (max<prediction[a])
-            {
-                max=prediction[a];
-                j=a;
-            }
-        }
-        for (int i = 0; i < OUTPUT_SIZE; i++) 
-        {
-            //printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
-        }
-        printf("La lettre %c = %c\n",lettre[i],lettre[j]);
-        if (lettre[i]==lettre[j]) pourc++;
-        
-    }
-    printf("Le pourcentage de réussite est de %d",pourc*100/26);
+    /*for (int i = 0; i < INPUT_SIZE; i++) {
+    free(weights_input_hidden[i]);  // Free each row
+}
+free(weights_input_hidden);  // Free the main pointer
+
+// Free the weights_hidden_output array
+for (int i = 0; i < HIDDEN_SIZE; i++) {
+    free(weights_hidden_output[i]);  // Free each row
+}
+free(weights_hidden_output);  // Free the main pointer
+
+// Free the hidden_bias and output_bias arrays
+free(hidden_bias);
+free(output_bias);
+
+// Free the batch_target array
+for (int i = 0; i < BATCH_SIZE; i++) {
+    free(batch_target[i]);  // Free each row
+}
+free(batch_target);*/
     
 
 
 
-    /*double new_input[INPUT_SIZE];
-    double* resultats = traitements(argv[1]);
-        for (size_t j = 0; j < INPUT_SIZE; j++) 
-        {
-            new_input[j] = resultats[j];
-        }               
-    double prediction[OUTPUT_SIZE];
-    predict(new_input, weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, prediction);
-    char lettre[26]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
     
-    
-    // Afficher les résultats de la prédiction
-    for (int i = 0; i < OUTPUT_SIZE; i++) {
-        printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
-    }
-
-    int j=0;
-        double max=prediction[0];
-        for (size_t a = 0; a < 26; a++)
-        {
-            if (max<prediction[a])
-            {
-                max=prediction[a];
-                j=a;
-            }
-        }
-        printf("\nLa lettre prédite est un %c",lettre[j]);
-    */
 
 
 

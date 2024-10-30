@@ -174,9 +174,9 @@ double* traitements_test(char* filename) {
         for (size_t j = 0; j < 30; ++j) {
             res[c] = (double)pixel_table[i][j];
             c++;
-            //printf("%d",pixel_table[i][j]);
+   //         printf("%d",pixel_table[i][j]);
         }
-        //printf("\n");
+ //       printf("\n");
     }
     //printf("\n");
 

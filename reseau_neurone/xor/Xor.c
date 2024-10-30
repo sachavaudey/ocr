@@ -70,10 +70,10 @@ void predict(double input1, double input2, double hiddenWeight[nbInput][nbHidden
 }
 
 
-int main(void) {
+int process_xor(void) {
     size_t repet = 10000;
     const double lr = 0.1f;
-    printf("\n\n");
+
     double hiddenLayer[nbHiddenNode];
     double outputLayer[output];
     double hiddenLayerBias[nbHiddenNode];
@@ -144,11 +144,11 @@ int main(void) {
             softmax(outputRaw, outputLayer, output);
 
             // Impression des résultats périodiquement
-            if (epoch ==repet-1) {
-                printf("  Input: (%g,%g), Predicted output: %g, Output: %g\n",
-                       training_input[i][0], training_input[i][1],
-                       training_output[i][0],outputLayer[0]
-                       );
+            if (epoch % 2000 == 0) {
+                printf("Epoch: %zu, Input: %g %g, Output: %g %g, Predicted output: %g %g\n",
+                       epoch, training_input[i][0], training_input[i][1],
+                       outputLayer[0], outputLayer[1],
+                       training_output[i][0], training_output[i][1]);
             }
 
             // Rétropropagation : Couche de sortie
@@ -185,9 +185,6 @@ int main(void) {
             }
         }
     }
-    printf("\n\n");
-
-    
 
     double input1, input2;
     printf("Enter two values (0 or 1): ");

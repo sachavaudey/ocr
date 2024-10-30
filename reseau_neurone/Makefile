@@ -7,7 +7,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -O2 -lm
 
 # Target executable name
-TARGET = xor
+TARGET = xor_1
 
 # Source files
 SRC = Xor.c

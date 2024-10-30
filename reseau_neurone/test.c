@@ -4,26 +4,25 @@
 #include "traitement_image.c"
 
 
+
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
-#define HIDDEN_SIZE 20       
+#define HIDDEN_SIZE 30       
 #define OUTPUT_SIZE 52       
 #define BATCH_SIZE 52        
-#define LEARNING_RATE 0.1 
+#define LEARNING_RATE 0.01 
 #define NBTEST 21    
-#define EPOCHS 4000 
+#define EPOCHS 90000
   
 
 
 //ne pas oublier de passer les images en noir
 
-double sigmoid(double x) {
-    return 1 / (1 + exp(-x));
-}
+double sigmoid(double x) {return 1 / (1 + exp(-x));}
 
-double sigmoid_derivative(double x) {
-    return x * (1 - x);
-}
+double sigmoid_derivative(double x) {return x * (1 - x);}
+
+
 
 void init_weights(double weights[][HIDDEN_SIZE], int rows, int cols) {
     for (int i = 0; i < rows; i++) {
@@ -209,47 +208,58 @@ void remplirTestAvecImages_black(double test[BATCH_SIZE][INPUT_SIZE], char* imag
 }
 
 
-void save_weights(double hiddenWeight[INPUT_SIZE][HIDDEN_SIZE], 
-                  double outPutWeight[HIDDEN_SIZE][OUTPUT_SIZE], 
+void save_weights(double hiddenoutput[HIDDEN_SIZE][OUTPUT_SIZE], 
+                  double outPutWeight[INPUT_SIZE][HIDDEN_SIZE], 
                   double hiddenLayerBias[HIDDEN_SIZE], 
                   double outputLayerBias[OUTPUT_SIZE]) {
-    FILE *file = fopen("hiddenWeight.txt", "w");
-    for (int i = 0; i < INPUT_SIZE; i++) {
-        for (int j = 0; j < HIDDEN_SIZE; j++) {
-            // Écrire chaque élément de la matrice dans le fichier
-            fprintf(file, "%f ", hiddenWeight[i][j]);
-        }
-        // Ajouter un saut de ligne après chaque ligne de la matrice
-        fprintf(file, "\n");
+    
+    FILE *file = fopen("save_value/weight_hidden_output.txt", "w");
+    if (file == NULL) {
+        perror("Error opening file for hidden-output weights");
+        return;
     }
-
-    FILE *file2 = fopen("outPutWeight", "w");
     for (int i = 0; i < HIDDEN_SIZE; i++) {
         for (int j = 0; j < OUTPUT_SIZE; j++) {
-            // Écrire chaque élément de la matrice dans le fichier
-            fprintf(file2, "%f ", outPutWeight[i][j]);
+            fprintf(file, "%f ", hiddenoutput[i][j]);
         }
-        // Ajouter un saut de ligne après chaque ligne de la matrice
         fprintf(file, "\n");
     }
+    fclose(file); 
 
-    FILE *file3 = fopen("hiddenLayerBias", "w");
+    FILE *file2 = fopen("save_value/weight_hidden_input.txt", "w");  
+    if (file2 == NULL) {
+        perror("Error opening file for hidden-input weights");
+        return;
+    }
+    for (int i = 0; i < INPUT_SIZE; i++) {
+        for (int j = 0; j < HIDDEN_SIZE; j++) {
+            fprintf(file2, "%f ", outPutWeight[i][j]);
+        }
+        fprintf(file2, "\n");  
+    }
+    fclose(file2);  
+
+    FILE *file3 = fopen("save_value/hiddenLayerBias.txt", "w");  
+    if (file3 == NULL) {
+        perror("Error opening file for hidden layer bias");
+        return;
+    }
     for (int i = 0; i < HIDDEN_SIZE; i++) {
-        
-            // Écrire chaque élément de la matrice dans le fichier
         fprintf(file3, "%f ", hiddenLayerBias[i]);
     }
+    fprintf(file3, "\n");  
+    fclose(file3);  
 
-    FILE *file4 = fopen("OutputLayerBias", "w");
+    FILE *file4 = fopen("save_value/OutputLayerBias.txt", "w"); 
+    if (file4 == NULL) {
+        perror("Error opening file for output layer bias");
+        return;
+    }
     for (int i = 0; i < OUTPUT_SIZE; i++) {
-        
         fprintf(file4, "%f ", outputLayerBias[i]);
     }
-
-    fclose(file);
-    fclose(file2);
-    fclose(file3);
-    fclose(file4);
+    fprintf(file4, "\n");  
+    fclose(file4);  
 }
 
 
@@ -266,6 +276,8 @@ void remplir_chemins_images(char* images[BATCH_SIZE], const char* prefixe, const
         
         images[i] = (char*)malloc(FILENAME_SIZE * sizeof(char));
         snprintf(images[i], FILENAME_SIZE, "%s/%s/%c%s.PNG", prefixe, lettres_min[i], lettres[i], suffixe);
+        
+
     }
 }
 
@@ -282,7 +294,6 @@ void shuffle(int *array, size_t n) {
         }
     }
 }
-
 
 
 
@@ -303,20 +314,13 @@ int main(int argc,char** argv) {
     init_target(batch_target);
 
    
-    
-
-
-    
-    
-    
-
 
 
 
     double batch_inputs[NBTEST][BATCH_SIZE][INPUT_SIZE];
     char* images[NBTEST][BATCH_SIZE]; 
         
-    for (int i = 0; i < NBTEST; i++) {
+    for (int i = 0; i < NBTEST+1; i++) {
         char index[3]; // Assurez-vous que la taille est suffisante pour le numéro d'index
         snprintf(index, sizeof(index), "%d", i + 1); 
         remplir_chemins_images(images[i], "images_test/dataset", index);
@@ -325,10 +329,19 @@ int main(int argc,char** argv) {
     for (int i = 0; i < NBTEST; i++) { // Remplir uniquement les 10 premiers cas
         remplirTestAvecImages_black(batch_inputs[i], images[i]);
     }
-/*
-    for (size_t i = 0; i < BATCH_SIZE; i++) {
-    free(images[i]);
-    }*/
+
+    for (size_t i = 0; i < NBTEST; i++)
+    {
+        for (size_t j = 0; j < BATCH_SIZE; j++)
+        {
+            free(images[i][j]);
+        }
+        
+    }
+
+    
+    
+
 
 
 
@@ -346,6 +359,7 @@ int main(int argc,char** argv) {
         double batch_hidden[BATCH_SIZE][HIDDEN_SIZE];
         double batch_output[BATCH_SIZE][OUTPUT_SIZE];
         if (epoch%100==0) printf("%d\n",EPOCHS-epoch);
+        
         for (int i = 0; i < NBTEST; i++) 
         {
             forward_batch(batch_inputs[i], weights_input_hidden, hidden_bias, batch_hidden,
@@ -355,62 +369,14 @@ int main(int argc,char** argv) {
         }
     }
 
-    for (size_t i = 0; i < BATCH_SIZE; i++) {
-        free(images[i]);
-    }
     
 
-
-
-
-
-
-
+    
 
     
-    //save_weights(weights_input_hidden, weights_hidden_output,  hidden_bias, output_bias);
+    save_weights(weights_hidden_output,weights_input_hidden,   hidden_bias, output_bias);
 
-
-    char* res[BATCH_SIZE];
-    remplir_chemins_images(res,"images_test/dataset","40");
-
-    int pourc=0;
-    for (size_t i = 0; i < OUTPUT_SIZE; i++)
-    {
-            double new_input[INPUT_SIZE];
-            
-            double* resultats = traitements_test(res[i]);
-            for (size_t j = 0; j < INPUT_SIZE; j++) 
-            {
-                new_input[j] = resultats[j];
-            }               
-            double prediction[OUTPUT_SIZE];
-            predict(new_input, weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, prediction);
-            char lettre[52]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X'
-            ,'Y','Z','a','b','c','d','e','f','g','h','i','j','q','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
-            
-        
-        // Afficher les résultats de la prédiction
-        
-        int j=0;
-        double max=prediction[0];
-        for (size_t a = 0; a < OUTPUT_SIZE; a++)
-        {
-            if (max<prediction[a])
-            {
-                max=prediction[a];
-                j=a;
-            }
-        }
-        for (int i = 0; i < OUTPUT_SIZE; i++) 
-        {
-            //printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
-        }
-        printf("La lettre %c = %c\n",lettre[i],lettre[j]);
-        if (lettre[i]==lettre[j]) pourc++;
-        
-    }
-    printf("Le pourcentage de réussite est de %d",pourc*100/52);
+    
     
 
 
