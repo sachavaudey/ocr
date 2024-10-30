@@ -2,7 +2,15 @@
 
 #define PI 3.1415926535
 
-
+/**
+ * Applies the Sobel filter to the image to compute the gradient magnitude and direction.
+ * @param image The input image in grayscale.
+ * @param width The width of the image.
+ * @param height The height of the image.
+ * @param gradient_magnitude The output gradient magnitude.
+ * @param gradient_direction The output gradient direction.
+ * @return void
+ */
 void sobel_filter(unsigned char **image, int width, int height, float **gradient_magnitude, float **gradient_direction)
 {
     int Gx[3][3] = {
@@ -35,6 +43,15 @@ void sobel_filter(unsigned char **image, int width, int height, float **gradient
     }
 }
 
+/**
+ * Applies non-maximum suppression to thin out the edges.
+ * @param width The width of the image.
+ * @param height The height of the image.
+ * @param gradient_magnitude The input gradient magnitude.
+ * @param gradient_direction The input gradient direction.
+ * @param edges The output edges after non-maximum suppression.
+ * @return void
+ */
 void nm_filter(int width, int height, float **gradient_magnitude, float **gradient_direction, float **edges)
 {
     for (int y = 1; y < height - 1; y++)
@@ -71,6 +88,14 @@ void nm_filter(int width, int height, float **gradient_magnitude, float **gradie
     }
 }
 
+/**
+ * Applies dilation to the edge map to thicken the edges.
+ * @param input The input edge map.
+ * @param output The output edge map after dilation.
+ * @param width The width of the image.
+ * @param height The height of the image.
+ * @return void
+ */
 void dilate_filter(unsigned char **input, unsigned char **output, int width, int height)
 {
     for (int y = 0; y < height; y++)
@@ -91,6 +116,16 @@ void dilate_filter(unsigned char **input, unsigned char **output, int width, int
         }
 }
 
+/**
+ * Applies hysteresis thresholding to the edges to create a binary edge map.
+ * @param edges The input edges after non-maximum suppression.
+ * @param width The width of the image.
+ * @param height The height of the image.
+ * @param low_thresh The low threshold for hysteresis.
+ * @param high_thresh The high threshold for hysteresis.
+ * @param edge_map The output binary edge map.
+ * @return void
+ */
 void hysteresis_filter(float **edges, int width, int height, float low_thresh, float high_thresh, unsigned char **edge_map) {
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -133,6 +168,11 @@ void hysteresis_filter(float **edges, int width, int height, float low_thresh, f
     }
 }
 
+/**
+ * Processes the image using the Canny edge detection algorithm.
+ * @param surface The input SDL surface containing the image.
+ * @return void
+ */
 void process_canny(SDL_Surface *surface)
 {
     int width = surface->w;
