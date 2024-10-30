@@ -41,8 +41,6 @@ Uint8* average_9_pixels(SDL_Surface* surface, uint index)
 			avg[2] += temp[2];
 		}
 	}
-		
-	//printf("avg : %i %i %i\n", avg[0], avg[1], avg[2]);
 
 	Uint8* retour = malloc(sizeof(Uint8) * 3);
 

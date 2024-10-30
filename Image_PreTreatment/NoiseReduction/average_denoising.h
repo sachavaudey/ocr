@@ -1,17 +1,16 @@
-#ifndef DENOISE_H
-#define DENOISE_H
+#ifndef AVERAGEDENOISING_H
+#define AVERAGEDENOISING_H
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdlib.h>
 #include <err.h>
+
 #include "../Tools/tools.h"
 #include "../../Common/ocr.h"
-#include "patterns.h"
+#include "utils.h"
 
-
-long OnSide(long index, long width, long height);
-void denoise_simple(SDL_Surface *surface);
+void Denoise_AverageDenoising(SDL_Surface *surface, int threshold);
 
 
 #endif

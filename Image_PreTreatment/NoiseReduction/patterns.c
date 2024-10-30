@@ -4,15 +4,34 @@
 #include <strings.h>
 
 
-/*	ooooo
- *	ooxoo
- *	oxoxo
- *	ooxoo
- *	ooooo
+/*	@Function : Patterns_ReplaceLosange
  *
- *	en partant du 1er x rencontre
+ *	-----------------------------------
+ *
+ *	Function replacing white pixel pattern
+ *	by black pixels, if we find a match >= to thresold 
+ *	( thresold : double [0-1] ).
+ *	Pattern is searched with index_to_check == 1st white pixel.
+ *	Pattern searched here :
+ *
+ *	..... => .....
+ *	..X.. => .....
+ *	.X.X. => ..... 
+ *	..X.. => .....
+ *	..... => .....
+ *	en partant du 1er X rencontre
+ *
+ *	@param surface			:	target surface
+ *	@param index_to_check	:	index of starting pixel (1st X)
+ *								in surface's pixel array.
+ *	@param thrseold			:	if searched area 
+ *								matches ([0-1]) >= thresold ([0-1]),
+ *								white pixels become black
+ *
+ *	@return					: void
+ *
  */ 
-void losange(SDL_Surface* surface, long index_to_check, double thresold)
+void Patterns_RepalceLosange(SDL_Surface* surface, long index_to_check, double thresold)
 {
 	long W = surface->w, H = surface->h;
 	Uint32* pixels = surface->pixels;
@@ -49,7 +68,7 @@ void losange(SDL_Surface* surface, long index_to_check, double thresold)
 	}
 }
 
-void line5(SDL_Surface* surface, long index_to_check, double thresold)
+void Patterns_Line5(SDL_Surface* surface, long index_to_check, double thresold)
 {
 	long W = surface->w, H = surface->h;
 	Uint32* pixels = surface->pixels;
@@ -84,7 +103,7 @@ void line5(SDL_Surface* surface, long index_to_check, double thresold)
 	}
 }
 
-void row5(SDL_Surface* surface, long index_to_check, double thresold)
+void Patterns_Row5(SDL_Surface* surface, long index_to_check, double thresold)
 {
 	long W = surface->w, H = surface->h;
 	Uint32* pixels = surface->pixels;

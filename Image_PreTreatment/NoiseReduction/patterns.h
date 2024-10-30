@@ -8,8 +8,8 @@
 #include "../Tools/tools.h"
 #include "../../Common/ocr.h"
 
-void losange(SDL_Surface *surface, long index_to_check, double thresold);
-void line5(SDL_Surface *surface, long index_to_check, double thresold);
-void row5(SDL_Surface *surface, long index_to_check, double thresold);
+void Patterns_RepalceLosange(SDL_Surface *surface, long index_to_check, double thresold);
+void Patterns_Line5(SDL_Surface *surface, long index_to_check, double thresold);
+void Patterns_Row5(SDL_Surface *surface, long index_to_check, double thresold);
 
 #endif

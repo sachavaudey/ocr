@@ -1,14 +1,17 @@
-#ifndef NOISEREDUCTION_H
-#define NOISEREDUCTION_H
+#ifndef SIMPLE_DENOISE_H
+#define SIMPLE_DENOISE_H
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdlib.h>
 #include <err.h>
+
 #include "../Tools/tools.h"
 #include "../../Common/ocr.h"
+#include "patterns.h"
+#include "utils.h"
 
-void noise_reduction(SDL_Surface *surface, int threshold);
+void Denoise_SimpleDenoising(SDL_Surface *surface);
 
 
 #endif
