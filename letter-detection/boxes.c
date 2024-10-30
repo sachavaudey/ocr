@@ -1,6 +1,11 @@
 #include "boxes.h"
 
 
+int is_overlapping(BoundingBox *box1, BoundingBox *box2) {
+    return !(box1->max_x < box2->min_x || box1->min_x > box2->max_x ||
+             box1->max_y < box2->min_y || box1->min_y > box2->max_y);
+}
+
 void flood_fill(unsigned char **edge_map, int **label_map, int width, int height, int x, int y, int label, BoundingBox *box)
 {
     Point *stack = (Point *)malloc(height * width * sizeof(Point));
@@ -41,27 +46,6 @@ void flood_fill(unsigned char **edge_map, int **label_map, int width, int height
     free(stack);
 }
 
-void draw_rectangle(SDL_Surface *surface, int min_x, int min_y, int max_x, int max_y)
-{
-    Color color = {0,255,0};
-    Uint32 pixel_color = SDL_MapRGB(surface->format, color.r, color.g, color.b);
-    Uint32 *pixels = (Uint32 *)surface->pixels;
-    int width = surface->w;
-    int height = surface->h;
-
-    for (int x = min_x; x <= max_x; x++)
-    {
-        if (min_y >= 0 && min_y < height) pixels[min_y * width + x] = pixel_color;
-        if (max_y >= 0 && max_y < height) pixels[max_y * width + x] = pixel_color;
-    }
-
-    for (int y = min_y; y <= max_y; y++)
-    {
-        if (min_x >= 0 && min_x < width) pixels[y * width + min_x] = pixel_color;
-        if (max_x >= 0 && max_x < width) pixels[y * width + max_x] = pixel_color;
-    }
-}
-
 void find_bounding_boxes(unsigned char **edge_map, int width, int height, BoundingBox **boxes, int *num_boxes)
 {
     int **label_map = (int **)malloc(height * sizeof(int *));
@@ -88,14 +72,34 @@ void find_bounding_boxes(unsigned char **edge_map, int width, int height, Boundi
         errx(EXIT_FAILURE, "Memory allocation failed!\n");
     }
 
+    int max_box_width = width / 10;
+    int max_box_height = height / 10;
+
     for (int y = 0; y < height; y++)
         for (int x = 0; x < width; x++)
             if (edge_map[y][x] == 255 && label_map[y][x] == 0)
             {
                 BoundingBox box = {x, x, y, y};
                 flood_fill(edge_map, label_map, width, height, x, y, label, &box);
-                temp_boxes[*num_boxes] = box;
-                (*num_boxes)++;
+
+                int box_width = box.max_x - box.min_x;
+                int box_height = box.max_y - box.min_y;
+
+                if (box_width > 5 && box_height > 5 && box_width < max_box_width && box_height < max_box_height)
+                {
+                    int overlapping = 0;
+                    for (int i = 0; i < *num_boxes; i++) {
+                        if (is_overlapping(&box, &temp_boxes[i])) {
+                            overlapping = 1;
+                            break;
+                        }
+                    }
+
+                    if (!overlapping) {
+                        temp_boxes[*num_boxes] = box;
+                        (*num_boxes)++;
+                    }
+                }
                 label++;
             }
 
@@ -115,6 +119,27 @@ void find_bounding_boxes(unsigned char **edge_map, int width, int height, Boundi
     free(label_map);
 }
 
+void draw_rectangle(SDL_Surface *surface, int min_x, int min_y, int max_x, int max_y)
+{
+    Color color = {0,255,0};
+    Uint32 pixel_color = SDL_MapRGB(surface->format, color.r, color.g, color.b);
+    Uint32 *pixels = (Uint32 *)surface->pixels;
+    int width = surface->w;
+    int height = surface->h;
+
+    for (int x = min_x; x <= max_x; x++)
+    {
+        if (min_y >= 0 && min_y < height) pixels[min_y * width + x] = pixel_color;
+        if (max_y >= 0 && max_y < height) pixels[max_y * width + x] = pixel_color;
+    }
+
+    for (int y = min_y; y <= max_y; y++)
+    {
+        if (min_x >= 0 && min_x < width) pixels[y * width + min_x] = pixel_color;
+        if (max_x >= 0 && max_x < width) pixels[y * width + max_x] = pixel_color;
+    }
+}
+
 void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes)
 {
     int merged = 1;
@@ -124,8 +149,8 @@ void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes)
         for (int i = 0; i < *num_boxes; i++)
             for (int j = i + 1; j < *num_boxes; j++)
             {
-                int overlap_x = (boxes[i].min_x <= boxes[j].max_x + 5) && (boxes[j].min_x <= boxes[i].max_x + 5);
-                int overlap_y = (boxes[i].min_y <= boxes[j].max_y + 5) && (boxes[j].min_y <= boxes[i].max_y + 5);
+                int overlap_x = (boxes[i].min_x <= boxes[j].max_x + 2) && (boxes[j].min_x <= boxes[i].max_x + 2);
+                int overlap_y = (boxes[i].min_y <= boxes[j].max_y + 2) && (boxes[j].min_y <= boxes[i].max_y + 2);
 
                 if (overlap_x && overlap_y)
                 {
@@ -141,6 +166,4 @@ void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes)
                 }
             }
     }
-
-    return;
 }

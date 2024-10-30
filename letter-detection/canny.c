@@ -81,9 +81,13 @@ void dilate_filter(unsigned char **input, unsigned char **output, int width, int
         for (int x = 1; x < width - 1; x++)
         {
             if (input[y][x] == 255)
-                for (int dy = -1; dy <= 1; dy++)
-                    for (int dx = -1; dx <= 1; dx++)
-                        output[y + dy][x + dx] = 255;
+            {
+                output[y][x] = 255;
+                if (input[y][x - 1] == 255) output[y][x - 1] = 255;
+                if (input[y][x + 1] == 255) output[y][x + 1] = 255;
+                if (input[y - 1][x] == 255) output[y - 1][x] = 255;
+                if (input[y + 1][x] == 255) output[y + 1][x] = 255;
+            }
         }
 }
 
@@ -129,27 +133,23 @@ void hysteresis_filter(float **edges, int width, int height, float low_thresh, f
     }
 }
 
-
-void process(SDL_Surface *surface)
+void process_canny(SDL_Surface *surface)
 {
     int width = surface->w;
     int height = surface->h;
 
     unsigned char **image = (unsigned char **)malloc(height * sizeof(unsigned char *));
-    for (int i = 0; i < height; i++)
-    {
-        image[i] = (unsigned char *)malloc(width * sizeof(unsigned char));
-    }
+    for (int i = 0; i < height; i++) image[i] = (unsigned char *)malloc(width * sizeof(unsigned char));
 
     for (int y = 0; y < height; y++)
-    {
         for (int x = 0; x < width; x++)
         {
             Uint8 r, g, b;
             get_pixel_color(surface, x, y, &r, &g, &b);
             image[y][x] = (r + g + b) / 3;
         }
-    }
+
+    save_image_from_matrix(image, width, height, "resultafter_initial.png");
 
     float **gradient_magnitude = (float **)malloc(height * sizeof(float *));
     float **gradient_direction = (float **)malloc(height * sizeof(float *));
@@ -160,6 +160,7 @@ void process(SDL_Surface *surface)
     }
 
     sobel_filter(image, width, height, gradient_magnitude, gradient_direction);
+    save_image_from_matrix(image, width, height, "resultafter_sobel_filter.png");
 
     float **edges = (float **)malloc(height * sizeof(float *));
     for (int i = 0; i < height; i++)
@@ -168,6 +169,7 @@ void process(SDL_Surface *surface)
     }
 
     nm_filter(width, height, gradient_magnitude, gradient_direction, edges);
+    save_image_from_matrix(image, width, height, "resultafter_nm_filter.png");
 
     unsigned char **edge_map = (unsigned char **)malloc(height * sizeof(unsigned char *));
     for (int i = 0; i < height; i++)
@@ -175,9 +177,10 @@ void process(SDL_Surface *surface)
         edge_map[i] = (unsigned char *)malloc(width * sizeof(unsigned char));
     }
 
-    float low_thresh = 100.0;
-    float high_thresh = 200.0;
+    float low_thresh = 50.0;
+    float high_thresh = 150.0;
     hysteresis_filter(edges, width, height, low_thresh, high_thresh, edge_map);
+    save_image_from_matrix(edge_map, width, height, "resultafter_hysteresis_filter.png");
 
     unsigned char **dilated_edge_map = (unsigned char **)malloc(height * sizeof(unsigned char *));
     for (int i = 0; i < height; i++)
@@ -186,12 +189,14 @@ void process(SDL_Surface *surface)
     }
 
     dilate_filter(edge_map, dilated_edge_map, width, height);
+    save_image_from_matrix(dilated_edge_map, width, height, "resultafter_dilate_filter.png");
 
     BoundingBox *boxes;
     int num_boxes;
     find_bounding_boxes(dilated_edge_map, width, height, &boxes, &num_boxes);
+    save_image_from_matrix(dilated_edge_map, width, height, "resultafter_find_bounding_boxes.png");
 
-    merge_bounding_boxes(boxes, &num_boxes);
+    //merge_bounding_boxes(boxes, &num_boxes);
 
     for (int i = 0; i < num_boxes; i++)
     {
