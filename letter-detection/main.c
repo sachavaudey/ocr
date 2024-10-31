@@ -9,7 +9,7 @@ int main(int argc, char* argv[]){
     SDL_Surface *image = IMG_Load(argv[1]);
     if(image == NULL) errx(EXIT_FAILURE, "Could not load image %s", argv[1]);
 
-    process_canny(image);
+    process(image);
     IMG_SavePNG(image, argv[2]);
     SDL_FreeSurface(image);
     return EXIT_SUCCESS;

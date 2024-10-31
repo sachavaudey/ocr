@@ -15,7 +15,7 @@ void sobel_filter(unsigned char **image, int width, int height, float **gradient
 void nm_filter(int width, int height, float **gradient_magnitude, float **gradient_direction, float **edges);
 void dilate_filter(unsigned char **input, unsigned char **output, int width, int height);
 void hysteresis_filter(float **edges, int width, int height, float low_thresh, float high_thresh, unsigned char **edge_map);
-void process_canny(SDL_Surface *surface);
+void process(SDL_Surface *surface);
 
 
 #endif
