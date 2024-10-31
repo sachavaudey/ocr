@@ -9,7 +9,7 @@
 #include <SDL2/SDL_image.h>
 
 
-int run_letterdetection(SDL_Surface *surface);
+int process_letter_detection(SDL_Surface *surface);
 
 
 #endif
