@@ -11,6 +11,15 @@
 #define EDGE_NONE       0
 #define MIN_BOX_SIZE    5
 
+/**
+ * This function implement the sobel filter according to the binary representation of a specific image
+ * @param image image in binary representation
+ * @param width width of the image
+ * @param height height of the image
+ * @param gradient_magnitude the magnitude of the gradient
+ * @param gradient_direction gradient_direction of the gradient
+ * @return VOID
+*/
 void sobel_filter(unsigned char **image, int width, int height, float **gradient_magnitude, float **gradient_direction)
 {
     int Gx[3][3] = SOBEL_GX;
@@ -37,6 +46,15 @@ void sobel_filter(unsigned char **image, int width, int height, float **gradient
     }
 }
 
+/**
+ * This function implement the suppression of non-maxima algorithm
+ * @param width width of the image
+ * @param heigth height of the image
+ * @param gradient_magnitude the gradient magnitude
+ * @param gradient_direction the gradient direction
+ * @param edges the edges present in the image
+ * @return VOID
+*/
 void nm_filter(int width, int height, float **gradient_magnitude, float **gradient_direction, float **edges)
 {
     for (int y = 1; y < height - 1; y++)
@@ -73,6 +91,13 @@ void nm_filter(int width, int height, float **gradient_magnitude, float **gradie
     }
 }
 
+/**
+ * This function implement the dilate filter algorithm
+ * @param input image imput to process (binary representation)
+ * @param output output image after process (binary representation)
+ * @param width width of the image
+ * @param height height of the image
+ */
 void dilate_filter(unsigned char **input, unsigned char **output, int width, int height)
 {
     for (int y = 0; y < height; y++)
@@ -89,6 +114,14 @@ void dilate_filter(unsigned char **input, unsigned char **output, int width, int
         }
 }
 
+/**
+ * This function implement the hysteresis filter
+ * @param edges edges present in the image
+ * @param width width of the image
+ * @param heigth height of the imahe
+ * @param edge_map the final edge map (modify in ref)
+ * @return VOID
+*/
 void hysteresis_filter(float **edges, int width, int height, unsigned char **edge_map) {
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -131,6 +164,11 @@ void hysteresis_filter(float **edges, int width, int height, unsigned char **edg
     }
 }
 
+/**
+ * This function is the main function wich run correctly all the filter
+ * @param surface the surface to process
+ * @return VOID
+*/
 void process(SDL_Surface *surface)
 {
     int width = surface->w;

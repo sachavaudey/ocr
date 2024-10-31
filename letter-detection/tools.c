@@ -4,15 +4,15 @@
 * This file include tools function for letter detection process *
 * ###############################################################*/
 
-/*
-This function set the color of a given coordonate pixel in the given surface
-@param surface surface to use
-@param x x coordinate to use
-@param y y coordinate to use
-@param r red value to set
-@param g green value to set
-@param b blue value to set
-@return void no speicif return (change made in place)
+/**
+* This function set the color of a given coordonate pixel in the given surface
+* @param surface surface to use
+* @param x x coordinate to use
+* @param y y coordinate to use
+* @param r red value to set
+* @param g green value to set
+* @param b blue value to set
+* @return void no speicif return (change made in place)
 */
 void set_pixel_color(SDL_Surface *surface, int x, int y, Uint8 r, Uint8 g, Uint8 b)
 {
@@ -23,15 +23,15 @@ void set_pixel_color(SDL_Surface *surface, int x, int y, Uint8 r, Uint8 g, Uint8
     pixels[(y * surface->w) + x] = pixel_color;
 }
 
-/*
-This function return by ref the RGB value of a specific pixel of a given surface
-@param surface surface to process
-@param x x coordinate
-@param y y coordinate
-@param r red value (set by ref)
-@param g green value (set by ref)
-@param b blue value (set by ref)
-@return void no specific return, return by ref parameter
+/**
+* This function return by ref the RGB value of a specific pixel of a given surface
+* @param surface surface to process
+* @param x x coordinate
+* @param y y coordinate
+* @param r red value (set by ref)
+* @param g green value (set by ref)
+* @param b blue value (set by ref)
+* @return void no specific return, return by ref parameter
 */
 void get_pixel_color(SDL_Surface *surface, int x, int y, Uint8 *r, Uint8 *g, Uint8 *b)
 {
