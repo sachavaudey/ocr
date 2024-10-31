@@ -1,6 +1,8 @@
 #include "boxes.h"
 
 
+
+
 void flood_fill(unsigned char **edge_map, int **label_map, int width, int height, int x, int y, int label, BoundingBox *box)
 {
     Point *stack = (Point *)malloc(height * width * sizeof(Point));
