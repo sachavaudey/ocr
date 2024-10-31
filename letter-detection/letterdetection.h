@@ -9,7 +9,7 @@
 #include <SDL2/SDL_image.h>
 
 
-int process_letter_detection(SDL_Surface *surface);
+int lalala(SDL_Surface *surface);
 
 
 #endif

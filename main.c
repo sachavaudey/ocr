@@ -25,7 +25,7 @@ int run_pretreatment(SDL_Surface *surface) {
 }
 
 int run_letterdetection(SDL_Surface *surface) {
-    return process_letter_detection(surface);
+    return lalala(surface);
 }
 
 int run_griddetection(SDL_Surface *surface) {
