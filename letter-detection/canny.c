@@ -1,18 +1,29 @@
 #include "canny.h"
 
-#define PI 3.1415926535
+#define PI              3.1415926535
+#define LOW_THRESHOLD   50.0
+#define HIGH_THRESHOLD  100.0
+#define DILATE_VALUE    2
+#define SOBEL_GX        {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}}
+#define SOBEL_GY        {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}}
+#define EDGE_STRONG     255
+#define EDGE_WEAK       128
+#define EDGE_NONE       0
+#define MIN_BOX_SIZE    5
 
-
+/**
+ * This function implement the sobel filter according to the binary representation of a specific image
+ * @param image image in binary representation
+ * @param width width of the image
+ * @param height height of the image
+ * @param gradient_magnitude the magnitude of the gradient
+ * @param gradient_direction gradient_direction of the gradient
+ * @return VOID
+*/
 void sobel_filter(unsigned char **image, int width, int height, float **gradient_magnitude, float **gradient_direction)
 {
-    int Gx[3][3] = {
-        {-1, 0, 1},
-        {-2, 0, 2},
-        {-1, 0, 1}};
-    int Gy[3][3] = {
-        {-1, -2, -1},
-        {0, 0, 0},
-        {1, 2, 1}};
+    int Gx[3][3] = SOBEL_GX;
+    int Gy[3][3] = SOBEL_GY;
 
     for (int y = 1; y < height - 1; y++)
     {
@@ -35,6 +46,15 @@ void sobel_filter(unsigned char **image, int width, int height, float **gradient
     }
 }
 
+/**
+ * This function implement the suppression of non-maxima algorithm
+ * @param width width of the image
+ * @param heigth height of the image
+ * @param gradient_magnitude the gradient magnitude
+ * @param gradient_direction the gradient direction
+ * @param edges the edges present in the image
+ * @return VOID
+*/
 void nm_filter(int width, int height, float **gradient_magnitude, float **gradient_direction, float **edges)
 {
     for (int y = 1; y < height - 1; y++)
@@ -71,48 +91,63 @@ void nm_filter(int width, int height, float **gradient_magnitude, float **gradie
     }
 }
 
+/**
+ * This function implement the dilate filter algorithm
+ * @param input image imput to process (binary representation)
+ * @param output output image after process (binary representation)
+ * @param width width of the image
+ * @param height height of the image
+ */
 void dilate_filter(unsigned char **input, unsigned char **output, int width, int height)
 {
     for (int y = 0; y < height; y++)
         for (int x = 0; x < width; x++)
-            output[y][x] = 0;
+            output[y][x] = EDGE_NONE;
 
     for (int y = 1; y < height - 1; y++)
         for (int x = 1; x < width - 1; x++)
         {
-            if (input[y][x] == 255)
-                for (int dy = -1; dy <= 1; dy++)
-                    for (int dx = -1; dx <= 1; dx++)
-                        output[y + dy][x + dx] = 255;
+            if (input[y][x] == EDGE_STRONG)
+                for (int dy = -1; dy <= DILATE_VALUE; dy++)
+                    for (int dx = -1; dx <= DILATE_VALUE; dx++)
+                        output[y + dy][x + dx] = EDGE_STRONG;
         }
 }
 
-void hysteresis_filter(float **edges, int width, int height, float low_thresh, float high_thresh, unsigned char **edge_map) {
+/**
+ * This function implement the hysteresis filter
+ * @param edges edges present in the image
+ * @param width width of the image
+ * @param heigth height of the imahe
+ * @param edge_map the final edge map (modify in ref)
+ * @return VOID
+*/
+void hysteresis_filter(float **edges, int width, int height, unsigned char **edge_map) {
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            edge_map[y][x] = 0;
+            edge_map[y][x] = EDGE_NONE;
         }
     }
 
     for (int y = 1; y < height - 1; y++) {
         for (int x = 1; x < width - 1; x++) {
-            if (edges[y][x] >= high_thresh) {
-                edge_map[y][x] = 255;
-            } else if (edges[y][x] >= low_thresh) {
-                edge_map[y][x] = 128;
+            if (edges[y][x] >= HIGH_THRESHOLD) {
+                edge_map[y][x] = EDGE_STRONG;
+            } else if (edges[y][x] >= LOW_THRESHOLD) {
+                edge_map[y][x] = EDGE_WEAK;
             }
         }
     }
 
     for (int y = 1; y < height - 1; y++) {
         for (int x = 1; x < width - 1; x++) {
-            if (edge_map[y][x] == 255) {
+            if (edge_map[y][x] == EDGE_STRONG) {
                 for (int dy = -1; dy <= 1; dy++) {
                     for (int dx = -1; dx <= 1; dx++) {
                         int ny = y + dy;
                         int nx = x + dx;
-                        if (ny >= 0 && ny < height && nx >= 0 && nx < width && edge_map[ny][nx] == 128) {
-                            edge_map[ny][nx] = 255;
+                        if (ny >= 0 && ny < height && nx >= 0 && nx < width && edge_map[ny][nx] == EDGE_WEAK) {
+                            edge_map[ny][nx] = EDGE_STRONG;
                         }
                     }
                 }
@@ -122,14 +157,18 @@ void hysteresis_filter(float **edges, int width, int height, float low_thresh, f
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            if (edge_map[y][x] == 128) {
-                edge_map[y][x] = 0;
+            if (edge_map[y][x] == EDGE_WEAK) {
+                edge_map[y][x] = EDGE_NONE;
             }
         }
     }
 }
 
-
+/**
+ * This function is the main function wich run correctly all the filter
+ * @param surface the surface to process
+ * @return VOID
+*/
 void process(SDL_Surface *surface)
 {
     int width = surface->w;
@@ -175,9 +214,7 @@ void process(SDL_Surface *surface)
         edge_map[i] = (unsigned char *)malloc(width * sizeof(unsigned char));
     }
 
-    float low_thresh = 100.0;
-    float high_thresh = 200.0;
-    hysteresis_filter(edges, width, height, low_thresh, high_thresh, edge_map);
+    hysteresis_filter(edges, width, height, edge_map);
 
     unsigned char **dilated_edge_map = (unsigned char **)malloc(height * sizeof(unsigned char *));
     for (int i = 0; i < height; i++)
@@ -191,13 +228,13 @@ void process(SDL_Surface *surface)
     int num_boxes;
     find_bounding_boxes(dilated_edge_map, width, height, &boxes, &num_boxes);
 
-    merge_bounding_boxes(boxes, &num_boxes);
+    //merge_bounding_boxes(boxes, &num_boxes); Fonction qui pose pas mal de problème (perte informations surtout)
 
     for (int i = 0; i < num_boxes; i++)
     {
         int box_width = boxes[i].max_x - boxes[i].min_x;
         int box_height = boxes[i].max_y - boxes[i].min_y;
-        if (box_width > 5 && box_height > 5)
+        if (box_width > MIN_BOX_SIZE && box_height > MIN_BOX_SIZE)
         {
             draw_rectangle(surface, boxes[i].min_x, boxes[i].min_y, boxes[i].max_x, boxes[i].max_y);
         }

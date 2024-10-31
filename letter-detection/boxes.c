@@ -1,6 +1,17 @@
 #include "boxes.h"
 
-
+/**
+ * This function implement the flood fill algorithm
+ * @param edge_map the edge_map in the image
+ * @param label_map (the result) given by ref
+ * @param width width of the image
+ * @param height heigth of the imahe
+ * @param x x-coordinate of the reference pixel
+ * @param y y-coordinate of the reference pixel
+ * @param labal label to use
+ * @param box box struct to use during the process
+ * @return VOID
+*/
 void flood_fill(unsigned char **edge_map, int **label_map, int width, int height, int x, int y, int label, BoundingBox *box)
 {
     Point *stack = (Point *)malloc(height * width * sizeof(Point));
@@ -41,6 +52,15 @@ void flood_fill(unsigned char **edge_map, int **label_map, int width, int height
     free(stack);
 }
 
+/**
+ * This function simply implement a method to draw a rectangle according 4 coordinates
+ * @param surface surface to process
+ * @param min_x min_x coordinate
+ * @param min_y min_y coordinate
+ * @param max_x max_x coordinate
+ * @param max_y max_y coordinate
+ * @return VOID
+ */
 void draw_rectangle(SDL_Surface *surface, int min_x, int min_y, int max_x, int max_y)
 {
     Color color = {0,255,0};
@@ -62,6 +82,15 @@ void draw_rectangle(SDL_Surface *surface, int min_x, int min_y, int max_x, int m
     }
 }
 
+/**
+ * This function finds bounding boxes in an edge map using a flood fill algorithm.
+ * @param edge_map the edge map of the image
+ * @param width width of the image
+ * @param height height of the image
+ * @param boxes pointer to the array of bounding boxes (output)
+ * @param num_boxes pointer to the number of bounding boxes found (output)
+ * @return VOID
+ */
 void find_bounding_boxes(unsigned char **edge_map, int width, int height, BoundingBox **boxes, int *num_boxes)
 {
     int **label_map = (int **)malloc(height * sizeof(int *));
@@ -115,6 +144,12 @@ void find_bounding_boxes(unsigned char **edge_map, int width, int height, Boundi
     free(label_map);
 }
 
+/**
+ * This function merges overlapping bounding boxes into a single bounding box.
+ * @param boxes array of bounding boxes
+ * @param num_boxes pointer to the number of bounding boxes (input/output)
+ * @return VOID
+ */
 void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes)
 {
     int merged = 1;
