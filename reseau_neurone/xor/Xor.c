@@ -1,6 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include "Xor.h"
+
+
+#define nbInput 2
+#define nbHiddenNode 2
+#define output 2  
+#define nbTest 4
+
 
 double sigmoid(double x) { return 1/(1+exp(-x)); }
 double dsigmoid(double x) { return x * (1 - x); }
@@ -36,10 +41,7 @@ void shuffle(int *array, size_t n) {
     }
 }
 
-#define nbInput 2
-#define nbHiddenNode 2
-#define output 2  
-#define nbTest 4
+
 
 
 
