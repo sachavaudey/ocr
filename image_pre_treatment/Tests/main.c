@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
         errx(EXIT_FAILURE, "SDL_Init failed: %s\n", SDL_GetError());
     }
 
-    SDL_Surface *surface = load_image(argv[2]);
+    SDL_Surface *surface = Tools_LoadImage(argv[2]);
     if (!surface) {
         errx(EXIT_FAILURE, "Error while loading image: %s\n", IMG_GetError());
     }
@@ -19,32 +19,32 @@ int main(int argc, char *argv[]) {
 		rotate(surface, -25);
 
 	if (!strcmp(argv[1],"grayscale") || !strcmp(argv[1],"all"))
-		grayscaling(surface);
+		PRT_Grayscaling(surface);
 
 	if (!strcmp(argv[1],"dgray"))
 	{
-		noise_reduction(surface, 180);
-		mean_denoising(surface);
-		grayscaling(surface);
-		mean_denoising(surface);
-		blackWhite(surface);
-		for (int i =0; i<4; i++)
-		{denoise_simple(surface);}
+		PRT_Grayscaling(surface);
+		PRT_AverageDenoising(surface);
+		PRT_BlackWhite(surface);
+		PRT_AverageDenoisingBlackWhite(surface);
+		//for (int i =0; i<2; i++)
+		PRT_SimpleDenoising(surface);
+		PRT_xy_denoising(surface);
 		printf("noised reduction\n");
 	}
 
 	if (!strcmp(argv[1],"blackwhite") || !strcmp(argv[1],"all"))
-		blackWhite(surface);
+		PRT_BlackWhite(surface);
    
 	if (!strcmp(argv[1],"denoise"))
 	{
 		for (int i =0; i<2; i++)
-		{denoise_simple(surface);}
-		noise_reduction(surface, 100);
+		{PRT_SimpleDenoising(surface);}
+		PRT_AverageDenoising(surface);
 		printf("noise reduction\n");
 	}   
 
-	save_image(surface, "result.png");//argv[2]);
+	Tools_SaveImage(surface, "result.png");//argv[2]);
     
 	if (LOG_LEVEL)
 		printf("Image (result.png) saved\n");

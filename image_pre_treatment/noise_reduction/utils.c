@@ -52,40 +52,6 @@ int OnSide5(long pixel, long width, long height)
 
 
 
-/*	Function : Utils_WhiteNeighboursCount
- *
- *	--------------------------
- *
- *	Pixel MUST NOT be on a side when using this.
- *	Counts white neighbour of target pixel,
- *
- *	@param pixel_index: index of target pixel in surface
- *	@param surface	: target surface
- *
- *	@return			: count of white pixel around target
- */
-int Utils_WhiteNeighboursCount(long pixel_index, SDL_Surface* surface)
-{
-	int retour = 0;
-	Uint8 color = 0;
-	Uint32* pixels = surface->pixels;
-	for (int line = -1; line < 2; line++)
-	{
-		for(int row = -1; row < 2; row++)
-		{
-			SDL_GetRGB(
-					pixels[pixel_index + row + line*(surface->w)],
-					surface->format,
-					&color, &color, &color
-					);
-			if (line!= 0 && row != 0 && color == 255)
-			{
-				retour++;
-			}
-		}
-	}
-	return retour;
-}
 
 
 

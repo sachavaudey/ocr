@@ -31,9 +31,9 @@
  *	@return					: void
  *
  */ 
-void Patterns_RepalceLosange(SDL_Surface* surface, long index_to_check, double thresold)
+void Patterns_ReplaceLosange(SDL_Surface* surface, long index_to_check, double thresold)
 {
-	long W = surface->w, H = surface->h;
+	long W = surface->w;
 	Uint32* pixels = surface->pixels;
 	Uint8 color=0;
 	double diff = 0;
@@ -70,7 +70,7 @@ void Patterns_RepalceLosange(SDL_Surface* surface, long index_to_check, double t
 
 void Patterns_Line5(SDL_Surface* surface, long index_to_check, double thresold)
 {
-	long W = surface->w, H = surface->h;
+	long W = surface->w;
 	Uint32* pixels = surface->pixels;
 	Uint8 color=0;
 	double diff = 0;
@@ -105,7 +105,7 @@ void Patterns_Line5(SDL_Surface* surface, long index_to_check, double thresold)
 
 void Patterns_Row5(SDL_Surface* surface, long index_to_check, double thresold)
 {
-	long W = surface->w, H = surface->h;
+	long W = surface->w;
 	Uint32* pixels = surface->pixels;
 	Uint8 color=0;
 	double diff = 0;
@@ -139,3 +139,47 @@ void Patterns_Row5(SDL_Surface* surface, long index_to_check, double thresold)
 }
 
 //si trop de trucs avec 1 seul voisin max => delete
+
+/* ......
+ * ......
+ * ..xxxx..
+ * ..xxxx..
+ * ..xxxx..
+ * ..xxxx..
+ * ......
+ * ......
+ */
+void Patterns_ReplaceBlob(SDL_Surface* surface, long index_to_check)
+{
+	long W = surface->w;
+	Uint32* pixels = surface->pixels;
+	Uint8 color=0;
+
+	for (long line = -3; line < 5; line++)
+	{
+		for (long row = -3; row < 5; row++)
+		{
+			SDL_GetRGB(
+					pixels[index_to_check + line * W + row],
+					surface->format,
+					&color, &color, &color);
+			if ((row == -3 || row == -2 || row == 3 || row == 4) || 
+				(line == -3 || line == -2 || line == 3 || line == 4))
+			{
+				if (color == 255)
+				{return;}
+			}
+		}
+	}
+
+	
+	if (LOG_LEVEL > 1)
+		printf("BLOB removed\n");
+	for (long line = -1; line < 3; line++)
+	{
+		for (long row = -1; row < 3; row++)
+		{
+			pixels[index_to_check + line * W + row] = SDL_MapRGB(surface->format, 0, 0, 0);
+		}
+	}
+}

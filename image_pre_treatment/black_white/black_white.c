@@ -1,8 +1,8 @@
-#include "blackWhite.h"
+#include "black_white.h"
 
 
 
-/*	Function : grayscaling
+/*	Function : PRT_BlackWhite
  *
  *	--------------------------
  *
@@ -13,7 +13,7 @@
  *
  *	returns	: void 
  */
-void blackWhite(SDL_Surface *surface) 
+void PRT_BlackWhite(SDL_Surface *surface) 
 {
 	SDL_LockSurface(surface);
 
@@ -23,13 +23,19 @@ void blackWhite(SDL_Surface *surface)
 	const int pixelCount = (surface->w * surface->h);
     Uint32 *pixels = surface->pixels;
     Uint8 gray;
-    
+   
+
+	Uint8 avg = RgbAverageSurface(surface)[0];
+	printf("avg before : %i", avg);
+
+	avg = avg * 0.9;
+	printf("avg after : %i", avg);
 	for (int i = 0; i < pixelCount; ++i)
     {
         //r == g == b
         SDL_GetRGB(pixels[i], surface->format, &gray, &gray, &gray);
 		
-		if (gray > GRAY_THRESOLD) 
+		if (gray > avg) 
 		{
             pixels[i] = SDL_MapRGB(surface->format, 0, 0, 0);
         }

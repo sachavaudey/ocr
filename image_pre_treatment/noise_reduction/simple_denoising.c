@@ -1,23 +1,26 @@
 #include "simple_denoising.h"
+#include "patterns.h"
+#include <stdlib.h>
+#include <string.h>
 
 #define IS_BLACK 0
 #define IS_WHITE 255
 
 
 
-/*	Function : Denoise_SimpleDenoising
+/*	Function : SimpleDenoising
  *
  *	--------------------------
  *
- *	Denoise a surface by removing pixel without
- *	(or only one) neighbour, or if it matches 
- *	some predifined patterns.
+ *	Denoise a black/white surface by removing 
+ *	pixels without (or only one) neighbour,
+ *	or if it matches some predifined patterns.
  *
  *	@param surface	: target surface
  *
  *	@return			: void 
  */
-void Denoise_SimpleDenoising(SDL_Surface *surface)
+void PRT_SimpleDenoising(SDL_Surface *surface)
 {
 	SDL_LockSurface(surface);
 	
@@ -35,6 +38,7 @@ void Denoise_SimpleDenoising(SDL_Surface *surface)
 
 	long pixel_count = (surface->w) * (surface->h);
 	Uint32* pixels = surface->pixels;
+	Uint32* new_pixels = malloc(sizeof(Uint32) * pixel_count);
 	long W = surface->w, H = surface->h;
 
 	Uint8 color = 0;
@@ -42,22 +46,25 @@ void Denoise_SimpleDenoising(SDL_Surface *surface)
 	for (long pixel_index = 0; pixel_index < pixel_count; pixel_index++)
 	{
 		SDL_GetRGB(pixels[pixel_index], surface->format, &color, &color, &color);
-		if (!Utils_IsOnSide(pixel_index, W, H) && color == IS_WHITE && Utils_WhiteNeighboursCount(pixel_index, surface) <= 1)
+		new_pixels[pixel_index] = pixels[pixel_index];
+		if (!PixelIsOnSide(pixel_index, W, H) && color == IS_WHITE && WhiteNeighboursCount(pixel_index, surface) <= 1)
 		{
-			pixels[pixel_index] = SDL_MapRGB(surface->format, 0, 0, 0);
+			new_pixels[pixel_index] = SDL_MapRGB(surface->format, 0, 0, 0);
 			continue;
 		}
-		if (!Utils_IsOnSideRange4(pixel_index, W, H) && color ==  255)
+		if (!PixelIsOnSideRange4(pixel_index, W, H) && color ==  255)
 		{
 			Patterns_ReplaceLosange(surface, pixel_index, 1);
+			Patterns_ReplaceBlob(surface, pixel_index);
 		}
-		if (!Utils_IsOnSide(pixel_index, W, H) && color == 255 && Utils_WhiteNeighboursCount(pixel_index, surface) >= 8)
-		{
-			pixels[pixel_index] = SDL_MapRGB(surface->format, 255, 255, 255);
-		}
+		//if (!PixelIsOnSide(pixel_index, W, H) && color == IS_WHITE && WhiteNeighboursCount(pixel_index, surface) >= 8)
+		//{
+		//	new_pixels[pixel_index] = SDL_MapRGB(surface->format, 255, 255, 255);
+		//}
 	}
 	
-
+	memcpy(pixels, new_pixels, pixel_count*sizeof(Uint32));
+	free(new_pixels);
 	SDL_UnlockSurface(surface);
 
 	if (LOG_LEVEL)

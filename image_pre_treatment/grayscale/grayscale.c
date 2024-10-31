@@ -1,4 +1,7 @@
-#include "grayscaling.h"
+#include "grayscale.h"
+#include <SDL2/SDL_stdinc.h>
+#include <stdlib.h>
+#include <string.h>
 
 
 /*	Function : grayscaling
@@ -11,14 +14,16 @@
  *
  *	returns	: void 
  */
-void grayscaling(SDL_Surface *surface) 
+void PRT_Grayscaling(SDL_Surface *surface) 
 {
 	SDL_LockSurface(surface);
-    
+ 
+	const int pixelCount = (surface->w * surface->h);
+	Uint32* new_pixels = malloc(pixelCount * sizeof(Uint32));
+
 	if (LOG_LEVEL)
 		printf("---------------\nStarting grayscaling...\n");
 
-    const int pixelCount = (surface->w * surface->h);
     Uint32 *pixels = surface->pixels; 
     Uint8 r, g, b, gray;
 
@@ -31,8 +36,11 @@ void grayscaling(SDL_Surface *surface)
         gray = (Uint8)(0.299 * r + 0.587 * g + 0.114 * b);
 		
 		// Assigning grey value to pixel
-        pixels[i] = SDL_MapRGB(surface->format, gray, gray, gray);
+        new_pixels[i] = SDL_MapRGB(surface->format, gray, gray, gray);
     }
+
+	memcpy(pixels, new_pixels, pixelCount * sizeof(Uint32));
+	free(new_pixels);
 
     SDL_UnlockSurface(surface);
     
