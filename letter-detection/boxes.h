@@ -35,5 +35,4 @@ void find_bounding_boxes(unsigned char **edge_map, int width, int height, Boundi
 void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes);
 
 
-
 #endif

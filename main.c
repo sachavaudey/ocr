@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <err.h>
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_image.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include "letter-detection/letterdetection.h"
 #include "reseau_neurone/Xor.h"
 #include "Solver/solver.h"
@@ -37,8 +37,8 @@ int run_neuronalnetwork() {
     return process_xor();
 }
 
-int run_solver() {
-    return EXIT_FAILURE;
+int run_solver(char* filepath, char* word) {
+    return process_solver(filepath, word);
 }
 
 int run_killprogramm() {
@@ -50,16 +50,17 @@ int main() {
     int choice;
     char filepath[256];
 
+    printf("To run correctly the code, please enter the entire file path of the image to process: ");
+
+    if (scanf("%255s", filepath) != 1) {
+        printf("Invalid input. Please enter the file path again.\n");
+        while (getchar() != '\n');
+    }
+
+    SDL_Surface *surface = load_surface(filepath);
+
     while (1) {
-        printf("To run correctly the code, please enter the entire file path of the image to process: \n");
 
-        if (scanf("%255s", filepath) != 1) {
-            printf("Invalid input. Please enter the file path again.\n");
-            while (getchar() != '\n');
-            continue;
-        }
-
-        SDL_Surface *surface = load_surface(filepath);
 
         printf("## MENU ##\n");
         printf("1. Pre-treatment functions\n");
@@ -69,6 +70,8 @@ int main() {
         printf("5. Solver functions\n");
         printf("6. Kill program process\n");
         printf("\n");
+
+        printf("Please select the number of the process you want to run : ");
 
         if (scanf("%d", &choice) != 1) {
             printf("Invalid input. Please enter the process you want:\n");
@@ -81,19 +84,24 @@ int main() {
             case 1:
                 if (run_pretreatment(surface) == EXIT_FAILURE) 
                     errx(EXIT_FAILURE, "Error during pre-treatment process!\n");
+                printf("\n");
                 break;
             case 2:
                 if (run_letterdetection(surface) == EXIT_FAILURE)
                     errx(EXIT_FAILURE, "Error during letter-detection function\n");
+                printf("\n");
                 break;
             case 3:
                 run_griddetection(surface);
+                printf("\n");
                 break;
             case 4:
                 run_neuronalnetwork();
+                printf("\n");
                 break;
             case 5:
-                run_solver();
+                run_solver("grid.txt", "word");
+                printf("\n");
                 break;
             case 6:
                 run_killprogramm();

@@ -1,10 +1,13 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -lSDL2 -lSDL2_image -lm
+CFLAGS = -Wall -Wextra -O2
+LDFLAGS = -lSDL2 -lSDL2_image -lm
 SRCS = $(shell find . -name '*.c')
 OBJS = $(SRCS:.c=.o)
 EXEC = main
 
 all: $(EXEC)
+
+$(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c

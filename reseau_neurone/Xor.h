@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <err.h>
 
 #define NB_INPUT 2
 #define NB_HIDDEN_NODE 2

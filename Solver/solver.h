@@ -8,6 +8,7 @@ char (*lire_grille(char *nom_fichier, int *lignes, int *colonnes))[100];
 
 
 void solver(char *nom_fichier, char *word);
+int process_solver(char* filename, char* word);
 
 #endif // SOLVER_H
 

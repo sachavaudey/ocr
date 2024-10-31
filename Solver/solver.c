@@ -34,7 +34,7 @@ int search_right(char** matrice, char* word ,int i,int j,int x)
     {
         int c=0;
         int q=j;
-        for (size_t t = 0; t < x; t++)
+        for (int t = 0; t < x; t++)
         {
             if (matrice[i][q]==word[t]) q++;
             else break;
@@ -47,7 +47,7 @@ int search_left(char** matrice, char* word ,int i,int j,int x)
 {
     int c=0;
     int q=j;
-    for (size_t t = 0; t < x; t++)
+    for (int t = 0; t < x; t++)
     {
         if (matrice[i][q]==word[t]) q--;
         else break;
@@ -60,7 +60,7 @@ int search_up(char** matrice, char* word ,int i,int j,int x)
 {
 int c=0;
                     int q=i;
-                    for (size_t t = 0; t < x; t++)
+                    for (int t = 0; t < x; t++)
                     {
                         if (matrice[q][j]==word[t]) q--;
                         else break;
@@ -73,7 +73,7 @@ int search_down(char** matrice, char* word ,int i,int j,int x)
 {
 int c=0;
                     int q=i;
-                    for (size_t t = 0; t < x; t++)
+                    for (int t = 0; t < x; t++)
                     {
                         if (matrice[q][j]==word[t]) q++;
                         else break;
@@ -87,7 +87,7 @@ int search_up_left(char** matrice, char* word ,int i,int j,int x)
     int c=0;
                     int q=i;
                     int l=j;
-                    for (size_t t = 0; t < x; t++)
+                    for (int t = 0; t < x; t++)
                     {
                         if (matrice[q][l]==word[t]) q--,l--;
                         else break;
@@ -101,7 +101,7 @@ int search_up_right(char** matrice, char* word ,int i,int j,int x)
     int c=0;
                     int q=i;
                     int l=j;
-                    for (size_t t = 0; t < x; t++)
+                    for (int t = 0; t < x; t++)
                     {
                         if (matrice[q][l]==word[t]) q--,l++;
                         else break;
@@ -115,7 +115,7 @@ int search_down_left(char** matrice, char* word ,int i,int j,int x)
 int c=0;
                     int q=i;
                     int l=j;
-                    for (size_t t = 0; t < x; t++)
+                    for (int t = 0; t < x; t++)
                     {
                         if (matrice[q][l]==word[t]) q++,l--;
                         else break;
@@ -129,7 +129,7 @@ int search_down_right(char** matrice, char* word ,int i,int j,int x)
     int c=0;
                     int q=i;
                     int l=j;
-                    for (size_t t = 0; t < x; t++)
+                    for (int t = 0; t < x; t++)
                     {
                         if (matrice[q][l]==word[t]) q++,l++;
                         else break;
@@ -158,10 +158,10 @@ void solver(char *nom_fichier,char *word)
     while(ma[0][m-1]!=0) m++;
 
     char** matrice=malloc(n*sizeof(char*));
-    for (size_t i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         matrice[i]=malloc(m*sizeof(char*));
-        for (size_t j = 0; j < m; j++)
+        for (int j = 0; j < m; j++)
         {
             matrice[i][j]=ma[i][j];
             printf("%c",matrice[i][j]);
@@ -262,17 +262,7 @@ void solver(char *nom_fichier,char *word)
 }   
     
     
-int main(int argc, char *argv[]) {
-    
-    
-    
-    char *filename = argv[1];
-    char *word = argv[2];
-    
-    solver(filename,word);
-
-
-   
-    return 0;
-    
+int process_solver(char* filename, char* word) {   
+    solver(filename,word);  
+    return 0;    
 }
