@@ -7,6 +7,9 @@
 #include <err.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include "canny.h"
+#include "boxes.h"
+#include "tools.h"
 
 
 int lalala(SDL_Surface *surface);

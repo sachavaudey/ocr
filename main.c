@@ -72,9 +72,10 @@ int run_letterdetection() {
 }
 
 int run_griddetection(SDL_Surface *surface) {
+    (void)surface;
     printf("This function will run all the letter detection before!\n");
-    process_grid_detection(surface);
-    return 0;
+    //process_grid_detection(surface);
+    return EXIT_SUCCESS;
 }
 
 int run_neuronalnetwork() {
