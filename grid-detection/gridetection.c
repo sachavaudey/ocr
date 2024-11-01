@@ -1,19 +1,6 @@
 #include "griddetection.h"
 
-
-int process_grid_detection(const char *input_image_path, const char *output_image_path) {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        fprintf(stderr, "Could not initialize SDL: %s\n", SDL_GetError());
-        return EXIT_FAILURE;
-    }
-
-    SDL_Surface *surface = IMG_Load(input_image_path);
-    if (!surface) {
-        fprintf(stderr, "Could not load image: %s\n", IMG_GetError());
-        SDL_Quit();
-        return EXIT_FAILURE;
-    }
-
+void process_grid_detection(SDL_Surface *surface) {
     int width = surface->w;
     int height = surface->h;
 
@@ -22,13 +9,11 @@ int process_grid_detection(const char *input_image_path, const char *output_imag
         image[i] = (unsigned char *)malloc(width * sizeof(unsigned char));
     }
 
-    Uint32 *pixels = (Uint32 *)surface->pixels;
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            Uint32 pixel = pixels[y * width + x];
             Uint8 r, g, b;
-            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-            image[y][x] = 0.299 * r + 0.587 * g + 0.114 * b;
+            get_pixel_color(surface, x, y, &r, &g, &b);
+            image[y][x] = (r + g + b) / 3;
         }
     }
 
@@ -53,9 +38,7 @@ int process_grid_detection(const char *input_image_path, const char *output_imag
         edge_map[i] = (unsigned char *)malloc(width * sizeof(unsigned char));
     }
 
-    float low_thresh = 50.0;
-    float high_thresh = 150.0;
-    hysteresis_filter(edges, width, height, low_thresh, high_thresh, edge_map);
+    hysteresis_filter(edges, width, height, edge_map);
 
     unsigned char **dilated_edge_map = (unsigned char **)malloc(height * sizeof(unsigned char *));
     for (int i = 0; i < height; i++) {
@@ -64,18 +47,19 @@ int process_grid_detection(const char *input_image_path, const char *output_imag
 
     dilate_filter(edge_map, dilated_edge_map, width, height);
 
-    BoundingBox *boxes;
+    BoundingBox *bounding_boxes;
     int num_boxes;
-    find_bounding_boxes(dilated_edge_map, width, height, &boxes, &num_boxes);
+    find_bounding_boxes(dilated_edge_map, width, height, &bounding_boxes, &num_boxes);
+
+    Box *boxes = (Box *)malloc(num_boxes * sizeof(Box));
+    for (int i = 0; i < num_boxes; i++) {
+        boxes[i].x = bounding_boxes[i].min_x;
+        boxes[i].y = bounding_boxes[i].min_y;
+        boxes[i].width = bounding_boxes[i].max_x - bounding_boxes[i].min_x;
+        boxes[i].height = bounding_boxes[i].max_y - bounding_boxes[i].min_y;
+    }
 
     detect_grid(surface, boxes, num_boxes);
-
-    if (SDL_SaveBMP(surface, output_image_path) != 0) {
-        fprintf(stderr, "Could not save image: %s\n", SDL_GetError());
-        SDL_FreeSurface(surface);
-        SDL_Quit();
-        return EXIT_FAILURE;
-    }
 
     for (int i = 0; i < height; i++) {
         free(image[i]);
@@ -91,10 +75,11 @@ int process_grid_detection(const char *input_image_path, const char *output_imag
     free(edges);
     free(edge_map);
     free(dilated_edge_map);
+    free(bounding_boxes);
     free(boxes);
 
-    SDL_FreeSurface(surface);
-    SDL_Quit();
-
-    return EXIT_SUCCESS;
+    // Sauvegarder l'image résultante
+    if (SDL_SaveBMP(surface, "result.png") != 0) {
+        fprintf(stderr, "Could not save image: %s\n", SDL_GetError());
+    }
 }

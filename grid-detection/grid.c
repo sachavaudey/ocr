@@ -9,7 +9,6 @@ double calculate_distance(Box a, Box b) {
 }
 
 void draw_red_line(SDL_Surface *surface, Box a, Box b) {
-    Uint32 red = SDL_MapRGB(surface->format, 255, 0, 0);
     SDL_Renderer *renderer = SDL_CreateSoftwareRenderer(surface);
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderDrawLine(renderer, a.x + a.width / 2, a.y + a.height / 2, b.x + b.width / 2, b.y + b.height / 2);

@@ -1,12 +1,4 @@
 #include "main.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <err.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include "letter-detection/letterdetection.h"
-#include "reseau_neurone/Xor.h"
-#include "Solver/solver.h"
 
 // This file is the main file of execution function (soutenance 1 only !!)
 
@@ -80,8 +72,9 @@ int run_letterdetection() {
 }
 
 int run_griddetection(SDL_Surface *surface) {
-    (void)surface;
-    return EXIT_FAILURE;
+    printf("This function will run all the letter detection before!\n");
+    process_grid_detection(surface);
+    return 0;
 }
 
 int run_neuronalnetwork() {
@@ -122,8 +115,6 @@ int main() {
     SDL_Surface *surface = load_surface(filepath);
 
     while (1) {
-
-
         printf("## MENU ##\n");
         printf("1. Pre-treatment functions\n");
         printf("2. Letter detection functions\n");
@@ -173,9 +164,8 @@ int main() {
                 printf("Incorrect choice, please choose another!\n");
                 break;
         }
-
-        SDL_FreeSurface(surface);
     }
 
+    SDL_FreeSurface(surface);
     return EXIT_SUCCESS;
 }
