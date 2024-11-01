@@ -1,0 +1,17 @@
+getXFromPixelNb(x, width, height):
+	retourne x / width - (width / 2);
+
+getYFromPixelNb(x, width, height):
+	retourne x % width - (height / 2);
+
+rotation (image, a): 
+	- compute new width  : h * ABS(sind(a)) + w * ABS(cosd(a))
+	- compute new height : h * ABS(cosd(a)) + w * ABS(sind(a))
+
+	- pour chaque pixel in nouvelle image :
+		- x_depart = getX(pixel)*cosd(-a) + getY(pixel) * sind(-a);
+		- y_depart = -getX(pixel)*sind(-a) + getY(pixel) * cosd(-a);
+		- if (x_depart et y_depart in image_depart)
+			nouvelle_image.rgb = image_depart[x_depart * width + y_depart].rgb
+
+	- return new_image
