@@ -49,7 +49,7 @@ void process_grid_detection(SDL_Surface *surface) {
 
     BoundingBox *bounding_boxes;
     int num_boxes;
-    find_bounding_boxes(dilated_edge_map, width, height, &bounding_boxes, &num_boxes);
+    find_bounding_boxes(dilated_edge_map, width, height, &bounding_boxes, &num_boxes, surface);
 
     Box *boxes = (Box *)malloc(num_boxes * sizeof(Box));
     for (int i = 0; i < num_boxes; i++) {

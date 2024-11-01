@@ -29,9 +29,11 @@ typedef struct
     int y;
 } Point;
 
+
+void save_box_as_png(SDL_Surface *surface, BoundingBox box);
 void flood_fill(unsigned char **edge_map, int **label_map, int width, int height, int x, int y, int label, BoundingBox *box);
 void draw_rectangle(SDL_Surface *surface, int min_x, int min_y, int max_x, int max_y);
-void find_bounding_boxes(unsigned char **edge_map, int width, int height, BoundingBox **boxes, int *num_boxes);
+void find_bounding_boxes(unsigned char **edge_map, int width, int height, BoundingBox **boxes, int *num_boxes, SDL_Surface *surface);
 void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes);
 
 
