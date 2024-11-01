@@ -41,7 +41,7 @@ void PRT_xy_denoising(SDL_Surface* surface)
 	long pixel_count = W * H;
 	Uint32* new_pixels = malloc(sizeof(Uint32)*pixel_count);
 	memcpy(new_pixels, pixels, pixel_count*sizeof(Uint32));
-	Uint8 threshold = RgbAverageSurface(surface)[0];
+	Uint8 threshold = RgbAverageSurface(surface)[0] * 0.5;
 	Uint8 color = 0;
 	for (int line= 2; line < H -2; line++)
 	{

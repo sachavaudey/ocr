@@ -129,7 +129,7 @@ void rotate(SDL_Surface *surface, int angle)
 		
 		if (pixelDepartNb == NOT_IN_IMAGE) 
 		{
-			pixelPtr[pixelNb] = SDL_MapRGBA(newOne->format, 0, 0, 0, 0);
+			pixelPtr[pixelNb] = 0;//SDL_MapRGBA(newOne->format, 0, 0, 0, 0);
 		}
 		else
 		{	
