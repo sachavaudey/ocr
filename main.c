@@ -10,7 +10,11 @@
 
 // This file is the main file of execution function (soutenance 1 only !!)
 
-// Auxiliary function to run correctly all the process
+/**
+ * This function load in surface the image store in the given filepath
+ * @param filepath the filepath where the image is stored
+ * @return SDL_Surface the surface create with the image
+*/
 SDL_Surface* load_surface(const char* filepath) {
     SDL_Surface *image = IMG_Load(filepath);
     if (image == NULL) errx(EXIT_FAILURE, "Could not load image %s", filepath);
@@ -18,14 +22,63 @@ SDL_Surface* load_surface(const char* filepath) {
     return image;
 }
 
+/**
+ * This function save in PNG the surface given in parameter
+ * @param surface surface to save in the PNG file
+ * @return VOID
+*/
+void save_image(SDL_Surface *surface){
+    IMG_SavePNG(surface, "result.png");
+    return;
+}
+
 // Different process functions (6 different processes can be run)
 int run_pretreatment(SDL_Surface *surface) {
-    (void)surface;
-    return EXIT_FAILURE;
+    int set;
+    printf("## PRE-TREATMENT MENU ##\n");
+    printf("1. Run rotation function\n");
+    printf("2. Run all the pre-treatment functions (whitout rotation)\n");
+    printf("Please make your choice : ");
+
+    if (scanf("%d", &set) != 1) {
+        printf("Invalid input. Please enter the process you want:\n");
+        while (getchar() != '\n');
+    }
+
+    if (set == 1) {
+        int rotation_value;
+        printf("\n");
+        printf("Please enter a rotation value : ");
+
+        if (scanf("%d", &rotation_value) != 1) {
+            printf("Invalid input. Please enter the rotation value you want:\n");
+            while (getchar() != '\n');
+        }
+
+        PRT_Rotate(surface, rotation_value);
+        save_image(surface);
+        return EXIT_SUCCESS;
+    }
+    else if (set == 2){
+        PRT_Full(surface);
+        save_image(surface);
+        return EXIT_SUCCESS;
+    }
+    else{
+        printf("Wrong option (1 or 2)\n");
+        printf("Abort...\n");
+        return EXIT_FAILURE;
+    }
+    
 }
 
 int run_letterdetection(SDL_Surface *surface) {
-    return lalala(surface);
+    int result = lalala(surface);
+    if (result == EXIT_SUCCESS){
+        save_image(surface);
+        return EXIT_SUCCESS;
+    }
+    else return EXIT_FAILURE;
 }
 
 int run_griddetection(SDL_Surface *surface) {

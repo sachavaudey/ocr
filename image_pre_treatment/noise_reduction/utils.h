@@ -6,7 +6,7 @@
 #include <SDL2/SDL_surface.h>
 #include <stdlib.h>
 #include <err.h>
-#include "../Tools/tools.h"
+#include "../tools/tools.h"
 #include "../../Common/ocr.h"
 #include "patterns.h"
 

@@ -5,12 +5,11 @@
 #include <SDL2/SDL_image.h>
 #include <stdlib.h>
 #include <err.h>
-#include "../Tools/tools.h"
+#include "../tools/tools.h"
 #include "../../Common/ocr.h"
 #include "patterns.h"
-#include "denoise.h"
+#include "utils.h"
 
 void mean_denoising(SDL_Surface *surface);
-
 
 #endif

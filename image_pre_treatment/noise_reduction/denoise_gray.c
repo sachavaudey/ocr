@@ -20,12 +20,12 @@
  *	returns	: void 
  */
 
-Uint8* average_9_pixels(SDL_Surface* surface, uint index)
+Uint8* average_9_pixels(SDL_Surface* surface, int index)
 {
 	long* avg = malloc(sizeof(long) * 3);
 	Uint8 temp[3] = {0,0,0};
 	Uint32* pixels = surface->pixels;
-	int W = surface->w, H = surface->h;	
+	int W = surface->w;	
 	avg[0] = 0;
 	avg[1] = 0;
 	avg[2] = 0;
@@ -88,7 +88,7 @@ void mean_denoising(SDL_Surface *surface)
 
 	for (long pixelI = 0; pixelI < pixelCount; pixelI++)
 	{
-		if (!OnSide(pixelI, W, H))
+		if (!Utils_IsOnSide(pixelI, W, H))
 		{
 			color = average_9_pixels(surface, pixelI);
 			pixels[pixelI] = SDL_MapRGB(surface->format, color[0], color[1], color[2]);

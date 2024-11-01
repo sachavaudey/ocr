@@ -68,12 +68,12 @@ int OnSide5(long pixel, long width, long height)
  *
  *	returns	: void 
  */
-Uint8* Utis_AveragePixelsAround(SDL_Surface* surface, uint index)
+Uint8* Utis_AveragePixelsAround(SDL_Surface* surface, int index)
 {
 	long* avg = malloc(sizeof(long) * 3);
 	Uint8 temp[3] = {0,0,0};
 	Uint32* pixels = surface->pixels;
-	int W = surface->w, H = surface->h;	
+	int W = surface->w;	
 	avg[0] = 0;
 	avg[1] = 0;
 	avg[2] = 0;

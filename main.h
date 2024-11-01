@@ -9,6 +9,7 @@
 #include "letter-detection/letterdetection.h"
 #include "reseau_neurone/Xor.h"
 #include "Solver/solver.h"
+#include "image_pre_treatment/pre_treatment.h"
 
 SDL_Surface* load_surface(const char* filepath);
 int process_letter_detection(SDL_Surface *surface);
