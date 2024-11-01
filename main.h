@@ -7,7 +7,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "letter-detection/letterdetection.h"
-#include "reseau_neurone/Xor.h"
+#include "neuron_network/Xor.h"
 #include "Solver/solver.h"
 #include "image_pre_treatment/pre_treatment.h"
 #include "grid-detection/griddetection.h"
