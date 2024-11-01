@@ -15,7 +15,7 @@ SDL_Surface* load_surface(const char* filepath);
 int process_letter_detection(SDL_Surface *surface);
 int process_xor();
 int run_pretreatment(SDL_Surface *surface);
-int run_letterdetection(SDL_Surface *surface);
+int run_letterdetection();
 int run_griddetection(SDL_Surface *surface);
 int run_neuronalnetwork();
 int run_solver();

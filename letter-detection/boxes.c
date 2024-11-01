@@ -1,5 +1,15 @@
 #include "boxes.h"
 
+#define MAX_BOX_WIDTH 100
+#define MAX_BOX_HEIGHT 50
+#define STACK_SIZE_MULTIPLIER 1
+#define EDGE_MAP_VALUE 255
+#define LABEL_MAP_INITIAL_VALUE 0
+#define COLOR_R 0
+#define COLOR_G 255
+#define COLOR_B 0
+#define OVERLAP_MARGIN 5
+
 /**
  * This function implement the flood fill algorithm
  * @param edge_map the edge_map in the image
@@ -14,7 +24,7 @@
 */
 void flood_fill(unsigned char **edge_map, int **label_map, int width, int height, int x, int y, int label, BoundingBox *box)
 {
-    Point *stack = (Point *)malloc(height * width * sizeof(Point));
+    Point *stack = (Point *)malloc(height * width * STACK_SIZE_MULTIPLIER * sizeof(Point));
     if (!stack) errx(EXIT_FAILURE, "Memory allocation failed!\n");
 
     int stack_size = 0;
@@ -41,7 +51,7 @@ void flood_fill(unsigned char **edge_map, int **label_map, int width, int height
                 int ny = cy + dy;
 
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height)
-                    if (edge_map[ny][nx] == 255 && label_map[ny][nx] == 0)
+                    if (edge_map[ny][nx] == EDGE_MAP_VALUE && label_map[ny][nx] == LABEL_MAP_INITIAL_VALUE)
                     {
                         label_map[ny][nx] = label;
                         stack[stack_size++] = (Point){nx, ny};
@@ -63,7 +73,7 @@ void flood_fill(unsigned char **edge_map, int **label_map, int width, int height
  */
 void draw_rectangle(SDL_Surface *surface, int min_x, int min_y, int max_x, int max_y)
 {
-    Color color = {0,255,0};
+    Color color = {COLOR_R, COLOR_G, COLOR_B};
     Uint32 pixel_color = SDL_MapRGB(surface->format, color.r, color.g, color.b);
     Uint32 *pixels = (Uint32 *)surface->pixels;
     int width = surface->w;
@@ -119,12 +129,20 @@ void find_bounding_boxes(unsigned char **edge_map, int width, int height, Boundi
 
     for (int y = 0; y < height; y++)
         for (int x = 0; x < width; x++)
-            if (edge_map[y][x] == 255 && label_map[y][x] == 0)
+            if (edge_map[y][x] == EDGE_MAP_VALUE && label_map[y][x] == LABEL_MAP_INITIAL_VALUE)
             {
                 BoundingBox box = {x, x, y, y};
                 flood_fill(edge_map, label_map, width, height, x, y, label, &box);
-                temp_boxes[*num_boxes] = box;
-                (*num_boxes)++;
+
+                int box_width = box.max_x - box.min_x + 1;
+                int box_height = box.max_y - box.min_y + 1;
+
+                if (box_width <= MAX_BOX_WIDTH && box_height <= MAX_BOX_HEIGHT)
+                {
+                    temp_boxes[*num_boxes] = box;
+                    (*num_boxes)++;
+                }
+
                 label++;
             }
 
@@ -159,8 +177,8 @@ void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes)
         for (int i = 0; i < *num_boxes; i++)
             for (int j = i + 1; j < *num_boxes; j++)
             {
-                int overlap_x = (boxes[i].min_x <= boxes[j].max_x + 5) && (boxes[j].min_x <= boxes[i].max_x + 5);
-                int overlap_y = (boxes[i].min_y <= boxes[j].max_y + 5) && (boxes[j].min_y <= boxes[i].max_y + 5);
+                int overlap_x = (boxes[i].min_x <= boxes[j].max_x + OVERLAP_MARGIN) && (boxes[j].min_x <= boxes[i].max_x + OVERLAP_MARGIN);
+                int overlap_y = (boxes[i].min_y <= boxes[j].max_y + OVERLAP_MARGIN) && (boxes[j].min_y <= boxes[i].max_y + OVERLAP_MARGIN);
 
                 if (overlap_x && overlap_y)
                 {

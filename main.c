@@ -72,13 +72,11 @@ int run_pretreatment(SDL_Surface *surface) {
     
 }
 
-int run_letterdetection(SDL_Surface *surface) {
-    int result = lalala(surface);
-    if (result == EXIT_SUCCESS){
-        save_image(surface);
-        return EXIT_SUCCESS;
-    }
-    else return EXIT_FAILURE;
+int run_letterdetection() {
+    printf("Enter in function\n");
+    SDL_Surface *surface = load_surface("result.png");
+    printf("New image sucessfully load\n");
+    return lalala(surface);
 }
 
 int run_griddetection(SDL_Surface *surface) {
@@ -140,7 +138,7 @@ int main() {
                 printf("\n");
                 break;
             case 2:
-                if (run_letterdetection(surface) == EXIT_FAILURE)
+                if (run_letterdetection() == EXIT_FAILURE)
                     errx(EXIT_FAILURE, "Error during letter-detection function\n");
                 printf("\n");
                 break;

@@ -1,7 +1,7 @@
 #include "canny.h"
 
 #define PI              3.1415926535
-#define LOW_THRESHOLD   50.0
+#define LOW_THRESHOLD   25.0
 #define HIGH_THRESHOLD  100.0
 #define DILATE_VALUE    2
 #define SOBEL_GX        {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}}
