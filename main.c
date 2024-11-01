@@ -88,8 +88,19 @@ int run_neuronalnetwork() {
     return process_xor();
 }
 
-int run_solver(char* filepath, char* word) {
-    return process_solver(filepath, word);
+int run_solver() {
+    char word[100];
+    printf("\n");
+    printf("The solver will be run on the first grid\n");
+    printf("Please enter the word you want to search: ");
+
+    if (scanf("%99s", word) != 1) {
+        printf("Invalid input. Please enter correct word to search:\n");
+        while (getchar() != '\n');
+        return EXIT_FAILURE;
+    }
+
+    return process_solver("grid", word);
 }
 
 int run_killprogramm() {
@@ -151,7 +162,7 @@ int main() {
                 printf("\n");
                 break;
             case 5:
-                run_solver("grid.txt", "word");
+                run_solver();
                 printf("\n");
                 break;
             case 6:

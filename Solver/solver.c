@@ -150,7 +150,6 @@ void solver(char *nom_fichier,char *word)
         
         x++;
     }
-    // size of first dim
     int n=1;
     while(ma[n-1][0]!=0) n++;
     // size of second dim
@@ -263,6 +262,6 @@ void solver(char *nom_fichier,char *word)
     
     
 int process_solver(char* filename, char* word) {   
-    solver(filename,word);  
-    return 0;    
+    solver(filename,word);
+    return 0;
 }
