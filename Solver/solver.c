@@ -265,3 +265,9 @@ int process_solver(char* filename, char* word) {
     solver(filename,word);
     return 0;
 }
+
+
+int main(int argc, char* argv[]){
+    (void)argc;
+    return process_solver(argv[1], argv[2]);
+}
