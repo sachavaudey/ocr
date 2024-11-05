@@ -17,6 +17,7 @@ jobs:
       pull-requests: write
 
     steps:
-    - uses: Napoleon280/c_actions
+    - name: c_action
+      uses: Napoleon280/c_actions@test3  
       with:
         username: "test"
