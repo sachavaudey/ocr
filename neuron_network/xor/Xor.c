@@ -1,18 +1,10 @@
 #include "Xor.h"
 
-
-#define nbInput 2
-#define nbHiddenNode 2
-#define output 2  
-#define nbTest 4
-
-
 double sigmoid(double x) { return 1/(1+exp(-x)); }
 double dsigmoid(double x) { return x * (1 - x); }
 
 double init_weight() { return ((double)rand()) / ((double)RAND_MAX); }
 
-// Fonction softmax
 void softmax(double* input, double* output, size_t length) {
     double max = input[0];
     for (size_t i = 1; i < length; i++) {
@@ -41,111 +33,97 @@ void shuffle(int *array, size_t n) {
     }
 }
 
+void predict(double input1, double input2, double hiddenWeight[NB_INPUT][NB_HIDDEN_NODE], 
+             double outputWeight[NB_HIDDEN_NODE][NB_OUTPUT], double hiddenLayerBias[NB_HIDDEN_NODE], 
+             double outputLayerBias[NB_OUTPUT], double* outputLayer) {
+    double hiddenLayer[NB_HIDDEN_NODE];
 
-
-
-
-void predict(double input1, double input2, double hiddenWeight[nbInput][nbHiddenNode], 
-             double outPutWeight[nbHiddenNode][output], double hiddenLayerBias[nbHiddenNode], 
-             double outputLayerBias[output], double* outputLayer) {
-    double hiddenLayer[nbHiddenNode];
-
-    // Propagation avant : Couche cachée
-    for (size_t j = 0; j < nbHiddenNode; j++) {
+    for (size_t j = 0; j < NB_HIDDEN_NODE; j++) {
         double activation = hiddenLayerBias[j];
         activation += input1 * hiddenWeight[0][j] + input2 * hiddenWeight[1][j];
         hiddenLayer[j] = sigmoid(activation);
     }
 
-    // Propagation avant : Couche de sortie (Softmax)
-    double outputRaw[output];
-    for (size_t j = 0; j < output; j++) {
+    double outputRaw[NB_OUTPUT];
+    for (size_t j = 0; j < NB_OUTPUT; j++) {
         double activation = outputLayerBias[j];
-        for (size_t k = 0; k < nbHiddenNode; k++) {
-            activation += hiddenLayer[k] * outPutWeight[k][j];
+        for (size_t k = 0; k < NB_HIDDEN_NODE; k++) {
+            activation += hiddenLayer[k] * outputWeight[k][j];
         }
         outputRaw[j] = activation;
     }
 
-    // Appliquer softmax
-    softmax(outputRaw, outputLayer, output);
+    softmax(outputRaw, outputLayer, NB_OUTPUT);
 }
-
 
 int process_xor(void) {
     size_t repet = 10000;
     const double lr = 0.1f;
 
-    double hiddenLayer[nbHiddenNode];
-    double outputLayer[output];
-    double hiddenLayerBias[nbHiddenNode];
-    double outputLayerBias[output];
+    double hiddenLayer[NB_HIDDEN_NODE];
+    double outputLayer[NB_OUTPUT];
+    double hiddenLayerBias[NB_HIDDEN_NODE];
+    double outputLayerBias[NB_OUTPUT];
 
-    double hiddenWeight[nbInput][nbHiddenNode];
-    double outPutWeight[nbHiddenNode][output];
+    double hiddenWeight[NB_INPUT][NB_HIDDEN_NODE];
+    double outputWeight[NB_HIDDEN_NODE][NB_OUTPUT];
 
-    double training_input[nbTest][nbInput] = {{0.0f, 0.0f},
-                                              {1.0f, 0.0f},
-                                              {0.0f, 1.0f},
-                                              {1.0f, 1.0f}};
+    double training_input[4][NB_INPUT] = {{0.0f, 0.0f},
+                                          {1.0f, 0.0f},
+                                          {0.0f, 1.0f},
+                                          {1.0f, 1.0f}};
 
-    double training_output[nbTest][output] = {{1.0f, 0.0f},  
-                                              {0.0f, 1.0f},  
-                                              {0.0f, 1.0f},  
-                                              {1.0f, 0.0f}}; 
+    double training_output[4][NB_OUTPUT] = {{1.0f, 0.0f},  
+                                            {0.0f, 1.0f},  
+                                            {0.0f, 1.0f},  
+                                            {1.0f, 0.0f}}; 
 
-    // Initialisation des poids
-    for (size_t i = 0; i < nbInput; i++) {
-        for (size_t j = 0; j < nbHiddenNode; j++) {
+    for (size_t i = 0; i < NB_INPUT; i++) {
+        for (size_t j = 0; j < NB_HIDDEN_NODE; j++) {
             hiddenWeight[i][j] = init_weight();
         }
     }
 
-    for (size_t i = 0; i < nbHiddenNode; i++) {
-        for (size_t j = 0; j < output; j++) {
-            outPutWeight[i][j] = init_weight();
+    for (size_t i = 0; i < NB_HIDDEN_NODE; i++) {
+        for (size_t j = 0; j < NB_OUTPUT; j++) {
+            outputWeight[i][j] = init_weight();
         }
     }
 
-    // Initialisation des biais
-    for (size_t i = 0; i < output; i++) {
+    for (size_t i = 0; i < NB_OUTPUT; i++) {
         outputLayerBias[i] = init_weight();
     }
 
-    for (size_t i = 0; i < nbHiddenNode; i++) {
+    for (size_t i = 0; i < NB_HIDDEN_NODE; i++) {
         hiddenLayerBias[i] = init_weight();
     }
 
     int trainingsetorder[] = {0, 1, 2, 3};
 
     for (size_t epoch = 0; epoch < repet; epoch++) {
-        shuffle(trainingsetorder, nbTest);
-        for (size_t x = 0; x < nbTest; x++) {
+        shuffle(trainingsetorder, 4);
+        for (size_t x = 0; x < 4; x++) {
             int i = trainingsetorder[x];
 
-            // Propagation avant : Couche cachée
-            for (size_t j = 0; j < nbHiddenNode; j++) {
+            for (size_t j = 0; j < NB_HIDDEN_NODE; j++) {
                 double activation = hiddenLayerBias[j];
-                for (size_t k = 0; k < nbInput; k++) {
+                for (size_t k = 0; k < NB_INPUT; k++) {
                     activation += training_input[i][k] * hiddenWeight[k][j];
                 }
                 hiddenLayer[j] = sigmoid(activation);
             }
 
-            // Propagation avant : Couche de sortie (Softmax)
-            double outputRaw[output];
-            for (size_t j = 0; j < output; j++) {
+            double outputRaw[NB_OUTPUT];
+            for (size_t j = 0; j < NB_OUTPUT; j++) {
                 double activation = outputLayerBias[j];
-                for (size_t k = 0; k < nbHiddenNode; k++) {
-                    activation += hiddenLayer[k] * outPutWeight[k][j];
+                for (size_t k = 0; k < NB_HIDDEN_NODE; k++) {
+                    activation += hiddenLayer[k] * outputWeight[k][j];
                 }
                 outputRaw[j] = activation;
             }
 
-            // Appliquer softmax
-            softmax(outputRaw, outputLayer, output);
+            softmax(outputRaw, outputLayer, NB_OUTPUT);
 
-            // Impression des résultats périodiquement
             if (epoch % 2000 == 0) {
                 printf("Epoch: %zu, Input: %g %g, Output: %g %g, Predicted output: %g %g\n",
                        epoch, training_input[i][0], training_input[i][1],
@@ -153,35 +131,31 @@ int process_xor(void) {
                        training_output[i][0], training_output[i][1]);
             }
 
-            // Rétropropagation : Couche de sortie
-            double DeltaOuput[output];
-            for (size_t j = 0; j < output; j++) {
+            double DeltaOutput[NB_OUTPUT];
+            for (size_t j = 0; j < NB_OUTPUT; j++) {
                 double error = training_output[i][j] - outputLayer[j];
-                DeltaOuput[j] = error;  
+                DeltaOutput[j] = error;  
             }
 
-            // Rétropropagation : Couche cachée
-            double deltaHidden[nbHiddenNode];
-            for (size_t j = 0; j < nbHiddenNode; j++) {
+            double deltaHidden[NB_HIDDEN_NODE];
+            for (size_t j = 0; j < NB_HIDDEN_NODE; j++) {
                 double error = 0.0f;
-                for (size_t k = 0; k < output; k++) {
-                    error += DeltaOuput[k] * outPutWeight[j][k];
+                for (size_t k = 0; k < NB_OUTPUT; k++) {
+                    error += DeltaOutput[k] * outputWeight[j][k];
                 }
                 deltaHidden[j] = error * dsigmoid(hiddenLayer[j]);
             }
 
-            // Mise à jour des poids et des biais de la couche de sortie
-            for (size_t j = 0; j < output; j++) {
-                outputLayerBias[j] += DeltaOuput[j] * lr;
-                for (size_t k = 0; k < nbHiddenNode; k++) {
-                    outPutWeight[k][j] += hiddenLayer[k] * DeltaOuput[j] * lr;
+            for (size_t j = 0; j < NB_OUTPUT; j++) {
+                outputLayerBias[j] += DeltaOutput[j] * lr;
+                for (size_t k = 0; k < NB_HIDDEN_NODE; k++) {
+                    outputWeight[k][j] += hiddenLayer[k] * DeltaOutput[j] * lr;
                 }
             }
 
-            // Mise à jour des poids et des biais de la couche cachée
-            for (size_t j = 0; j < nbHiddenNode; j++) {
+            for (size_t j = 0; j < NB_HIDDEN_NODE; j++) {
                 hiddenLayerBias[j] += deltaHidden[j] * lr;
-                for (size_t k = 0; k < nbInput; k++) {
+                for (size_t k = 0; k < NB_INPUT; k++) {
                     hiddenWeight[k][j] += training_input[i][k] * deltaHidden[j] * lr;
                 }
             }
@@ -190,15 +164,12 @@ int process_xor(void) {
 
     double input1, input2;
     printf("Enter two values (0 or 1): ");
-    scanf("%lf %lf", &input1, &input2);
+    if (scanf("%lf %lf", &input1, &input2) == 1) errx(EXIT_FAILURE, "Error due to scan f");
     
-    double predictedOutput[output];
-    predict(input1, input2, hiddenWeight, outPutWeight, hiddenLayerBias, outputLayerBias, predictedOutput);
+    double predictedOutput[NB_OUTPUT];
+    predict(input1, input2, hiddenWeight, outputWeight, hiddenLayerBias, outputLayerBias, predictedOutput);
     if (predictedOutput[0]<0.1) printf("Predicted output: 0\n");
     else printf("Predicted output: 1\n");
     
-    
-    
-
     return 0;
 }

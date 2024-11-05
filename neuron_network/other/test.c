@@ -7,12 +7,12 @@
 
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
-#define HIDDEN_SIZE 30       
-#define OUTPUT_SIZE 52       
-#define BATCH_SIZE 52        
-#define LEARNING_RATE 0.01 
-#define NBTEST 21    
-#define EPOCHS 90000
+#define HIDDEN_SIZE 35       
+#define OUTPUT_SIZE 26       
+#define BATCH_SIZE 26        
+#define LEARNING_RATE 0.1 
+#define NBTEST 43    
+#define EPOCHS 100000
   
 
 
@@ -213,7 +213,7 @@ void save_weights(double hiddenoutput[HIDDEN_SIZE][OUTPUT_SIZE],
                   double hiddenLayerBias[HIDDEN_SIZE], 
                   double outputLayerBias[OUTPUT_SIZE]) {
     
-    FILE *file = fopen("save_value/weight_hidden_output.txt", "w");
+    FILE *file = fopen("../save_value/weight_hidden_output.txt", "w");
     if (file == NULL) {
         perror("Error opening file for hidden-output weights");
         return;
@@ -226,7 +226,7 @@ void save_weights(double hiddenoutput[HIDDEN_SIZE][OUTPUT_SIZE],
     }
     fclose(file); 
 
-    FILE *file2 = fopen("save_value/weight_hidden_input.txt", "w");  
+    FILE *file2 = fopen("../save_value/weight_hidden_input.txt", "w");  
     if (file2 == NULL) {
         perror("Error opening file for hidden-input weights");
         return;
@@ -239,7 +239,7 @@ void save_weights(double hiddenoutput[HIDDEN_SIZE][OUTPUT_SIZE],
     }
     fclose(file2);  
 
-    FILE *file3 = fopen("save_value/hiddenLayerBias.txt", "w");  
+    FILE *file3 = fopen("../save_value/hiddenLayerBias.txt", "w");  
     if (file3 == NULL) {
         perror("Error opening file for hidden layer bias");
         return;
@@ -250,7 +250,7 @@ void save_weights(double hiddenoutput[HIDDEN_SIZE][OUTPUT_SIZE],
     fprintf(file3, "\n");  
     fclose(file3);  
 
-    FILE *file4 = fopen("save_value/OutputLayerBias.txt", "w"); 
+    FILE *file4 = fopen("../save_value/OutputLayerBias.txt", "w"); 
     if (file4 == NULL) {
         perror("Error opening file for output layer bias");
         return;
@@ -323,7 +323,7 @@ int main(int argc,char** argv) {
     for (int i = 0; i < NBTEST+1; i++) {
         char index[3]; // Assurez-vous que la taille est suffisante pour le numéro d'index
         snprintf(index, sizeof(index), "%d", i + 1); 
-        remplir_chemins_images(images[i], "images_test/dataset", index);
+        remplir_chemins_images(images[i], "../images_test/dataset", index);
     }
 
     for (int i = 0; i < NBTEST; i++) { // Remplir uniquement les 10 premiers cas
@@ -368,6 +368,54 @@ int main(int argc,char** argv) {
                                 weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
         }
     }
+
+    char* res[BATCH_SIZE];
+    remplir_chemins_images(res,"../images_test/dataset","40");
+
+    int pourc=0;
+    for (size_t i = 0; i < OUTPUT_SIZE; i++)
+    {
+            double new_input[INPUT_SIZE];
+            
+            double* resultats = traitements_test(res[i]);
+            for (size_t j = 0; j < INPUT_SIZE; j++) 
+            {
+                new_input[j] = resultats[j];
+            }               
+            double prediction[OUTPUT_SIZE];
+            predict(new_input, weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, prediction);
+            char lettre[52]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X'
+            ,'Y','Z','a','b','c','d','e','f','g','h','i','j','q','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+            
+        
+        // Afficher les résultats de la prédiction
+        
+        int j=0;
+        double max=prediction[0];
+        for (size_t a = 0; a < OUTPUT_SIZE; a++)
+        {
+            if (max<prediction[a])
+            {
+                max=prediction[a];
+                j=a;
+            }
+        }
+        for (int i = 0; i < OUTPUT_SIZE; i++) 
+        {
+            //printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
+        }
+        printf("La lettre %c = %c\n",lettre[i],lettre[j]);
+        if (lettre[i]==lettre[j]) pourc++;
+        
+    }
+    printf("Le pourcentage de réussite est de %d",pourc*100/OUTPUT_SIZE);
+
+
+    
+
+
+
+    
 
     
 
