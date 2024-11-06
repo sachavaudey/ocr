@@ -18,6 +18,6 @@ jobs:
 
     steps:
     - name: c_action
-      uses: Napoleon280/c_actions@test10
+      uses: Napoleon280/c_actions@test12
       with:
         username: "test"
