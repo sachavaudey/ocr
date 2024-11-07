@@ -5,12 +5,13 @@
 
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
-#define HIDDEN_SIZE 65       
+#define HIDDEN_SIZE 80       
 #define OUTPUT_SIZE 52       
 #define BATCH_SIZE 52        
 #define LEARNING_RATE 0.1 
-#define NBTEST 45    
-#define EPOCHS 3000
+#define NBTEST 70    
+#define EPOCHS 1000
+//Au moins 1h
 
 // Fonction d'activation
 double sigmoid(double x) { return 1 / (1 + exp(-x)); }
@@ -319,7 +320,7 @@ int main(int argc, char** argv) {
     for (int i = 0; i < NBTEST; i++) {
         images[i] = malloc(BATCH_SIZE * sizeof(char*));
         for (int j = 0; j < BATCH_SIZE; j++) {
-            images[i][j] = malloc(256 * sizeof(char)); // Assurez-vous que la taille est suffisante pour les chemins
+            images[i][j] = malloc(256 * sizeof(char)); 
         }
     }
 
@@ -356,7 +357,7 @@ int main(int argc, char** argv) {
             batch_output[i] = malloc(OUTPUT_SIZE * sizeof(double));
         }
 
-        if (epoch % 100 == 0) printf("%d\n", EPOCHS - epoch);
+        if (epoch % 10 == 0) printf("%d\n", EPOCHS - epoch);
 
         for (int i = 0; i < NBTEST; i++) {
             forward_batch(batch_inputs[i], weights_input_hidden, hidden_bias, batch_hidden,
@@ -373,6 +374,9 @@ int main(int argc, char** argv) {
         free(batch_hidden);
         free(batch_output);
     }
+
+
+
 
     char** res = malloc(BATCH_SIZE * sizeof(char*));
     for (int i = 0; i < BATCH_SIZE; i++) {
