@@ -73,6 +73,49 @@ void nm_filter(int width, int height, float **gradient_magnitude, float **gradie
     }
 }
 
+void double_threshold_and_hysteresis(int width, int height, float **edges)
+{
+    for (int y = 1; y < height - 1; y++)
+    {
+        for (int x = 1; x < width - 1; x++)
+        {
+            if (edges[y][x] >= HIGH_THRESHOLD)
+            {
+                edges[y][x] = EDGE_STRONG;
+            }
+            else if (edges[y][x] >= LOW_THRESHOLD)
+            {
+                edges[y][x] = EDGE_WEAK;
+            }
+            else
+            {
+                edges[y][x] = EDGE_NONE;
+            }
+        }
+    }
+
+    for (int y = 1; y < height - 1; y++)
+    {
+        for (int x = 1; x < width - 1; x++)
+        {
+            if (edges[y][x] == EDGE_WEAK)
+            {
+                if (edges[y - 1][x - 1] == EDGE_STRONG || edges[y - 1][x] == EDGE_STRONG || edges[y - 1][x + 1] == EDGE_STRONG ||
+                    edges[y][x - 1] == EDGE_STRONG || edges[y][x + 1] == EDGE_STRONG ||
+                    edges[y + 1][x - 1] == EDGE_STRONG || edges[y + 1][x] == EDGE_STRONG || edges[y + 1][x + 1] == EDGE_STRONG)
+                {
+                    edges[y][x] = EDGE_STRONG;
+                }
+                else
+                {
+                    edges[y][x] = EDGE_NONE;
+                }
+            }
+        }
+    }
+}
+
+
 void dilate_filter(unsigned char **input, unsigned char **output, int width, int height)
 {
     for (int y = 0; y < height; y++)
@@ -131,6 +174,7 @@ void hysteresis_filter(float **edges, int width, int height, unsigned char **edg
     }
 }
 
+
 void process(SDL_Surface *surface)
 {
     int width = surface->w;
@@ -169,6 +213,7 @@ void process(SDL_Surface *surface)
     }
 
     nm_filter(width, height, gradient_magnitude, gradient_direction, edges);
+    double_threshold_and_hysteresis(width, height, edges);
 
     unsigned char **edge_map = (unsigned char **)malloc(height * sizeof(unsigned char *));
     for (int i = 0; i < height; i++)

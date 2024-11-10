@@ -71,6 +71,7 @@ void flood_fill(unsigned char **edge_map, int **label_map, int width, int height
     free(stack);
 }
 
+
 void draw_rectangle(SDL_Surface *surface, int min_x, int min_y, int max_x, int max_y)
 {
     Uint32 pixel_color = SDL_MapRGB(surface->format, RECTANGLE_COLOR_R, RECTANGLE_COLOR_G, RECTANGLE_COLOR_B);

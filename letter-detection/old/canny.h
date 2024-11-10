@@ -11,11 +11,16 @@
 #include "tools.h"
 
 
+
+
 void sobel_filter(unsigned char **image, int width, int height, float **gradient_magnitude, float **gradient_direction);
 void nm_filter(int width, int height, float **gradient_magnitude, float **gradient_direction, float **edges);
+void double_threshold_and_hysteresis(int width, int height, float **edges);
 void dilate_filter(unsigned char **input, unsigned char **output, int width, int height);
 void hysteresis_filter(float **edges, int width, int height, unsigned char **edge_map);
+
 void process(SDL_Surface *surface);
+
 
 
 #endif
