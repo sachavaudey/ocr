@@ -1,5 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 
 int is_green(Uint32 pixel, SDL_PixelFormat *format) {
@@ -70,7 +72,7 @@ SDL_Surface* crop_image(SDL_Surface *image) {
 }
 
 
-// Fonction principale de traitement d'image
+
 void process_image(const char *input_path, const char *output_path) {
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
@@ -84,19 +86,18 @@ void process_image(const char *input_path, const char *output_path) {
     SDL_LockSurface(image);
 
     SDL_PixelFormat *format = image->format;
-    Uint32 *pixels = (Uint32 *)image->pixels;
+    //Uint32 *pixels = (Uint32 *)image->pixels;
 
-    // Recadrer l'image pour maximiser la taille de la lettre avant modification
     
 
     SDL_Surface *cropped = crop_image(image);
-    // Parcourir chaque pixel pour enlever le vert et inverser noir/blanc
+
     Uint32 *cropped_pixels = (Uint32 *)cropped->pixels;
     for (int y = 0; y < cropped->h; y++) {
         for (int x = 0; x < cropped->w; x++) {
             Uint32 *pixel = cropped_pixels + (y * cropped->w) + x;
             if (is_green(*pixel, format)) {
-                *pixel = SDL_MapRGB(format, 255, 255, 255);  // Transparence
+                *pixel = SDL_MapRGB(format, 255, 255, 255); 
             } else {
                 *pixel = invert_colors(*pixel, format);
             }
@@ -106,7 +107,6 @@ void process_image(const char *input_path, const char *output_path) {
 
     SDL_UnlockSurface(image);
 
-    // Enregistrer l'image recadrée et transformée
     IMG_SavePNG(cropped, output_path);
 
     SDL_FreeSurface(image);
@@ -115,23 +115,27 @@ void process_image(const char *input_path, const char *output_path) {
     SDL_Quit();
 }
 
-int main() {
-    process_image("../results-2/1.0.png", "output/1.0.png");
-    /*process_image("../results-2/1.0.png", "../results-2/1.0.png");
-    /*process_image("../results-2/5.0.png", "output/4_2.png");
-    process_image("../results-2/6.0.png", "output/4_3.png");
-    process_image("../results-2/7.0.png", "output/4_4.png");
-    process_image("../results-2/5.0.png", "output/4_4.png");*/
-    process_image("../results-2/2.0.png", "output/2.0.png");
-    process_image("../results-2/3.0.png", "output/3.0.png");
-    process_image("../results-2/4.0.png", "output/4.0.png");
-    process_image("../results-2/5.0.png", "output/5.0.png");
-    process_image("../results-2/6.0.png", "output/6.0.png");
-    process_image("../results-2/7.0.png", "output/7.0.png");
-    process_image("../results-2/8.0.png", "output/8.0.png");
-    process_image("../results-2/9.0.png", "output/9.0.png");
-    
-    //process_image("1_1.png", "output/1_1_processed.png");
+int process_transforme(int b){
+    char** res=malloc((b-1)*sizeof(char*));
+    char** out=malloc((b-1)*sizeof(char*));
 
+    for (int i = 1; i < b; i++)
+    {
+        res[i-1]=malloc(100*sizeof(char));
+        out[i-1]=malloc(100*sizeof(char));
+        snprintf(res[i-1],100,"../results-2/%d.0.png",i);
+        snprintf(out[i-1],100,"output/%d.0.png",i);
+    }
+    printf("%s",res[0]);
+    //process_image(res[0],out[0]);
+    //process_image("../results-2/1.0.png", "output/1.0.png");
+    for (int i = 0; i < b-1; i++)
+    {
+        process_image(res[i],out[i]);
+    }
     return 0;
+    
+    
 }
+
+

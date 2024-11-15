@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "traitement_image.c"
+#include "img_traitement.c"
+
 
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
@@ -10,7 +11,7 @@
 #define BATCH_SIZE 26        
 #define LEARNING_RATE 0.1 
 #define NBTEST 70    
-#define EPOCHS 2000
+#define EPOCHS 8000
 //Au moins 1h
 
 // Fonction d'activation
@@ -192,15 +193,7 @@ void remplirTestAvecImages_black(double** test, char** images) {
     }
 }
 
-void remplirTestAvecImages(double** test, char** images, size_t batch_size, size_t input_size) {
-    for (size_t i = 0; i < BATCH_SIZE; i++) {
-        double* resultats = traitements(images[i]);
-        for (size_t j = 0; j < INPUT_SIZE; j++) {
-            test[i][j] = resultats[j];
-        }
-        free(resultats);
-    }
-}
+
 
 void remplir_chemins_images(char** images, const char* prefixe, const char* suffixe) {
     char* lettres_min[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
@@ -281,8 +274,9 @@ void save_weights(double** hiddenoutput, double** outPutWeight, double* hiddenLa
     fclose(file4);
 }
 
-int main(int argc, char** argv) {
-    // Initialisation des poids et des biais (allocation dynamique)
+int main() {
+    
+    
     double** weights_input_hidden = malloc(INPUT_SIZE * sizeof(double*));
     for (int i = 0; i < INPUT_SIZE; i++) {
         weights_input_hidden[i] = malloc(HIDDEN_SIZE * sizeof(double));
@@ -430,7 +424,7 @@ char* res2[4];
             printf("%s\n",res2[c-1]);
         }
     }
-    //res[0]="../images_test/dataset/B/B1.png";
+    
     
     int pour=0;
     for (size_t i = 0; i < 4; i++)
@@ -471,7 +465,7 @@ char* res2[4];
         if (lettre[i]==lettre[j]) pour++;
         
     }
-    printf("Le pourcentage de réussite est de %d",pourc*100/52);
+    printf("Le pourcentage de réussite est de %d",pour*100/52);
 
 
     for (int i = 0; i < BATCH_SIZE; i++) {

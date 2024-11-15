@@ -5,13 +5,13 @@ CC = gcc
 
 # Compiler flags
 CFLAGS = -Wall -Wextra -O2 -I/opt/homebrew/include
-LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lm
+LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lm -lSDL2_image
 
 # Target executable name
-TARGET = test
+TARGET = main
 
 # Source files
-SRC = test.c traitement_image.c te.c
+SRC = predict.c 
 
 # Build target
 all: $(TARGET)
