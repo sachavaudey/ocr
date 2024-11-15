@@ -1,52 +1,44 @@
-#include "letterdetection.h"
+#include "../include/letterdetection.h"
 
-int lalala(char* filepath){
+int process_letterdetection(char* filepath) {
     SDL_Surface *surface = IMG_Load(filepath);
     if (!surface) {
-        fprintf(stderr, "Erreur lors du chargement de l'image : %s\n", IMG_GetError());
-        return EXIT_FAILURE;
+        errx(EXIT_FAILURE, "Error during the image load!");
     }
 
-    iImage *img = create_image(surface->w, surface->h);
+    custIMG *img = create_image(surface->w, surface->h);
     if (!img) {
-        fprintf(stderr, "Erreur lors de la création de iImage\n");
-        SDL_FreeSurface(surface);
-        return EXIT_FAILURE;
+        errx(EXIT_FAILURE, "Memory allocation failed for img!");
     }
-
-    Uint32 *pixels = (Uint32 *)surface->pixels;
-    for (unsigned int y = 0; y < img->height; y++) {
-        for (unsigned int x = 0; x < img->width; x++) {
-            Uint32 pixel = pixels[y * img->width + x];
-            Uint8 r, g, b;
-            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-            img->pixels[y][x].r = r;
-            img->pixels[y][x].g = g;
-            img->pixels[y][x].b = b;
-        }
-    }
-
-    apply_canny(img);
 
     for (unsigned int y = 0; y < img->height; y++) {
         for (unsigned int x = 0; x < img->width; x++) {
-            Uint8 r = img->pixels[y][x].r;
-            Uint8 g = img->pixels[y][x].g;
-            Uint8 b = img->pixels[y][x].b;
-            Uint32 pixel = SDL_MapRGB(surface->format, r, g, b);
-            pixels[y * img->width + x] = pixel;
+            Uint32 pixel = ((Uint32*)surface->pixels)[y * surface->w + x];
+            SDL_GetRGB(pixel, surface->format, &img->pixels[y][x].r, &img->pixels[y][x].g, &img->pixels[y][x].b);
         }
     }
 
-    if (IMG_SavePNG(surface, "result.png") != 0) {
-        fprintf(stderr, "Erreur lors de l'enregistrement de l'image : %s\n", IMG_GetError());
-        free_image(img);
-        SDL_FreeSurface(surface);
-        return EXIT_FAILURE;
+    process(img);
+
+    SDL_Surface *result_surface = SDL_CreateRGBSurfaceWithFormat(0, img->width, img->height, 32, SDL_PIXELFORMAT_RGBA32);
+    if (!result_surface) {
+        errx(EXIT_FAILURE, "Error creating result surface!");
+    }
+
+    for (unsigned int y = 0; y < img->height; y++) {
+        for (unsigned int x = 0; x < img->width; x++) {
+            Uint32 pixel = SDL_MapRGB(result_surface->format, img->pixels[y][x].r, img->pixels[y][x].g, img->pixels[y][x].b);
+            ((Uint32*)result_surface->pixels)[y * result_surface->w + x] = pixel;
+        }
+    }
+
+    if (IMG_SavePNG(result_surface, "result.png") != 0) {
+        errx(EXIT_FAILURE, "Error saving result image!");
     }
 
     free_image(img);
     SDL_FreeSurface(surface);
+    SDL_FreeSurface(result_surface);
 
     return EXIT_SUCCESS;
 }

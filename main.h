@@ -6,7 +6,7 @@
 #include <err.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "letter-detection/projection.h"
+#include "letter-detection/include/letterdetection.h"
 #include "neuron_network/Xor.h"
 #include "image_pre_treatment/pre_treatment.h"
 

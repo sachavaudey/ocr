@@ -1,8 +1,7 @@
-#include "image.h"
-#include <stdlib.h>
+#include "../include/canny.h"
 
-iImage* create_image(unsigned int width, unsigned int height) {
-    iImage *img = (iImage*)malloc(sizeof(iImage));
+custIMG* create_image(unsigned int width, unsigned int height) {
+    custIMG *img = (custIMG*)malloc(sizeof(custIMG));
     img->width = width;
     img->height = height;
     img->pixels = (Pixel**)malloc(height * sizeof(Pixel*));
@@ -12,7 +11,7 @@ iImage* create_image(unsigned int width, unsigned int height) {
     return img;
 }
 
-void free_image(iImage *img) {
+void free_image(custIMG *img) {
     if (img) {
         for (unsigned int i = 0; i < img->height; i++) {
             free(img->pixels[i]);
