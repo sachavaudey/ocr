@@ -5,12 +5,12 @@
 
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
-#define HIDDEN_SIZE 80       
-#define OUTPUT_SIZE 52       
-#define BATCH_SIZE 52        
+#define HIDDEN_SIZE 60       
+#define OUTPUT_SIZE 26       
+#define BATCH_SIZE 26        
 #define LEARNING_RATE 0.1 
 #define NBTEST 70    
-#define EPOCHS 1000
+#define EPOCHS 2000
 //Au moins 1h
 
 // Fonction d'activation
@@ -414,6 +414,65 @@ int main(int argc, char** argv) {
         free(prediction);
     }
     printf("Le pourcentage de réussite est de %d\n", pourc * 100 / OUTPUT_SIZE);
+
+printf("\n\n\n\n");
+char* res2[4];
+    int c=0;
+    int t=1;
+    for (size_t i = 0; i < 2; i++)
+    {
+        for (size_t j = 0; j < 2; j++)
+        {
+            res2[c]=malloc(100*sizeof(char));
+            //snprintf(res[c++], FILENAME_SIZE,"../results/%d_%d.png",i,j);
+            //snprintf(res[c++], FILENAME_SIZE,"output/%d_%d.png",i,j);
+            snprintf(res2[c++], FILENAME_SIZE,"output/4_%d.png",t++);
+            printf("%s\n",res2[c-1]);
+        }
+    }
+    //res[0]="../images_test/dataset/B/B1.png";
+    
+    int pour=0;
+    for (size_t i = 0; i < 4; i++)
+    {
+            double new_input[INPUT_SIZE];
+            
+            double* resultats = traitements_test(res2[i]);
+            for (size_t j = 0; j < INPUT_SIZE; j++) 
+            {
+                new_input[j] = resultats[j];
+            }               
+            double prediction[4];
+            predict(new_input, weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, prediction);
+            char lettre[52]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X'
+            ,'Y','Z','a','b','c','d','e','f','g','h','i','j','q','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+            
+        
+        // Afficher les résultats de la prédiction
+        
+        int j=0;
+        double max=prediction[0];
+        for (size_t a = 0; a < OUTPUT_SIZE; a++)
+        {
+            if (max<prediction[a])
+            {
+                max=prediction[a];
+                j=a;
+            }
+        }
+        for (int i = 0; i < OUTPUT_SIZE; i++) 
+        {
+            printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
+            
+        }
+        //printf("La lettre %c = %c\n",lettre[i],lettre[j]);
+        printf("La lettre %c\n",lettre[j]);
+        printf("\n\n");
+        if (lettre[i]==lettre[j]) pour++;
+        
+    }
+    printf("Le pourcentage de réussite est de %d",pourc*100/52);
+
 
     for (int i = 0; i < BATCH_SIZE; i++) {
         free(res[i]);

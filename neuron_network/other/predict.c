@@ -1,16 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
 #include "traitement_image.c"
+//#include "predict.h"
+
+
+//create ./o ou compile 
+//clang $(pkg-config --cflags --libs sdl2 SDL2_image) -g -o t predict.c && clear && ./t
+
+
 
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
-#define HIDDEN_SIZE 80       
-#define OUTPUT_SIZE 52       
-#define BATCH_SIZE 52        
+#define HIDDEN_SIZE 60       
+#define OUTPUT_SIZE 26       
+#define BATCH_SIZE 26        
 #define LEARNING_RATE 0.1 
-#define NBTEST 45    
+#define NBTEST 70    
 #define EPOCHS 10000
 
 
@@ -219,6 +225,45 @@ void read_grid(char* res[4])
     
 }
 
+
+int* search_size(char* filename,int* res)
+{
+    //int* res=malloc(2*sizeof(int));
+    int c=0;
+    int r=0;
+    while (1){
+        char* var=malloc(FILENAME_SIZE*sizeof(char));
+        snprintf(var,FILENAME_SIZE,"../results-2/0.%d.png",c);   
+        FILE *file = fopen(var, "r");
+        if (file==NULL) {
+            res[0]=c;
+            break;}
+        fclose(file);
+        c++;
+    } 
+
+     c=0;
+     r=0;
+    while (1){
+        char* var=malloc(FILENAME_SIZE*sizeof(char));
+        snprintf(var,FILENAME_SIZE,"../results-2/%d.0.png",c);   
+        FILE *file = fopen(var, "r");
+        if (file==NULL) 
+        {
+            res[1]=c;
+            break;
+        }
+        fclose(file);
+        c++;
+    } 
+    printf("%d,%d",res[0],res[1]);
+    return res;
+
+    
+}
+
+
+
 void create_grid(char* tab,int a,int b)
 {
     FILE *file = fopen("../solver/grid", "w");
@@ -245,13 +290,17 @@ void create_grid(char* tab,int a,int b)
 
 int main()
 {
-    load_hidden_bias("../save_value_92/hiddenLayerBias.txt");
-    load_output_bias("../save_value_92/OutputLayerBias.txt");
-    load_weight_hidden_output("../save_value_92/weight_hidden_output.txt");
-    load_weight_hidden_input("../save_value_92/weight_hidden_input.txt");
-    //printf("%f",hidden_bias[HIDDEN_SIZE-1]);
+    load_hidden_bias("../save_value/hiddenLayerBias.txt");
+    load_output_bias("../save_value/OutputLayerBias.txt");
+    load_weight_hidden_output("../save_value/weight_hidden_output.txt");
+    load_weight_hidden_input("../save_value/weight_hidden_input.txt");
     
-    char* res[BATCH_SIZE];
+    int* size=malloc(2*sizeof(int));
+    search_size("../results/",size);
+
+    
+    
+    /*char* res[BATCH_SIZE];
     remplir_chemins_images(res,"../images_test/dataset","40");
     char* r=malloc(52*sizeof(char));
     int pourc=0;
@@ -292,33 +341,44 @@ int main()
         if (lettre[i]==lettre[j]) pourc++;
         
     }
-    create_grid(r,13,4);
-    printf("Le pourcentage de réussite est de %d",pourc*100/52);
-
+    
+    //create_grid(r,13,2);
+    
+    create_grid(r,size[0],size[1]);
+    
+    
+    //printf("%s,%s",res[0],res[1]);
+    //printf("%d\n",search_size("../results/"));
+    printf("Le pourcentage de réussite est de %d\n",pourc*100/OUTPUT_SIZE);*/
+    
     
 
     
 
 
-
-    /*char* res[4];
+    
+    char* res[10];
     int c=0;
-    for (size_t i = 0; i < 2; i++)
+    int t=1;
+    //for (size_t i = 0; i < 2; i++)
     {
-        for (size_t j = 0; j < 2; j++)
+        for (size_t j = 0; j < 10; j++)
         {
             res[c]=malloc(100*sizeof(char));
-            snprintf(res[c++], FILENAME_SIZE,"../results/%d_%d.png",i,j);
+            //snprintf(res[c++], FILENAME_SIZE,"../results/%d_%d.png",i,j);
+            //snprintf(res[c++], FILENAME_SIZE,"output/%d_%d.png",i,j);
+            snprintf(res[c++], FILENAME_SIZE,"output/%d.0.png",t++);
             printf("%s\n",res[c-1]);
         }
     }
-
+    //res[0]="../images_test/dataset/B/B1.png";
+    
     int pourc=0;
-    for (size_t i = 0; i < 4; i++)
+    for (size_t i = 0; i < 10; i++)
     {
             double new_input[INPUT_SIZE];
             
-            double* resultats = traitements_with_vert(res[i]);
+            double* resultats = traitements_test(res[i]);
             for (size_t j = 0; j < INPUT_SIZE; j++) 
             {
                 new_input[j] = resultats[j];
@@ -343,15 +403,16 @@ int main()
         }
         for (int i = 0; i < OUTPUT_SIZE; i++) 
         {
-            //printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
+            printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
             
         }
-        printf("La lettre %c = %c\n",lettre[i],lettre[j]);
+        //printf("La lettre %c = %c\n",lettre[i],lettre[j]);
+        printf("La lettre %c\n",lettre[j]);
         printf("\n\n");
         if (lettre[i]==lettre[j]) pourc++;
         
     }
-    printf("Le pourcentage de réussite est de %d",pourc*100/52);*/
+    printf("Le pourcentage de réussite est de %d",pourc*100/52);
 
 
     

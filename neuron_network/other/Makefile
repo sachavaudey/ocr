@@ -11,7 +11,7 @@ LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lm
 TARGET = test
 
 # Source files
-SRC = test.c traitement_image.c
+SRC = test.c traitement_image.c te.c
 
 # Build target
 all: $(TARGET)
