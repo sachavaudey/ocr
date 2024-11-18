@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
 		PRT_AverageDenoisingBlackWhite(surface);
 		PRT_SimpleDenoising(surface);
 		PRT_xy_denoising(surface);
+		PRT_AverageDenoisingBlackWhite(surface);
 		printf("noised reduction\n");
 	}
 

@@ -128,7 +128,7 @@ void PRT_AverageDenoisingBlackWhite(SDL_Surface *surface)
 	int width = surface->w, height = surface->h;
 	
 	Uint8* thresholdArr = RgbAverageSurface(surface);
-	float coeff = 1.5;
+	float coeff = 1;
 	Uint8 threshold = (thresholdArr[0] * coeff);
 
 	free(thresholdArr);
