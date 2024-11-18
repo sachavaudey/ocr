@@ -5,6 +5,10 @@
 #include <SDL2/SDL_image.h>
 #include <stdlib.h>
 #include <err.h>
+#include <sys/time.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #include "../tools/tools.h"
 #include "../../Common/ocr.h"

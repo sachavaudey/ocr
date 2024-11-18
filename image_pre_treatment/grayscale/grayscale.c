@@ -22,7 +22,7 @@ void PRT_Grayscaling(SDL_Surface *surface)
 	Uint32* new_pixels = malloc(pixelCount * sizeof(Uint32));
 
 	if (LOG_LEVEL)
-		printf("---------------\nStarting grayscaling...\n");
+		printf("%s\nStarting grayscaling...\n", LOG_SEPARATOR);
 
     Uint32 *pixels = surface->pixels; 
     Uint8 r, g, b, gray;
@@ -45,5 +45,5 @@ void PRT_Grayscaling(SDL_Surface *surface)
     SDL_UnlockSurface(surface);
     
 	if (LOG_LEVEL)
-		printf("Image successfully grayscaled !\n---------------\n");
+		printf("Image successfully grayscaled !\n%s\n", LOG_SEPARATOR);
 }
