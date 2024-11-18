@@ -6,12 +6,11 @@
 #include <err.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "letter-detection/letterdetection.h"
+#include "letter-detection/include/letterdetection.h"
 #include "neuron_network/Xor.h"
 #include "image_pre_treatment/pre_treatment.h"
 
 SDL_Surface* load_surface(const char* filepath);
-int process_letter_detection(SDL_Surface *surface);
 int process_xor();
 int run_pretreatment(SDL_Surface *surface);
 int run_letterdetection();
