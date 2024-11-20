@@ -20,4 +20,4 @@ jobs:
     - name: c_action
       uses: Napoleon280/c_actions@test19
       with :
-        tests_token : ${{ secrets.TOKEN }}
+        token : ${{ secrets.token }}
