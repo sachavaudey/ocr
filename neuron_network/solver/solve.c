@@ -306,6 +306,7 @@ int process_solver(char* filename, char* word) {
 
 int main(int argc, char* argv[]){
     (void)argc;
+    
     char** grid=malloc(1*sizeof(char*));
     grid[0]=malloc(4*sizeof(char));
     sprintf(grid[0],"grid");
