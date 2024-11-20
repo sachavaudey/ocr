@@ -31,7 +31,8 @@
  *	@return					: void
  *
  */ 
-void Patterns_ReplaceLosange(SDL_Surface* surface, long index_to_check, double thresold)
+void Patterns_ReplaceLosange(SDL_Surface* surface,
+		long index_to_check, double thresold)
 {
 	long W = surface->w;
 	Uint32* pixels = surface->pixels;
@@ -131,10 +132,14 @@ void Patterns_Row5(SDL_Surface* surface, long index_to_check, double thresold)
 	if ((5 - diff)/5 >= thresold)
 	{
 		pixels[index_to_check] = SDL_MapRGB(surface->format, 255, 255, 255);
-		pixels[index_to_check+1*W] = SDL_MapRGB(surface->format, 255, 255, 255);
-		pixels[index_to_check+2*W] = SDL_MapRGB(surface->format, 255, 255, 255);
-		pixels[index_to_check+3*W] = SDL_MapRGB(surface->format, 255, 255, 255);
-		pixels[index_to_check+4*W] = SDL_MapRGB(surface->format, 255, 255, 255);
+		pixels[index_to_check+1*W] = SDL_MapRGB(surface->format,
+				255, 255, 255);
+		pixels[index_to_check+2*W] = SDL_MapRGB(surface->format,
+				255, 255, 255);
+		pixels[index_to_check+3*W] = SDL_MapRGB(surface->format,
+				255, 255, 255);
+		pixels[index_to_check+4*W] = SDL_MapRGB(surface->format,
+				255, 255, 255);
 	}
 }
 
@@ -179,7 +184,8 @@ void Patterns_ReplaceBlob(SDL_Surface* surface, long index_to_check)
 	{
 		for (long row = -1; row < 3; row++)
 		{
-			pixels[index_to_check + line * W + row] = SDL_MapRGB(surface->format, 0, 0, 0);
+			pixels[index_to_check + line * W + row] =
+				SDL_MapRGB(surface->format, 0, 0, 0);
 		}
 	}
 }

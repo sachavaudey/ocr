@@ -20,7 +20,9 @@
 long Utils_IsOnSide(long pixel_index, long width, long height)
 {
 	long pixel_col = pixel_index%width;
-	return (pixel_col <= 1) || (pixel_index <= width) || (pixel_index >= (width * (height-1)));
+	return (pixel_col <= 1) ||
+		(pixel_index <= width) ||
+		(pixel_index >= (width * (height-1)));
 }
 
 
@@ -41,13 +43,19 @@ long Utils_IsOnSide(long pixel_index, long width, long height)
 long Utils_IsOnSideRange4(long pixel_index, long width, long height)
 {
 	long pixel_col = pixel_index%width;
-	return (pixel_col <= 3) || (pixel_col + 4 >= width) || (pixel_index <= width*4) || (pixel_index >= (width * (height-4)));
+	return (pixel_col <= 3) ||
+		(pixel_col + 4 >= width) ||
+		(pixel_index <= width*4) ||
+		(pixel_index >= (width * (height-4)));
 }
 
 //trash
 int OnSide5(long pixel, long width, long height)
 {
-	return (pixel%width <= 4) || (pixel%width >= width -5) || (pixel <= width*5) || (pixel >= (width * (height-5)));
+	return (pixel%width <= 4) ||
+		(pixel%width >= width -5) ||
+		(pixel <= width*5) ||
+		(pixel >= (width * (height-5)));
 }
 
 

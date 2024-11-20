@@ -4,7 +4,8 @@
 #include <stdlib.h>
 
 
-Uint8 xy_denoising_pixel(SDL_Surface* surface, unsigned long pixel_index, Uint8 threshold)
+Uint8 xy_denoising_pixel(SDL_Surface* surface,
+		unsigned long pixel_index,Uint8 threshold)
 {
 		/*pseudo code, appelle sur un pixel blanc:
 		 * pour index donne:
@@ -72,11 +73,13 @@ void PRT_xy_denoising(SDL_Surface* surface)
 		for(int row = 2; row < W - 2; row++)
 		{
 			int pixel_index = line * W + row;
-			SDL_GetRGB(pixels[pixel_index],surface->format, &color, &color, &color);
+			SDL_GetRGB(pixels[pixel_index],surface->format,
+					&color, &color, &color);
 			if (color == 255)
 			{
 				color = xy_denoising_pixel(surface, pixel_index, threshold);
-				new_pixels[pixel_index] = SDL_MapRGB(surface->format, color, color, color);
+				new_pixels[pixel_index] = SDL_MapRGB(surface->format,
+						color, color, color);
 			}
 
 		}
