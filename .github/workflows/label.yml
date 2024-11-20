@@ -18,6 +18,6 @@ jobs:
 
     steps:
     - name: c_action
-      uses: Napoleon280/c_actions@test18
+      uses: Napoleon280/c_actions@latest
       with :
         tests_token : ${{ secrets.TOKEN }}
