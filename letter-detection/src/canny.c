@@ -17,7 +17,6 @@
 #define ANGLE_POS_157_5  157.5
 
 #define RAD_TO_DEG (180.0 / PI)
-#define MIN_BOX_DIMENSION 5
 
 const int Gx[3][3] = SOBEL_GX;
 const int Gy[3][3] = SOBEL_GY;
@@ -216,16 +215,9 @@ void process(custIMG *img)
     int num_boxes;
     find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
 
-    Color green = {0, 255, 0};
-    for (int i = 0; i < num_boxes; i++)
-    {
-        int width = boxes[i].max_x - boxes[i].min_x;
-        int height = boxes[i].max_y - boxes[i].min_y;
-        if (width > MIN_BOX_DIMENSION && height > MIN_BOX_DIMENSION)
-        {
-            draw_rectangle(img, boxes[i].min_x, boxes[i].min_y, boxes[i].max_x, boxes[i].max_y, green, i);
-        }
-    }
+    int num_columns = column_number(boxes, num_boxes);
+
+    draw_rectangles(img, boxes, num_boxes, num_columns);
 
     for (unsigned int i = 0; i < img->height; i++)
     {

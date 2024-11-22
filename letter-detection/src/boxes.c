@@ -1,15 +1,52 @@
 #include "../include/boxes.h"
 
-#define MIN_RATIO   0.5
-#define MAX_RATIO   4.0
-#define MAX_WIDTH   100
-#define MAX_HEIGHT  100
-#define MIN_WIDTH   5
-#define MIN_HEIGHT  10
-#define MIN_SURFACE 50  
-#define MAX_SURFACE 1000
-#define MIN_WHITE_PROP 0.2
-#define MAX_WHITE_PROP 0.475
+#define MIN_RATIO       0.5
+#define MAX_RATIO       4.0
+#define MAX_WIDTH       100
+#define MAX_HEIGHT      100
+#define MIN_WIDTH       5
+#define MIN_HEIGHT      10
+#define MIN_SURFACE     50  
+#define MAX_SURFACE     1000
+#define MIN_WHITE_PROP  0.2
+#define MAX_WHITE_PROP  0.475
+#define X_BIAS          25
+
+/**
+ * This function calculate the number of column according the box givin in parameter
+ * @param boxes all the boxes detected in the image
+ * @param num_boxes the number of boxes given
+ * @return the number of column
+ */
+int column_number(BoundingBox *boxes, int num_boxes)
+{
+    int num_columns = 0;
+    int *column_max_x = (int *)malloc(num_boxes * sizeof(int));
+
+    for (int i = 0; i < num_boxes; i++)
+    {
+        int max_x = boxes[i].max_x;
+        int found = 0;
+
+        for (int j = 0; j < num_columns; j++)
+        {
+            if (abs(max_x - column_max_x[j]) <= X_BIAS)
+            {
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            column_max_x[num_columns] = max_x;
+            num_columns++;
+        }
+    }
+
+    free(column_max_x);
+    return num_columns;
+}
 
 /**
  * This function check if a fivne Bounding box have the correct proportion of white pixel in it
@@ -35,10 +72,7 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
 
     float proportion = (float)white_pixel_count / (float)total_pixels;
 
-    if (proportion < MIN_WHITE_PROP || proportion > MAX_WHITE_PROP){
-        printf("Incorrect white proportion %f\n", proportion);
-        return 0;
-    }
+    if (proportion < MIN_WHITE_PROP || proportion > MAX_WHITE_PROP) return 0;
        
     else
         return 1;
@@ -134,75 +168,98 @@ void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsig
  * @param i the number of rectangle
  * @return VOID
  */
-void draw_rectangle(custIMG *img, int min_x, int min_y, int max_x, int max_y, Color color, int i)
+void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_columns)
 {
-    for (int x = min_x; x <= max_x; x++)
+    Color green = {0, 255, 0};
+    int x = 0;
+    int y = 0;
+
+    for (int i = 0; i < num_boxes; i++)
     {
-        if (min_y >= 0 && (unsigned int)min_y < img->height)
+        int width = boxes[i].max_x - boxes[i].min_x;
+        int height = boxes[i].max_y - boxes[i].min_y;
+        if (width > MIN_WIDTH && height > MIN_HEIGHT)
         {
-            img->pixels[min_y][x].r = color.r;
-            img->pixels[min_y][x].g = color.g;
-            img->pixels[min_y][x].b = color.b;
-        }
-        if (max_y >= 0 && (unsigned int)max_y < img->height)
-        {
-            img->pixels[max_y][x].r = color.r;
-            img->pixels[max_y][x].g = color.g;
-            img->pixels[max_y][x].b = color.b;
+            int min_x = boxes[i].min_x;
+            int min_y = boxes[i].min_y;
+            int max_x = boxes[i].max_x;
+            int max_y = boxes[i].max_y;
+
+            for (int x_coord = min_x; x_coord <= max_x; x_coord++)
+            {
+                if (min_y >= 0 && (unsigned int)min_y < img->height)
+                {
+                    img->pixels[min_y][x_coord].r = green.r;
+                    img->pixels[min_y][x_coord].g = green.g;
+                    img->pixels[min_y][x_coord].b = green.b;
+                }
+                if (max_y >= 0 && (unsigned int)max_y < img->height)
+                {
+                    img->pixels[max_y][x_coord].r = green.r;
+                    img->pixels[max_y][x_coord].g = green.g;
+                    img->pixels[max_y][x_coord].b = green.b;
+                }
+            }
+
+            for (int y_coord = min_y; y_coord <= max_y; y_coord++)
+            {
+                if (min_x >= 0 && (unsigned int)min_x < img->width)
+                {
+                    img->pixels[y_coord][min_x].r = green.r;
+                    img->pixels[y_coord][min_x].g = green.g;
+                    img->pixels[y_coord][min_x].b = green.b;
+                }
+                if (max_x >= 0 && (unsigned int)max_x < img->width)
+                {
+                    img->pixels[y_coord][max_x].r = green.r;
+                    img->pixels[y_coord][max_x].g = green.g;
+                    img->pixels[y_coord][max_x].b = green.b;
+                }
+            }
+
+            int box_width = max_x - min_x + 1;
+            int box_height = max_y - min_y + 1;
+
+            custIMG *box_img = create_image(box_width, box_height);
+
+            for (int y_coord = 0; y_coord < box_height; y_coord++)
+                for (int x_coord = 0; x_coord < box_width; x_coord++)
+                    box_img->pixels[y_coord][x_coord] = img->pixels[min_y + y_coord][min_x + x_coord];
+
+            SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, box_width, box_height, 32, SDL_PIXELFORMAT_RGBA32);
+            if (!surface) errx(EXIT_FAILURE, "Error while surface creation!");
+
+            for (int y_coord = 0; y_coord < box_height; y_coord++)
+            {
+                for (int x_coord = 0; x_coord < box_width; x_coord++)
+                {
+                    Uint32 pixel = SDL_MapRGB(surface->format,
+                                              box_img->pixels[y_coord][x_coord].r,
+                                              box_img->pixels[y_coord][x_coord].g,
+                                              box_img->pixels[y_coord][x_coord].b);
+                    ((Uint32 *)surface->pixels)[y_coord * surface->w + x_coord] = pixel;
+                }
+            }
+
+            struct stat st = {0};
+            if (stat("results", &st) == -1) mkdir("results", 0700);
+
+            char filename[256];
+            sprintf(filename, "results/%d.%d.png", y, x);
+            if (IMG_SavePNG(surface, filename) != 0) errx(EXIT_FAILURE, "Error during the image saving!");
+
+            SDL_FreeSurface(surface);
+            free_image(box_img);
+
+            y++;
+            if (y == num_columns)
+            {
+                y = 0;
+                x++;
+            }
         }
     }
-
-    for (int y = min_y; y <= max_y; y++)
-    {
-        if (min_x >= 0 && (unsigned int)min_x < img->width)
-        {
-            img->pixels[y][min_x].r = color.r;
-            img->pixels[y][min_x].g = color.g;
-            img->pixels[y][min_x].b = color.b;
-        }
-        if (max_x >= 0 && (unsigned int)max_x < img->width)
-        {
-            img->pixels[y][max_x].r = color.r;
-            img->pixels[y][max_x].g = color.g;
-            img->pixels[y][max_x].b = color.b;
-        }
-    }
-
-    int box_width = max_x - min_x + 1;
-    int box_height = max_y - min_y + 1;
-
-    custIMG *box_img = create_image(box_width, box_height);
-
-    for (int y = 0; y < box_height; y++)
-        for (int x = 0; x < box_width; x++)
-            box_img->pixels[y][x] = img->pixels[min_y + y][min_x + x];
-
-    SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, box_width, box_height, 32, SDL_PIXELFORMAT_RGBA32);
-    if (!surface) errx(EXIT_FAILURE, "Error while surface creation!");
-
-    for (int y = 0; y < box_height; y++)
-    {
-        for (int x = 0; x < box_width; x++)
-        {
-            Uint32 pixel = SDL_MapRGB(surface->format,
-                                      box_img->pixels[y][x].r,
-                                      box_img->pixels[y][x].g,
-                                      box_img->pixels[y][x].b);
-            ((Uint32 *)surface->pixels)[y * surface->w + x] = pixel;
-        }
-    }
-
-    struct stat st = {0};
-    if (stat("results", &st) == -1) mkdir("results", 0700);
-
-    char filename[256];
-    sprintf(filename, "results/%d.png", i);
-    if (IMG_SavePNG(surface, filename) != 0) errx(EXIT_FAILURE, "Error during the image saving!");
-
-    SDL_FreeSurface(surface);
-    free_image(box_img);
 }
-
 
 /**
  * This function is the main function of boxes.c. It finds all the bounding boxes according to the different algorithms and filters implemented in this file.

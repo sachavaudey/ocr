@@ -24,10 +24,11 @@ typedef struct
     unsigned char b;
 } Color;
 
+int column_number(BoundingBox *boxes, int num_boxes);
 int check_white_pixel_proportion(custIMG *img, BoundingBox *box);
 int check_box(BoundingBox *box);
 void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsigned int y, unsigned int height, unsigned int width, int label, BoundingBox *box);
-void draw_rectangle(custIMG *img, int min_x, int min_y, int max_x, int max_y, Color color, int i);
+void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_columns);
 void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int height, unsigned int width, BoundingBox **boxes, int *num_boxes);
 
 #endif
