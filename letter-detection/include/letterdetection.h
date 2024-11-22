@@ -12,5 +12,6 @@
 
 
 int process_letterdetection(char* filepath);
+int main(int argc, char* argv[]);
 
 #endif

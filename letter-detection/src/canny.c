@@ -1,18 +1,29 @@
 #include "../include/canny.h"
 
 #define PI M_PI
+#define SOBEL_GX {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}}
+#define SOBEL_GY {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}}
+#define LOW_THRESH 20.0
+#define HIGH_THRESH 50.0
+#define AVG_DIVISOR 3.0
+
+#define ANGLE_NEG_22_5   -22.5
+#define ANGLE_POS_22_5    22.5
+#define ANGLE_NEG_67_5   -67.5
+#define ANGLE_POS_67_5    67.5
+#define ANGLE_NEG_112_5 -112.5
+#define ANGLE_POS_112_5  112.5
+#define ANGLE_NEG_157_5 -157.5
+#define ANGLE_POS_157_5  157.5
+
+#define RAD_TO_DEG (180.0 / PI)
+#define MIN_BOX_DIMENSION 5
+
+const int Gx[3][3] = SOBEL_GX;
+const int Gy[3][3] = SOBEL_GY;
 
 void sobel_filter(custIMG *img, float **gradient_magnitude, float **gradient_direction)
 {
-    int Gx[3][3] = {
-        {-1, 0, 1},
-        {-2, 0, 2},
-        {-1, 0, 1}};
-    int Gy[3][3] = {
-        {-1, -2, -1},
-        {0, 0, 0},
-        {1, 2, 1}};
-
     for (unsigned int y = 1; y < img->height - 1; y++)
     {
         for (unsigned int x = 1; x < img->width - 1; x++)
@@ -40,9 +51,9 @@ void sobel_filter(custIMG *img, float **gradient_magnitude, float **gradient_dir
             float grad_g = sqrt(gx_g * gx_g + gy_g * gy_g);
             float grad_b = sqrt(gx_b * gx_b + gy_b * gy_b);
 
-            gradient_magnitude[y][x] = (grad_r + grad_g + grad_b) / 3.0;
+            gradient_magnitude[y][x] = (grad_r + grad_g + grad_b) / AVG_DIVISOR;
 
-            gradient_direction[y][x] = atan2(gy_r + gy_g + gy_b, gx_r + gx_g + gx_b) * 180 / PI;
+            gradient_direction[y][x] = atan2(gy_r + gy_g + gy_b, gx_r + gx_g + gx_b) * RAD_TO_DEG;
         }
     }
 }
@@ -57,17 +68,17 @@ void nm_filter(custIMG *img, float **gradient_magnitude, float **gradient_direct
             float magnitude = gradient_magnitude[y][x];
             float mag1, mag2;
 
-            if ((direction >= -22.5 && direction <= 22.5) || (direction >= 157.5 || direction <= -157.5))
+            if ((direction >= ANGLE_NEG_22_5 && direction <= ANGLE_POS_22_5) || (direction >= ANGLE_POS_157_5 || direction <= ANGLE_NEG_157_5))
             {
                 mag1 = gradient_magnitude[y][x - 1];
                 mag2 = gradient_magnitude[y][x + 1];
             }
-            else if ((direction > 22.5 && direction <= 67.5) || (direction < -112.5 && direction >= -157.5))
+            else if ((direction > ANGLE_POS_22_5 && direction <= ANGLE_POS_67_5) || (direction < ANGLE_NEG_112_5 && direction >= ANGLE_NEG_157_5))
             {
                 mag1 = gradient_magnitude[y - 1][x + 1];
                 mag2 = gradient_magnitude[y + 1][x - 1];
             }
-            else if ((direction > 67.5 && direction <= 112.5) || (direction < -67.5 && direction >= -112.5))
+            else if ((direction > ANGLE_POS_67_5 && direction <= ANGLE_POS_112_5) || (direction < ANGLE_NEG_67_5 && direction >= ANGLE_NEG_112_5))
             {
                 mag1 = gradient_magnitude[y - 1][x];
                 mag2 = gradient_magnitude[y + 1][x];
@@ -192,9 +203,7 @@ void process(custIMG *img)
     {
         edge_map[i] = (unsigned char *)malloc(img->width * sizeof(unsigned char));
     }
-    float low_thresh = 20.0;
-    float high_thresh = 50.0;
-    hysteresis_filter(img, edges, low_thresh, high_thresh, edge_map);
+    hysteresis_filter(img, edges, LOW_THRESH, HIGH_THRESH, edge_map);
 
     unsigned char **dilated_edge_map = (unsigned char **)malloc(img->height * sizeof(unsigned char *));
     for (unsigned int i = 0; i < img->height; i++)
@@ -205,15 +214,14 @@ void process(custIMG *img)
 
     BoundingBox *boxes;
     int num_boxes;
-    find_bounding_boxes(dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
-
+    find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
 
     Color green = {0, 255, 0};
     for (int i = 0; i < num_boxes; i++)
     {
         int width = boxes[i].max_x - boxes[i].min_x;
         int height = boxes[i].max_y - boxes[i].min_y;
-        if (width > 5 && height > 5)
+        if (width > MIN_BOX_DIMENSION && height > MIN_BOX_DIMENSION)
         {
             draw_rectangle(img, boxes[i].min_x, boxes[i].min_y, boxes[i].max_x, boxes[i].max_y, green, i);
         }

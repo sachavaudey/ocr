@@ -1,14 +1,56 @@
 #include "../include/boxes.h"
 
-
-#define MIN_RATIO   0.2
-#define MAX_RATIO   5.0
+#define MIN_RATIO   0.5
+#define MAX_RATIO   4.0
 #define MAX_WIDTH   100
 #define MAX_HEIGHT  100
 #define MIN_WIDTH   5
-#define MIN_HEIGHT  5
+#define MIN_HEIGHT  10
+#define MIN_SURFACE 50  
+#define MAX_SURFACE 1000
+#define MIN_WHITE_PROP 0.2
+#define MAX_WHITE_PROP 0.475
 
-int check_box(BoundingBox *box){
+/**
+ * This function check if a fivne Bounding box have the correct proportion of white pixel in it
+ * @param img base img (to check white pixel)
+ * @param box Bounding box struct to check
+ * @return 0 if incorrect, 1 otherwise
+ */
+int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
+{
+    unsigned int white_pixel_count = 0;
+    unsigned int total_pixels = (box->max_x - box->min_x + 1) * (box->max_y - box->min_y + 1);
+
+    for (int y = box->min_y; y <= box->max_y; y++)
+    {
+        for (int x = box->min_x; x <= box->max_x; x++)
+        {
+            if (img->pixels[y][x].r == 255 && img->pixels[y][x].g == 255 && img->pixels[y][x].b == 255)
+            {
+                white_pixel_count++;
+            }
+        }
+    }
+
+    float proportion = (float)white_pixel_count / (float)total_pixels;
+
+    if (proportion < MIN_WHITE_PROP || proportion > MAX_WHITE_PROP){
+        printf("Incorrect white proportion %f\n", proportion);
+        return 0;
+    }
+       
+    else
+        return 1;
+}
+
+/**
+ * This function check if the size of the box respect some conditions
+ * @param box the bounding box to process
+ * @return 1 if incorrect, 0 otherwise
+ */
+int check_box(BoundingBox *box)
+{
     int height = box->max_y - box->min_y;
     int width = box->max_x - box->min_x;
 
@@ -17,9 +59,22 @@ int check_box(BoundingBox *box){
     if (ratio < MIN_RATIO || ratio > MAX_RATIO) return 0;
     else if (height > MAX_HEIGHT || height < MIN_HEIGHT) return 0;
     else if (width > MAX_WIDTH || width < MIN_WIDTH) return 0;
+    else if ((width * height < MIN_SURFACE) || (width * height > MAX_SURFACE)) return 0;
     return 1;
 }
 
+/**
+ * This function implement the flood fill algorithm
+ * @param edge_map, all the edge detected previously in the map
+ * @param label_map the label map to process correctly the function
+ * @param x the x-coordinate of the reference pixel
+ * @param y the y-coordinate of the reference pixel
+ * @param heigth the height of the image to process
+ * @param width the width of the image to process
+ * @param label the label given to the process pixel
+ * @param box the box where processs the algorithm
+ * @return VOID
+ */
 void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsigned int y, unsigned int height, unsigned int width, int label, BoundingBox *box)
 {
     typedef struct
@@ -62,12 +117,23 @@ void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsig
                         stack[stack_size++] = (Point){nx, ny};
                     }
                 }
-        }
+            }
     }
 
     free(stack);
 }
 
+/**
+ * This function draw a rectangle of the given color arround the given box. This function also save the box in specific file according to the number
+ * @param img the img to process
+ * @param min_x the min_x coordinate
+ * @param min_y the min_y coordinate
+ * @param max_x the max_x coordinate
+ * @param max_y the max_y coordinate
+ * @param color the color of the rectangle
+ * @param i the number of rectangle
+ * @return VOID
+ */
 void draw_rectangle(custIMG *img, int min_x, int min_y, int max_x, int max_y, Color color, int i)
 {
     for (int x = min_x; x <= max_x; x++)
@@ -108,7 +174,8 @@ void draw_rectangle(custIMG *img, int min_x, int min_y, int max_x, int max_y, Co
     custIMG *box_img = create_image(box_width, box_height);
 
     for (int y = 0; y < box_height; y++)
-        for (int x = 0; x < box_width; x++) box_img->pixels[y][x] = img->pixels[min_y + y][min_x + x];
+        for (int x = 0; x < box_width; x++)
+            box_img->pixels[y][x] = img->pixels[min_y + y][min_x + x];
 
     SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, box_width, box_height, 32, SDL_PIXELFORMAT_RGBA32);
     if (!surface) errx(EXIT_FAILURE, "Error while surface creation!");
@@ -136,7 +203,19 @@ void draw_rectangle(custIMG *img, int min_x, int min_y, int max_x, int max_y, Co
     free_image(box_img);
 }
 
-void find_bounding_boxes(unsigned char **edge_map, unsigned int height, unsigned int width, BoundingBox **boxes, int *num_boxes)
+
+/**
+ * This function is the main function of boxes.c. It finds all the bounding boxes according to the different algorithms and filters implemented in this file.
+ * 
+ * @param img The base image to process.
+ * @param edge_map The map of edges detected previously.
+ * @param height The height of the image to process.
+ * @param width The width of the image to process.
+ * @param boxes A pointer to an array of BoundingBox where the found boxes will be stored.
+ * @param num_boxes A pointer to an integer where the number of found boxes will be stored.
+ * @return VOID
+ */
+void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int height, unsigned int width, BoundingBox **boxes, int *num_boxes)
 {
     int **label_map = (int **)malloc(height * sizeof(int *));
     if (!label_map) errx(EXIT_FAILURE, "Memory allocation failed!");
@@ -174,11 +253,10 @@ void find_bounding_boxes(unsigned char **edge_map, unsigned int height, unsigned
                 flood_fill(edge_map, label_map, x, y, height, width, label, &box);
 
                 if (check_box(&box))
-                {
-                    temp_boxes[*num_boxes] = box;
-                    (*num_boxes)++;
-                }
-
+                    if(check_white_pixel_proportion(img, &box)){
+                        temp_boxes[*num_boxes] = box;
+                        (*num_boxes)++;
+                    }
                 label++;
             }
         }

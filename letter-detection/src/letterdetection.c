@@ -42,3 +42,9 @@ int process_letterdetection(char* filepath) {
 
     return EXIT_SUCCESS;
 }
+
+
+int main(int argc, char* argv[]){
+    if (argc != 2) errx(EXIT_FAILURE, "Incorrect number of argument! ACTUAL : %d", argc);
+    return process_letterdetection(argv[1]);
+}

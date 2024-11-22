@@ -1,20 +1,19 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -O2
 LDFLAGS = -lSDL2 -lSDL2_image -lm
-SRCS = $(shell find . -name '*.c' ! -path './Solver/*' ! -path './letter-detection/old/*' ! -path './grid-detection/*')
-OBJS = $(SRCS:.c=.o)
 EXEC = main
+
+OBJ_FILES = $(shell find . -name '*.o')
 
 all: $(EXEC)
 
-$(EXEC): $(OBJS)
+$(EXEC): $(OBJ_FILES)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) $(EXEC)
-	clear
+	rm -f $(EXEC) $(OBJ_FILES)
 
 .PHONY: all clean
