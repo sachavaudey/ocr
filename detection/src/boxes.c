@@ -1,16 +1,17 @@
 #include "../include/boxes.h"
 
 #define MIN_RATIO       0.5
-#define MAX_RATIO       4.0
-#define MAX_WIDTH       100
-#define MAX_HEIGHT      100
-#define MIN_WIDTH       5
-#define MIN_HEIGHT      10
-#define MIN_SURFACE     50  
-#define MAX_SURFACE     1000
+#define MAX_RATIO       8.0
+#define MAX_WIDTH       750
+#define MAX_HEIGHT      1000
+#define MIN_WIDTH       25
+#define MIN_HEIGHT      50
+#define MIN_SURFACE     1250
+#define MAX_SURFACE     25000
 #define MIN_WHITE_PROP  0.2
-#define MAX_WHITE_PROP  0.475
-#define X_BIAS          25
+#define MAX_WHITE_PROP  1.0
+#define X_BIAS          125
+#define PADDING         5
 
 /**
  * This function calculate the number of column according the box givin in parameter
@@ -168,9 +169,8 @@ void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsig
  * @param i the number of rectangle
  * @return VOID
  */
-void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_columns)
+void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_columns, Color color)
 {
-    Color green = {0, 255, 0};
     int x = 0;
     int y = 0;
 
@@ -185,35 +185,41 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_co
             int max_x = boxes[i].max_x;
             int max_y = boxes[i].max_y;
 
-            for (int x_coord = min_x; x_coord <= max_x; x_coord++)
+            for (int border_y = 0; border_y < PADDING; border_y++)
             {
-                if (min_y >= 0 && (unsigned int)min_y < img->height)
+                for (int x_coord = min_x; x_coord <= max_x; x_coord++)
                 {
-                    img->pixels[min_y][x_coord].r = green.r;
-                    img->pixels[min_y][x_coord].g = green.g;
-                    img->pixels[min_y][x_coord].b = green.b;
-                }
-                if (max_y >= 0 && (unsigned int)max_y < img->height)
-                {
-                    img->pixels[max_y][x_coord].r = green.r;
-                    img->pixels[max_y][x_coord].g = green.g;
-                    img->pixels[max_y][x_coord].b = green.b;
+                    if (min_y + border_y >= 0 && (unsigned int)(min_y + border_y) < img->height)
+                    {
+                        img->pixels[min_y + border_y][x_coord].r = color.r;
+                        img->pixels[min_y + border_y][x_coord].g = color.g;
+                        img->pixels[min_y + border_y][x_coord].b = color.b;
+                    }
+                    if (max_y - border_y >= 0 && (unsigned int)(max_y - border_y) < img->height)
+                    {
+                        img->pixels[max_y - border_y][x_coord].r = color.r;
+                        img->pixels[max_y - border_y][x_coord].g = color.g;
+                        img->pixels[max_y - border_y][x_coord].b = color.b;
+                    }
                 }
             }
 
-            for (int y_coord = min_y; y_coord <= max_y; y_coord++)
+            for (int border_x = 0; border_x < PADDING; border_x++)
             {
-                if (min_x >= 0 && (unsigned int)min_x < img->width)
+                for (int y_coord = min_y; y_coord <= max_y; y_coord++)
                 {
-                    img->pixels[y_coord][min_x].r = green.r;
-                    img->pixels[y_coord][min_x].g = green.g;
-                    img->pixels[y_coord][min_x].b = green.b;
-                }
-                if (max_x >= 0 && (unsigned int)max_x < img->width)
-                {
-                    img->pixels[y_coord][max_x].r = green.r;
-                    img->pixels[y_coord][max_x].g = green.g;
-                    img->pixels[y_coord][max_x].b = green.b;
+                    if (min_x + border_x >= 0 && (unsigned int)(min_x + border_x) < img->width)
+                    {
+                        img->pixels[y_coord][min_x + border_x].r = color.r;
+                        img->pixels[y_coord][min_x + border_x].g = color.g;
+                        img->pixels[y_coord][min_x + border_x].b = color.b;
+                    }
+                    if (max_x - border_x >= 0 && (unsigned int)(max_x - border_x) < img->width)
+                    {
+                        img->pixels[y_coord][max_x - border_x].r = color.r;
+                        img->pixels[y_coord][max_x - border_x].g = color.g;
+                        img->pixels[y_coord][max_x - border_x].b = color.b;
+                    }
                 }
             }
 
@@ -234,9 +240,9 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_co
                 for (int x_coord = 0; x_coord < box_width; x_coord++)
                 {
                     Uint32 pixel = SDL_MapRGB(surface->format,
-                                              box_img->pixels[y_coord][x_coord].r,
-                                              box_img->pixels[y_coord][x_coord].g,
-                                              box_img->pixels[y_coord][x_coord].b);
+                                           box_img->pixels[y_coord][x_coord].r,
+                                           box_img->pixels[y_coord][x_coord].g,
+                                           box_img->pixels[y_coord][x_coord].b);
                     ((Uint32 *)surface->pixels)[y_coord * surface->w + x_coord] = pixel;
                 }
             }

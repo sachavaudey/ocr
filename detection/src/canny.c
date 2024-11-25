@@ -3,9 +3,9 @@
 #define PI M_PI
 #define SOBEL_GX {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}}
 #define SOBEL_GY {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}}
-#define LOW_THRESH 20.0
-#define HIGH_THRESH 50.0
-#define AVG_DIVISOR 3.0
+#define LOW_THRESH 50.0
+#define HIGH_THRESH 150.0
+#define AVG_DIVISOR 2.0
 
 #define ANGLE_NEG_22_5   -22.5
 #define ANGLE_POS_22_5    22.5
@@ -181,12 +181,13 @@ void hysteresis_filter(custIMG *img, float **edges, float low_thresh, float high
 
 void process(custIMG *img)
 {
-    float **gradient_magnitude = (float **)malloc(img->height * sizeof(float *));
-    float **gradient_direction = (float **)malloc(img->height * sizeof(float *));
-    for (unsigned int i = 0; i < img->height; i++)
-    {
-        gradient_magnitude[i] = (float *)malloc(img->width * sizeof(float));
-        gradient_direction[i] = (float *)malloc(img->width * sizeof(float));
+    float **gradient_magnitude = malloc(img->height * sizeof(float *));
+    float **gradient_direction = malloc(img->height * sizeof(float *));
+    if (!gradient_magnitude || !gradient_direction) errx(EXIT_FAILURE, "Memory allocation failed for gradient_magnitude or gradient_direction");
+    for (unsigned int i = 0; i < img->height; i++) {
+        gradient_magnitude[i] = malloc(img->width * sizeof(float));
+        gradient_direction[i] = malloc(img->width * sizeof(float));
+        if (!gradient_magnitude[i] || !gradient_direction[i]) errx(EXIT_FAILURE, "Memory allocation failed for gradient_magnitude[%d] or gradient_direction[%d]", i, i);
     }
     sobel_filter(img, gradient_magnitude, gradient_direction);
 
@@ -215,9 +216,37 @@ void process(custIMG *img)
     int num_boxes;
     find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
 
-    int num_columns = column_number(boxes, num_boxes);
 
-    draw_rectangles(img, boxes, num_boxes, num_columns);
+    BoundingBox *gridBoxes;
+    int numGridBox;
+    detect_word_grid(boxes, num_boxes, &gridBoxes, &numGridBox);
+
+    int num_columns = column_number(gridBoxes, numGridBox);
+
+    
+    BoundingBox **word_lists;
+    int num_words;
+    int *word_lengths;
+
+    if (detect_words(boxes, num_boxes, gridBoxes, numGridBox, &word_lists, &num_words, &word_lengths)) {
+        Color blue = {0, 0, 255};
+        for (int i = 0; i < num_words; i++) {
+            draw_rectangles(img, word_lists[i], word_lengths[i], num_columns, blue);
+        }
+
+        for (int i = 0; i < num_words; i++) {
+            free(word_lists[i]);
+        }
+        free(word_lists);
+        free(word_lengths);
+    }   
+
+
+    Color red = {255, 0, 0};
+    Color green = {0, 255, 0};
+
+    draw_rectangles(img, boxes, num_boxes, num_columns, green);
+    //draw_rectangles(img, gridBoxes, numGridBox, num_columns, red);
 
     for (unsigned int i = 0; i < img->height; i++)
     {
