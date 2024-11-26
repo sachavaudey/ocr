@@ -343,3 +343,14 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
         free(label_map[i]);
     free(label_map);
 }
+
+
+
+/**
+ * This function merge tow (or more) boxes if one (or more) are completly included in the largest box. Only the largest is conserve
+ * @param boxes liste of the boxes
+ * @return VOID - modify in place
+ */
+void merge_include_boxes(BoundingBox* boxes){
+    errx(EXIT_FAILURE, "Not implemented yet!");
+}

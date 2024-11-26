@@ -21,6 +21,13 @@
 const int Gx[3][3] = SOBEL_GX;
 const int Gy[3][3] = SOBEL_GY;
 
+/**
+ * This function apply a sobel filter on a given image and complete the gradient_magnitude and grandient_direction list
+ * @param img img to process
+ * @param gardient_magnitude the magnitude list to modify by ref
+ * @param gradient_direction gradient direction list to modify by ref
+ * @return VOID
+ */
 void sobel_filter(custIMG *img, float **gradient_magnitude, float **gradient_direction)
 {
     for (unsigned int y = 1; y < img->height - 1; y++)
@@ -57,6 +64,14 @@ void sobel_filter(custIMG *img, float **gradient_magnitude, float **gradient_dir
     }
 }
 
+/**
+ * This function apply a non-maxima suppression on the result of the sobel filter
+ * @param img img to process
+ * @param gradient_magnitude gradient_maginutde of the img to process
+ * @param gradient_direction the gradient direction list of the img to process
+ * @param edges a 2 dimension list of the edge of the img to process
+ * @return VOID
+ */
 void nm_filter(custIMG *img, float **gradient_magnitude, float **gradient_direction, float **edges)
 {
     for (unsigned int y = 1; y < img->height - 1; y++)
@@ -100,6 +115,14 @@ void nm_filter(custIMG *img, float **gradient_magnitude, float **gradient_direct
     }
 }
 
+/**
+ * This function apply a dilate filter on the result img (after filter and algorithm)
+ * @param input our input list (binary representation of our img)
+ * @param output the ouput binarization of our img
+ * @param height height of the image
+ * @param width width of the image
+ * @return VOID
+ */
 void dilate_filter(unsigned char **input, unsigned char **output, unsigned int height, unsigned int width)
 {
     for (unsigned int y = 0; y < height; y++)
@@ -128,6 +151,9 @@ void dilate_filter(unsigned char **input, unsigned char **output, unsigned int h
     }
 }
 
+/**
+ * This function is an auxilary function of hysteresis filter to implement the recusion
+ */
 void hyst_aux(unsigned char **edge_map, unsigned int y, unsigned int x, unsigned int height, unsigned int width)
 {
     for (int dy = -1; dy <= 1; dy++)
@@ -147,7 +173,15 @@ void hyst_aux(unsigned char **edge_map, unsigned int y, unsigned int x, unsigned
             }
         }
 }
-
+/**
+ * This function implement the hysteresis filter after sobel
+ * @param img the img to process
+ * @param edges all the edhes already detected on out img
+ * @param low_thresh the low threshold
+ * @param hight_tresh the high threshold
+ * @param edge_map the map of the img already process on the img
+ * @return VOID
+ */
 void hysteresis_filter(custIMG *img, float **edges, float low_thresh, float high_thresh, unsigned char **edge_map)
 {
     for (unsigned int y = 0; y < img->height; y++)
@@ -179,6 +213,11 @@ void hysteresis_filter(custIMG *img, float **edges, float low_thresh, float high
                 edge_map[y][x] = 1;
 }
 
+/**
+ * This function process all the necessary function for the detection
+ * @param img img to process the functions
+ * @return VOID - Save as PNG the result image
+ */
 void process(custIMG *img)
 {
     float **gradient_magnitude = malloc(img->height * sizeof(float *));
@@ -216,6 +255,7 @@ void process(custIMG *img)
     int num_boxes;
     find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
 
+    //merge_include_boxes(boxes);
 
     BoundingBox *gridBoxes;
     int numGridBox;
