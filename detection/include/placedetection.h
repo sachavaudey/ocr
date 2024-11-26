@@ -8,6 +8,7 @@
 #include <SDL2/SDL_image.h>
 #include <err.h>
 #include "boxes.h"
+#include "constant.h"
 
 
 int detect_word_grid(BoundingBox *boxes, int num_boxes, BoundingBox **grid_boxes, 

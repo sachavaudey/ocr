@@ -1,26 +1,5 @@
 #include "../include/canny.h"
 
-#define PI M_PI
-#define SOBEL_GX {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}}
-#define SOBEL_GY {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}}
-#define LOW_THRESH 50.0
-#define HIGH_THRESH 150.0
-#define AVG_DIVISOR 2.0
-
-#define ANGLE_NEG_22_5   -22.5
-#define ANGLE_POS_22_5    22.5
-#define ANGLE_NEG_67_5   -67.5
-#define ANGLE_POS_67_5    67.5
-#define ANGLE_NEG_112_5 -112.5
-#define ANGLE_POS_112_5  112.5
-#define ANGLE_NEG_157_5 -157.5
-#define ANGLE_POS_157_5  157.5
-
-#define RAD_TO_DEG (180.0 / PI)
-
-const int Gx[3][3] = SOBEL_GX;
-const int Gy[3][3] = SOBEL_GY;
-
 /**
  * This function apply a sobel filter on a given image and complete the gradient_magnitude and grandient_direction list
  * @param img img to process

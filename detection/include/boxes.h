@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <err.h>
+#include "constant.h"
 
 typedef struct
 {
@@ -16,13 +17,6 @@ typedef struct
     int min_y;
     int max_y;
 } BoundingBox;
-
-typedef struct
-{
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
-} Color;
 
 int column_number(BoundingBox *boxes, int num_boxes);
 int check_white_pixel_proportion(custIMG *img, BoundingBox *box);

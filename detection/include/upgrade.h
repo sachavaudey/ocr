@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "math.h"
+#include "constant.h"
 
 SDL_Surface *enlarge_image(SDL_Surface *surface);
 

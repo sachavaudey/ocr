@@ -10,6 +10,7 @@
 #include "boxes.h"
 #include "math.h"
 #include "placedetection.h"
+#include "constant.h"
 
 void sobel_filter(custIMG *img, float **gradient_magnitude, float **gradient_direction);
 void nm_filter(custIMG *img, float **gradient_magnitude, float **gradient_direction, float **edges);

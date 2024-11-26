@@ -9,6 +9,7 @@
 #include "canny.h"
 #include "boxes.h"
 #include "upgrade.h"
+#include "constant.h"
 
 
 int process_letterdetection(char* filepath);

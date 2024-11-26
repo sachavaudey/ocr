@@ -1,18 +1,5 @@
 #include "../include/boxes.h"
 
-#define MIN_RATIO       0.5
-#define MAX_RATIO       8.0
-#define MAX_WIDTH       750
-#define MAX_HEIGHT      1000
-#define MIN_WIDTH       25
-#define MIN_HEIGHT      50
-#define MIN_SURFACE     1250
-#define MAX_SURFACE     25000
-#define MIN_WHITE_PROP  0.2
-#define MAX_WHITE_PROP  1.0
-#define X_BIAS          125
-#define PADDING         5
-
 /**
  * This function calculate the number of column according the box givin in parameter
  * @param boxes all the boxes detected in the image
@@ -248,10 +235,10 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_co
             }
 
             struct stat st = {0};
-            if (stat("results", &st) == -1) mkdir("results", 0700);
+            if (stat("results_grid", &st) == -1) mkdir("results_grid", 0700);
 
             char filename[256];
-            sprintf(filename, "results/%d.%d.png", y, x);
+            sprintf(filename, "results_grid/%d.%d.png", y, x);
             if (IMG_SavePNG(surface, filename) != 0) errx(EXIT_FAILURE, "Error during the image saving!");
 
             SDL_FreeSurface(surface);
@@ -315,11 +302,15 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
                 BoundingBox box = {x, x, y, y};
                 flood_fill(edge_map, label_map, x, y, height, width, label, &box);
 
+                temp_boxes[*num_boxes] = box;
+                (*num_boxes)++;
+                /*
                 if (check_box(&box))
                     if(check_white_pixel_proportion(img, &box)){
                         temp_boxes[*num_boxes] = box;
                         (*num_boxes)++;
                     }
+                    */
                 label++;
             }
         }
