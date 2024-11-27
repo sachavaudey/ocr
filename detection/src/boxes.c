@@ -73,15 +73,22 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
  */
 int check_box(BoundingBox *box)
 {
+
     int height = box->max_y - box->min_y;
     int width = box->max_x - box->min_x;
+    int surface = height * width;
+    float ratio = height / width;
 
-    float ratio = (float)height / (float)width;
+    //printf("## NEW BOX ##\n");
+    //printf("HEIGHT : %d\n", height);
+    //printf("WIDTH : %d\n", width);
+    printf("SURFACE : %d\n", surface);
+    //printf("RATIO : %f\n", ratio);
+    if(surface < MIN_SURFACE || surface > MAX_SURFACE) return 0;
+    else if(height < MIN_HEIGHT || height > MAX_HEIGHT) return 0;
+    else if(width < MIN_WIDTH || width > MAX_WIDTH) return 0;
+    else if(ratio < MIN_RATIO || ratio > MAX_RATIO) return 0;
 
-    if (ratio < MIN_RATIO || ratio > MAX_RATIO) return 0;
-    else if (height > MAX_HEIGHT || height < MIN_HEIGHT) return 0;
-    else if (width > MAX_WIDTH || width < MIN_WIDTH) return 0;
-    else if ((width * height < MIN_SURFACE) || (width * height > MAX_SURFACE)) return 0;
     return 1;
 }
 
@@ -283,8 +290,9 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
     }
 
     int label = 1;
+    int temp_capacity = 1000;
     *num_boxes = 0;
-    BoundingBox *temp_boxes = (BoundingBox *)malloc(sizeof(BoundingBox) * (height * width / 10));
+    BoundingBox *temp_boxes = (BoundingBox *)malloc(sizeof(BoundingBox) * temp_capacity);
     if (!temp_boxes)
     {
         for (unsigned int i = 0; i < height; i++)
@@ -302,15 +310,18 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
                 BoundingBox box = {x, x, y, y};
                 flood_fill(edge_map, label_map, x, y, height, width, label, &box);
 
-                temp_boxes[*num_boxes] = box;
-                (*num_boxes)++;
-                /*
-                if (check_box(&box))
-                    if(check_white_pixel_proportion(img, &box)){
-                        temp_boxes[*num_boxes] = box;
-                        (*num_boxes)++;
+                if (check_box(&box) && check_white_pixel_proportion(img, &box))
+                {
+                    if (*num_boxes >= temp_capacity)
+                    {
+                        temp_capacity *= 2;
+                        temp_boxes = realloc(temp_boxes, sizeof(BoundingBox) * temp_capacity);
+                        if (!temp_boxes) errx(EXIT_FAILURE, "Memory allocation failed!");
                     }
-                    */
+                    temp_boxes[*num_boxes] = box;
+                    (*num_boxes)++;
+                }
+
                 label++;
             }
         }

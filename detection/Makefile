@@ -21,5 +21,6 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 
 clean:
 	rm -rf $(BUILD_DIR) $(EXEC)
+	clear
 
 .PHONY: all clean
