@@ -65,13 +65,26 @@ static const Color RED   = {255, 0, 0};
 static const Color GREEN = {0, 255, 0};
 static const Color BLUE  = {0, 0, 255};
 
-// Place detection constants
-#define GRID_X_TOLERANCE    25
-#define GRID_Y_TOLERANCE    25
-#define MIN_GRID_BOXES      16
-#define MIN_WORD_LEN        3
-#define WORD_X_GAP         10
-#define WORD_Y_TOL         10
+// Grid detection constants
+#define MIN_GRID_BOXES 9
+#define MAX_WIDTH 100
+#define MAX_HEIGHT 100
+#define MAX_GRID_GAP 100
+#define STD_TOLERANCE 0.3
+#define MIN_ALIGNED_NEIGHBORS 3
+
+// Word detection constants
+#define MIN_WORD_LEN 3
+#define WORD_X_GAP 20         
+#define WORD_Y_TOL 10 
+
+#define X_TOLERANCE_FACTOR 0.5
+#define Y_TOLERANCE_FACTOR 0.5
+#define MIN_ALIGNED_BOXES 3
+#define BOX_MATCH_TOLERANCE 2
+
+// Upgrade constants
+#define ENLARGEMENT_FACTOR 1
 
 
 

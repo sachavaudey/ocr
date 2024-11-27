@@ -338,10 +338,57 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
 
 
 /**
- * This function merge tow (or more) boxes if one (or more) are completly included in the largest box. Only the largest is conserve
- * @param boxes liste of the boxes
- * @return VOID - modify in place
+ * This function merges boxes by removing boxes that are completely included in other boxes
+ * @param boxes Array of bounding boxes
+ * @param num_boxes Pointer to the number of boxes (modified if boxes are merged)
  */
-void merge_include_boxes(BoundingBox* boxes){
-    errx(EXIT_FAILURE, "Not implemented yet!");
+void merge_include_boxes(BoundingBox* boxes, int* num_boxes) {
+    if (!boxes || !num_boxes || *num_boxes <= 0) {
+        return;
+    }
+    
+    int* to_remove = (int*)calloc(*num_boxes, sizeof(int));
+    if (!to_remove) {
+        fprintf(stderr, "Memory allocation failed in merge_include_boxes\n");
+        return;
+    }
+
+    for (int i = 0; i < *num_boxes; i++) {
+        if (to_remove[i]) {
+            continue;
+        }
+        
+        for (int j = 0; j < *num_boxes; j++) {
+            if (i == j || to_remove[j] || i >= *num_boxes || j >= *num_boxes) {
+                continue;
+            }
+
+            if (boxes[i].min_x <= boxes[j].min_x && 
+                boxes[i].max_x >= boxes[j].max_x &&
+                boxes[i].min_y <= boxes[j].min_y && 
+                boxes[i].max_y >= boxes[j].max_y &&
+                boxes[i].max_x >= boxes[i].min_x &&
+                boxes[i].max_y >= boxes[i].min_y) {
+                
+                to_remove[j] = 1;
+            }
+        }
+    }
+
+    int new_count = 0;
+    for (int i = 0; i < *num_boxes && new_count < *num_boxes; i++) {
+        if (!to_remove[i]) {
+            if (i != new_count) {
+                boxes[new_count] = boxes[i];
+            }
+            new_count++;
+        }
+    }
+
+    if (new_count <= *num_boxes) {
+        *num_boxes = new_count;
+    }
+
+    free(to_remove);
+    to_remove = NULL;
 }

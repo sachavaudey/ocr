@@ -13,54 +13,69 @@ int detect_word_grid(BoundingBox *boxes, int num_boxes, BoundingBox **grid_boxes
     if (num_boxes < MIN_GRID_BOXES) return 0;
 
     *grid_boxes = malloc(num_boxes * sizeof(BoundingBox));
+    if (!*grid_boxes) return 0;
     *num_grid_boxes = 0;
 
     float *x_gaps = malloc(num_boxes * num_boxes * sizeof(float));
     float *y_gaps = malloc(num_boxes * num_boxes * sizeof(float));
-    int gap_count = 0;
+    if (!x_gaps || !y_gaps) {
+        free(*grid_boxes);
+        return 0;
+    }
+    
+    int x_count = 0, y_count = 0;
 
     for (int i = 0; i < num_boxes; i++) {
         for (int j = i + 1; j < num_boxes; j++) {
-            float dx = abs(boxes[j].min_x - boxes[i].min_x);
-            float dy = abs(boxes[j].min_y - boxes[i].min_y);
-            if (dx > 0 && dx < MAX_WIDTH) x_gaps[gap_count] = dx;
-            if (dy > 0 && dy < MAX_HEIGHT) y_gaps[gap_count] = dy;
-            gap_count++;
+            float dx = fabs(boxes[j].min_x - boxes[i].min_x);
+            float dy = fabs(boxes[j].min_y - boxes[i].min_y);
+            
+            if (dx > 0 && dx < MAX_GRID_GAP) {
+                x_gaps[x_count++] = dx;
+            }
+            if (dy > 0 && dy < MAX_GRID_GAP) {
+                y_gaps[y_count++] = dy;
+            }
         }
     }
 
-    float avg_x = 0, avg_y = 0, std_x = 0, std_y = 0;
-    for (int i = 0; i < gap_count; i++) {
-        avg_x += x_gaps[i];
-        avg_y += y_gaps[i];
-    }
-    avg_x /= gap_count;
-    avg_y /= gap_count;
+    float avg_x = 0, avg_y = 0;
+    for (int i = 0; i < x_count; i++) avg_x += x_gaps[i];
+    for (int i = 0; i < y_count; i++) avg_y += y_gaps[i];
+    
+    avg_x = x_count > 0 ? avg_x / x_count : 0;
+    avg_y = y_count > 0 ? avg_y / y_count : 0;
 
-    for (int i = 0; i < gap_count; i++) {
-        std_x += pow(x_gaps[i] - avg_x, 2);
-        std_y += pow(y_gaps[i] - avg_y, 2);
+    float std_x = 0, std_y = 0;
+    for (int i = 0; i < x_count; i++) {
+        std_x += powf(x_gaps[i] - avg_x, 2);
     }
-    std_x = sqrt(std_x / gap_count);
-    std_y = sqrt(std_y / gap_count);
+    for (int i = 0; i < y_count; i++) {
+        std_y += powf(y_gaps[i] - avg_y, 2);
+    }
+    
+    std_x = sqrtf(std_x / x_count);
+    std_y = sqrtf(std_y / y_count);
 
-    float x_tolerance = std_x * 0.5;
-    float y_tolerance = std_y * 0.5;
+    float x_tolerance = std_x * STD_TOLERANCE;
+    float y_tolerance = std_y * STD_TOLERANCE;
 
     for (int i = 0; i < num_boxes; i++) {
-        int aligned_boxes = 0;
+        int aligned_neighbors = 0;
+        
         for (int j = 0; j < num_boxes; j++) {
             if (i == j) continue;
 
-            float dx = abs(boxes[j].min_x - boxes[i].min_x);
-            float dy = abs(boxes[j].min_y - boxes[i].min_y);
+            float dx = fabs(boxes[j].min_x - boxes[i].min_x);
+            float dy = fabs(boxes[j].min_y - boxes[i].min_y);
 
-            if (fabs(dx - avg_x) <= x_tolerance || fabs(dy - avg_y) <= y_tolerance) {
-                aligned_boxes++;
+            if ((fabs(dx - avg_x) <= x_tolerance && dy < y_tolerance) ||
+                (fabs(dy - avg_y) <= y_tolerance && dx < x_tolerance)) {
+                aligned_neighbors++;
             }
         }
 
-        if (aligned_boxes >= 3) {
+        if (aligned_neighbors >= MIN_ALIGNED_NEIGHBORS) {
             (*grid_boxes)[*num_grid_boxes] = boxes[i];
             (*num_grid_boxes)++;
         }
@@ -78,7 +93,6 @@ int detect_word_grid(BoundingBox *boxes, int num_boxes, BoundingBox **grid_boxes
 
     return 1;
 }
-
 
 
 /**

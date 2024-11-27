@@ -234,7 +234,7 @@ void process(custIMG *img)
     int num_boxes;
     find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
 
-    //merge_include_boxes(boxes);
+    //merge_include_boxes(boxes, num_boxes);
 
     BoundingBox *gridBoxes;
     int numGridBox;
@@ -247,6 +247,7 @@ void process(custIMG *img)
     int num_words;
     int *word_lengths;
 
+    /*
     if (detect_words(boxes, num_boxes, gridBoxes, numGridBox, &word_lists, &num_words, &word_lengths)) {
         Color blue = {0, 0, 255};
         for (int i = 0; i < num_words; i++) {
@@ -258,14 +259,14 @@ void process(custIMG *img)
         }
         free(word_lists);
         free(word_lengths);
-    }   
+    }   */
 
 
     Color red = {255, 0, 0};
     Color green = {0, 255, 0};
 
     draw_rectangles(img, boxes, num_boxes, num_columns, green);
-    //draw_rectangles(img, gridBoxes, numGridBox, num_columns, red);
+    draw_rectangles(img, gridBoxes, numGridBox, num_columns, red);
 
     for (unsigned int i = 0; i < img->height; i++)
     {
