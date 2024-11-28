@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-// Fonction qui charge une image
+// Function which load an image
 SDL_Surface* load_image(const char* filename) {
     if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) == 0) {
         printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
@@ -19,6 +19,7 @@ SDL_Surface* load_image(const char* filename) {
     return surface;
 }
 
+// Function which delete the green on this image
 void delete_green(SDL_Surface *image)
 {
     
@@ -45,7 +46,7 @@ void delete_green(SDL_Surface *image)
 
 
 
-
+// Function which transform the image on binary 
 double* traitements_test(char* filename) {
     SDL_Surface *image = load_image(filename);
     if (!image) {
@@ -129,6 +130,9 @@ double* traitements_test(char* filename) {
 
     return res;
 }
+
+
+
 
 
 

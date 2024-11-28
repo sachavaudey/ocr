@@ -76,7 +76,7 @@ SDL_Surface* crop_image(SDL_Surface *image) {
 void process_image(const char *input_path, const char *output_path) {
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
-
+    
     SDL_Surface *image = IMG_Load(input_path);
     if (!image) {
         printf("Erreur de chargement de l'image : %s\n", IMG_GetError());
@@ -115,10 +115,10 @@ void process_image(const char *input_path, const char *output_path) {
     SDL_Quit();
 }
 
-int process_transforme(int b){
+int process_transforme_grid(int b){
     char** res=malloc((b-1)*sizeof(char*));
     char** out=malloc((b-1)*sizeof(char*));
-
+    
     for (int i = 1; i < b; i++)
     {
         res[i-1]=malloc(100*sizeof(char));
@@ -127,15 +127,72 @@ int process_transforme(int b){
         snprintf(out[i-1],100,"output/%d.0.png",i);
     }
     printf("%s",res[0]);
-    //process_image(res[0],out[0]);
-    //process_image("../results-2/1.0.png", "output/1.0.png");
+    
+    
     for (int i = 0; i < b-1; i++)
     {
         process_image(res[i],out[i]);
     }
-    return 0;
+    return 0;  
+}
+
+
+int* search_size_word()
+{
+    int* word=malloc(10*sizeof(int));
+    const char *directory_name = "words";
+    char command[256];
+    snprintf(command, sizeof(command), "mkdir %s", directory_name);
+    system(command);
+    int p=0;
+    while (1)
+    {
+        int counter = 0;
+        char file_path[256];
+        while (1) 
+        {
+            char* var=malloc(100*sizeof(char));
+            snprintf(file_path, sizeof(file_path), "../results2_words/%d.%d.png", counter,p);
+            snprintf(var, sizeof(file_path), "words/%d.%d.png", counter,p);
+            FILE *file = fopen(file_path, "r");
+            if (file == NULL) {
+                word=realloc(word,(p+1)*sizeof(char));
+                word[p]=counter;
+                //printf("%d",word[p]);
+                p++;
+                break;
+            }
+            process_image(file_path,var);
+            fclose(file);
+            counter++;
+        }
+        if (p==90) break;
+        
+    }
+
+return word;
     
+    
+
+    
+
     
 }
+
+/*int main()
+{
+    char* wor=malloc(1*sizeof(char));
+    printf("%d",search_size_word(wor));
+
+
+    return 1;
+}*/
+
+
+
+
+
+
+
 
 

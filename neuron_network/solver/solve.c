@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+//trouver le nombre de mots
+
 
 char (*lire_grille(char *nom_fichier, int *lignes, int *colonnes))[100] {
     FILE *fichier = fopen(nom_fichier, "r");
@@ -141,7 +143,9 @@ int search_down_right(char** matrice, char* word ,int i,int j,int x)
 }
 
 void solver(char *nom_fichier,char *word) 
-{
+{   
+
+    FILE *file = fopen("../coordo", "a");
     int lignes, colonnes;
     char (*ma)[100] = lire_grille(nom_fichier, &lignes, &colonnes); 
     int x=0;
@@ -164,12 +168,13 @@ void solver(char *nom_fichier,char *word)
         for (int j = 0; j < m; j++)
         {
             matrice[i][j]=ma[i][j];
-            //printf("%c",matrice[i][j]);
+            printf("%c",matrice[i][j]);
 
         }
-        //printf("\n");
+        printf("\n");
         
     }
+
     for (int i = 0; i < n; i++)        // start of search
     {            
         
@@ -183,6 +188,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_left(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j-x+1,i);
+                        fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i);
                         return;
                     }
                 }
@@ -191,6 +197,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_right(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j+x-1,i);
+                        fprintf(file, "%d,%d %d,%d\n", j,i,j+x-1,i);
                         return;
                     } 
                     
@@ -201,6 +208,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_up(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j,i+1-x);
+                        fprintf(file, "%d,%d %d,%d\n", j,i,j,i+1-x);
                         return;
                     }
                     
@@ -212,6 +220,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_down(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j,i+x-1);
+                        fprintf(file, "%d,%d %d,%d\n", j,i,j,i+x-1);
                         return;
                     }
                     
@@ -221,6 +230,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_up_left(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j-x+1,i-x+1);
+                        fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i-x+1);
                         return;
                     }
                     
@@ -230,6 +240,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_up_right(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j+x-1,i-x+1);
+                        fprintf(file, "%d,%d %d,%d\n", j,i,j+x-1,i-x+1);
                         return;
                     }
                     
@@ -239,6 +250,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_down_left(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j-x+1,i+x-1);
+                        fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i+x-1);
                         return;
                     }
                 }
@@ -247,6 +259,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_down_right(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,-(j-x+1),(i+x-1));
+                        fprintf(file, "%d,%d %d,%d\n", j,i,-(j-x+1),(i+x-1));
                         return;
                     }
                 }
@@ -254,6 +267,8 @@ void solver(char *nom_fichier,char *word)
         }
     }
     printf(" Not Found ");
+    fprintf(file, "%d,%d %d,%d\n", 0,0,0,0);
+    //fprintf(file, "-1,-1 -1,-1\n" );
     return;
     
     
@@ -265,18 +280,16 @@ void solver(char *nom_fichier,char *word)
 char **read_fichier(const char *nom_fichier, int *nombre_mots) {
     FILE *fichier = fopen(nom_fichier, "r");
     if (!fichier) {
-        perror("Erreur d'ouverture du fichier");
+        perror("Erreur d'ouverture duuu fichier");
         return NULL;
     }
 
-    // Initialisation des variables
     char **mots = NULL;
     char buffer[100];
     *nombre_mots = 0;
 
-    // Lecture des mots et stockage dans le tableau dynamique
     while (fgets(buffer, 100, fichier)) {
-        buffer[strcspn(buffer, "\n")] = '\0'; // Supprime le retour à la ligne
+        buffer[strcspn(buffer, "\n")] = '\0'; 
 
         
         char **temp = realloc(mots, (*nombre_mots + 1) * sizeof(char *));
@@ -290,12 +303,26 @@ char **read_fichier(const char *nom_fichier, int *nombre_mots) {
     }
 
     fclose(fichier);
-    for (size_t i = 0; i < 4; i++)
+    
+    for (int i = 0; i < nombre_mots[0]; i++)
     {
         printf("%s\n",mots[i]);
     }
     
     return mots;
+}
+
+int compterLignes(const char *nomFichier) {
+    FILE *fichier = fopen(nomFichier, "r");
+    int nbLignes = 0;
+    char caractere;
+    while ((caractere = fgetc(fichier)) != EOF) {
+        if (caractere == '\n') {
+            nbLignes++;
+        }
+    }
+    fclose(fichier);
+    return nbLignes;
 }
 
 int process_solver(char* filename, char* word) {   
@@ -304,29 +331,37 @@ int process_solver(char* filename, char* word) {
 }
 
 
-int main(int argc, char* argv[]){
-    (void)argc;
+int main()
+{
     
-    char** grid=malloc(1*sizeof(char*));
+    //process_solver(argv[1],argv[2]);
+    remove("../coordo");
+    char** grid=malloc(2*sizeof(char*));
     grid[0]=malloc(4*sizeof(char));
     sprintf(grid[0],"grid");
     
     
 
     int* n=malloc(sizeof(int));
-    n[0]=4;
     
-    char** word=read_fichier("word",n);
+    grid[1]=malloc(4*sizeof(char));
+    sprintf(grid[1],"word");
+    n[0]=compterLignes(grid[1]);
+    
+
+    char** word=read_fichier(grid[1],n);
 
 
     
 
-
-    for (size_t i = 0; i < 4; i++)
+    
+    for (int i = 0; i < n[0]; i++)
     {
         //printf("\n%s\n",word[i]);
+        printf("%s\n",word[i]);
         process_solver(grid[0],word[i]);
-        printf("\n");
+        
+        printf("\n\n\n");
     }
     
 
