@@ -44,6 +44,7 @@ int column_number(BoundingBox *boxes, int num_boxes)
  */
 int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
 {
+    /*
     unsigned int white_pixel_count = 0;
     unsigned int total_pixels = (box->max_x - box->min_x + 1) * (box->max_y - box->min_y + 1);
 
@@ -63,6 +64,7 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
     if (proportion < MIN_WHITE_PROP || proportion > MAX_WHITE_PROP) return 0;
        
     else
+    */
         return 1;
 }
 
@@ -73,21 +75,29 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
  */
 int check_box(BoundingBox *box)
 {
-
+    /*
     int height = box->max_y - box->min_y;
     int width = box->max_x - box->min_x;
     int surface = height * width;
-    float ratio = height / width;
+    double ratio = height / width;
 
-    //printf("## NEW BOX ##\n");
-    //printf("HEIGHT : %d\n", height);
-    //printf("WIDTH : %d\n", width);
-    printf("SURFACE : %d\n", surface);
-    //printf("RATIO : %f\n", ratio);
-    if(surface < MIN_SURFACE || surface > MAX_SURFACE) return 0;
-    else if(height < MIN_HEIGHT || height > MAX_HEIGHT) return 0;
-    else if(width < MIN_WIDTH || width > MAX_WIDTH) return 0;
-    else if(ratio < MIN_RATIO || ratio > MAX_RATIO) return 0;
+    if(surface < MIN_SURFACE || surface > MAX_SURFACE){
+        printf("Incorrect box surface : %d\n", surface);
+        return 0;
+    }
+    else if(height < MIN_HEIGHT || height > MAX_HEIGHT) {
+        printf("Incorrect box height %d\n", height);
+        return 0;
+    }
+    else if(width < MIN_WIDTH || width > MAX_WIDTH) {
+        printf("Incorrect width : %d\n", width);
+        return 0;
+    }
+    /*
+    else if(ratio < MIN_RATIO || ratio > MAX_RATIO){
+        printf("Incorrect box ratio : %f\n", ratio);
+        return 0;
+    }*/
 
     return 1;
 }
@@ -310,6 +320,7 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
                 BoundingBox box = {x, x, y, y};
                 flood_fill(edge_map, label_map, x, y, height, width, label, &box);
 
+                
                 if (check_box(&box) && check_white_pixel_proportion(img, &box))
                 {
                     if (*num_boxes >= temp_capacity)

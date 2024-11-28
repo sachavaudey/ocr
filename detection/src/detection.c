@@ -94,15 +94,15 @@ int main(int argc, char* argv[]) {
         errx(EXIT_FAILURE, "Error initializing SDL_image: %s", IMG_GetError());
     }
 
-    /*
+    
     if(process_enlarge(argv[1]) != EXIT_SUCCESS) {
         IMG_Quit();
         SDL_Quit();
         errx(EXIT_FAILURE, "Error during the image enlargement process!");
-    }*/
+    }
 
 
-    if (process_letterdetection(argv[1]) != EXIT_SUCCESS) {
+    if (process_letterdetection("enlarged.png") != EXIT_SUCCESS) {
         IMG_Quit();
         SDL_Quit();
         errx(EXIT_FAILURE, "Error during the letter detection process!");

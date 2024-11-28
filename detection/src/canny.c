@@ -234,14 +234,8 @@ void process(custIMG *img)
     int num_boxes;
     find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
 
-    int num_columns = column_number(boxes, num_boxes);
-
-    Color green = {0, 255, 0};
-
-    draw_rectangles(img, boxes, num_boxes, num_columns, green);
-
     
-    /*BoundingBox *gridBoxes;
+    BoundingBox *gridBoxes;
     int numGridBox;
     detect_word_grid(boxes, num_boxes, &gridBoxes, &numGridBox);
 
@@ -270,8 +264,8 @@ void process(custIMG *img)
     Color green = {0, 255, 0};
 
     draw_rectangles(img, boxes, num_boxes, num_columns, green);
-    //draw_rectangles(img, gridBoxes, numGridBox, num_columns, red);
-    */
+    draw_rectangles(img, gridBoxes, numGridBox, num_columns, red);
+    
     for (unsigned int i = 0; i < img->height; i++)
     {
         free(gradient_magnitude[i]);
