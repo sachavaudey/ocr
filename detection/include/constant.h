@@ -58,7 +58,6 @@ static const int Gy[3][3] = {
 #define X_BIAS         125
 #define PADDING        5
 #define ENLARGEMENT_FACTOR 5
-#define COORD_BIAS 10 
 
 // Colors
 static const Color RED   = {255, 0, 0};
@@ -72,10 +71,5 @@ static const Color BLUE  = {0, 0, 255};
 #define MIN_WORD_LEN        3
 #define WORD_X_GAP         10
 #define WORD_Y_TOL         10
-#define GRID_STD_DEV_THRESHOLD 0.5
-#define MIN_ALIGNED_BOXES 3
-#define GRID_GAP_TOLERANCE 10
-#define MIN_BOX_GAP 30
-#define MAX_BOX_GAP 150
 
 #endif

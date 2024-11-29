@@ -1,6 +1,42 @@
 #include "../include/boxes.h"
 
 /**
+ * This function calculate the number of column according the box givin in parameter
+ * @param boxes all the boxes detected in the image
+ * @param num_boxes the number of boxes given
+ * @return the number of column
+ */
+int column_number(BoundingBox *boxes, int num_boxes)
+{
+    int num_columns = 0;
+    int *column_max_x = (int *)malloc(num_boxes * sizeof(int));
+
+    for (int i = 0; i < num_boxes; i++)
+    {
+        int max_x = boxes[i].max_x;
+        int found = 0;
+
+        for (int j = 0; j < num_columns; j++)
+        {
+            if (abs(max_x - column_max_x[j]) <= X_BIAS)
+            {
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            column_max_x[num_columns] = max_x;
+            num_columns++;
+        }
+    }
+
+    free(column_max_x);
+    return num_columns;
+}
+
+/**
  * This function check if a fivne Bounding box have the correct proportion of white pixel in it
  * @param img base img (to check white pixel)
  * @param box Bounding box struct to check
@@ -8,7 +44,7 @@
  */
 int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
 {
-    
+    /*
     unsigned int white_pixel_count = 0;
     unsigned int total_pixels = (box->max_x - box->min_x + 1) * (box->max_y - box->min_y + 1);
 
@@ -28,7 +64,7 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
     if (proportion < MIN_WHITE_PROP || proportion > MAX_WHITE_PROP) return 0;
        
     else
-    
+    */
         return 1;
 }
 
@@ -39,24 +75,27 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
  */
 int check_box(BoundingBox *box)
 {
-    
+    /*
     int height = box->max_y - box->min_y;
     int width = box->max_x - box->min_x;
     int surface = height * width;
     double ratio = height / width;
 
     if(surface < MIN_SURFACE || surface > MAX_SURFACE){
+        printf("Incorrect box surface : %d\n", surface);
         return 0;
     }
     else if(height < MIN_HEIGHT || height > MAX_HEIGHT) {
+        printf("Incorrect box height %d\n", height);
         return 0;
     }
     else if(width < MIN_WIDTH || width > MAX_WIDTH) {
+        printf("Incorrect width : %d\n", width);
         return 0;
     }
-    
     /*
     else if(ratio < MIN_RATIO || ratio > MAX_RATIO){
+        printf("Incorrect box ratio : %f\n", ratio);
         return 0;
     }*/
 
@@ -136,6 +175,9 @@ void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsig
  */
 void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_columns, Color color)
 {
+    int x = 0;
+    int y = 0;
+
     for (int i = 0; i < num_boxes; i++)
     {
         int width = boxes[i].max_x - boxes[i].min_x;
@@ -147,7 +189,6 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_co
             int max_x = boxes[i].max_x;
             int max_y = boxes[i].max_y;
 
-            // Dessine les bordures horizontales
             for (int border_y = 0; border_y < PADDING; border_y++)
             {
                 for (int x_coord = min_x; x_coord <= max_x; x_coord++)
@@ -167,7 +208,6 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_co
                 }
             }
 
-            // Dessine les bordures verticales 
             for (int border_x = 0; border_x < PADDING; border_x++)
             {
                 for (int y_coord = min_y; y_coord <= max_y; y_coord++)
@@ -185,6 +225,47 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_co
                         img->pixels[y_coord][max_x - border_x].b = color.b;
                     }
                 }
+            }
+
+            int box_width = max_x - min_x + 1;
+            int box_height = max_y - min_y + 1;
+
+            custIMG *box_img = create_image(box_width, box_height);
+
+            for (int y_coord = 0; y_coord < box_height; y_coord++)
+                for (int x_coord = 0; x_coord < box_width; x_coord++)
+                    box_img->pixels[y_coord][x_coord] = img->pixels[min_y + y_coord][min_x + x_coord];
+
+            SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, box_width, box_height, 32, SDL_PIXELFORMAT_RGBA32);
+            if (!surface) errx(EXIT_FAILURE, "Error while surface creation!");
+
+            for (int y_coord = 0; y_coord < box_height; y_coord++)
+            {
+                for (int x_coord = 0; x_coord < box_width; x_coord++)
+                {
+                    Uint32 pixel = SDL_MapRGB(surface->format,
+                                           box_img->pixels[y_coord][x_coord].r,
+                                           box_img->pixels[y_coord][x_coord].g,
+                                           box_img->pixels[y_coord][x_coord].b);
+                    ((Uint32 *)surface->pixels)[y_coord * surface->w + x_coord] = pixel;
+                }
+            }
+
+            struct stat st = {0};
+            if (stat("results_grid", &st) == -1) mkdir("results_grid", 0700);
+
+            char filename[256];
+            sprintf(filename, "results_grid/%d.%d.png", y, x);
+            if (IMG_SavePNG(surface, filename) != 0) errx(EXIT_FAILURE, "Error during the image saving!");
+
+            SDL_FreeSurface(surface);
+            free_image(box_img);
+
+            y++;
+            if (y == num_columns)
+            {
+                y = 0;
+                x++;
             }
         }
     }
@@ -279,229 +360,10 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
 
 
 /**
- * This function delete all boxes in the list given that are included in another box
+ * This function merge tow (or more) boxes if one (or more) are completly included in the largest box. Only the largest is conserve
  * @param boxes liste of the boxes
  * @return VOID - modify in place
  */
-void merge_include_boxes(BoundingBox* boxes, int *numBox) {
-    if (!boxes || !numBox || *numBox <= 0) {
-        return;
-    }
-
-    for (int i = 0; i < *numBox; i++) {
-        if (boxes[i].min_x == 0 && boxes[i].max_x == 0 && 
-            boxes[i].min_y == 0 && boxes[i].max_y == 0) {
-            continue;
-        }
-
-        for (int j = 0; j < *numBox; j++) {
-            if (i == j || (boxes[j].min_x == 0 && boxes[j].max_x == 0 && 
-                boxes[j].min_y == 0 && boxes[j].max_y == 0)) {
-                continue;
-            }
-
-            if (boxes[i].min_x >= boxes[j].min_x && 
-                boxes[i].max_x <= boxes[j].max_x &&
-                boxes[i].min_y >= boxes[j].min_y && 
-                boxes[i].max_y <= boxes[j].max_y) {
-                
-                boxes[i].min_x = 0;
-                boxes[i].max_x = 0;
-                boxes[i].min_y = 0;
-                boxes[i].max_y = 0;
-                break;
-            }
-        }
-    }
-}
-
-
-/**
- * This function clean the boxes list given in parameter by removing all '0' boxes and sort the list by min_y (and min_x)
- * @param boxes the list of boxes to clean
- * @return VOID - modify in place
- */
-void sorting_boxes(BoundingBox* boxes, int *numBox) {
-    if (!boxes || !numBox || *numBox <= 0) {
-        return;
-    }
-    BoundingBox* tempBoxes = (BoundingBox*)calloc(*numBox, sizeof(BoundingBox));
-    if (!tempBoxes) {
-        return;
-    }
-
-    int validCount = 0;
-    for (int i = 0; i < *numBox && i < 1000; i++) {
-        if (boxes[i].min_x != 0 || boxes[i].max_x != 0 || 
-            boxes[i].min_y != 0 || boxes[i].max_y != 0) {
-            tempBoxes[validCount] = boxes[i];
-            validCount++;
-        }
-    }
-    for (int i = 0; i < validCount - 1; i++) {
-        for (int j = 0; j < validCount - i - 1; j++) {
-            if (j + 1 >= validCount) break;
-
-            if (tempBoxes[j].max_y > tempBoxes[j + 1].max_y + COORD_BIAS) {
-                BoundingBox temp = tempBoxes[j];
-                tempBoxes[j] = tempBoxes[j + 1];
-                tempBoxes[j + 1] = temp;
-            }
-            else if (abs(tempBoxes[j].max_y - tempBoxes[j + 1].max_y) <= COORD_BIAS) {
-                if (tempBoxes[j].max_x > tempBoxes[j + 1].max_x + COORD_BIAS) {
-                    BoundingBox temp = tempBoxes[j];
-                    tempBoxes[j] = tempBoxes[j + 1];
-                    tempBoxes[j + 1] = temp;
-                }
-            }
-        }
-    }
-    for (int i = 0; i < validCount && i < *numBox; i++) {
-        boxes[i] = tempBoxes[i];
-    }
-    *numBox = validCount;
-
-    free(tempBoxes);
-    tempBoxes = NULL;
-}
-
-/**
- * This function create a two dimensional array of boxes from the given list of boxes
- * @param boxes the list of boxes to process
- * @param num_boxes the number of boxes in the list
- * @return a two dimensional array of boxes
- */
-BoundingBox* create_2d_boxes(BoundingBox* boxes, int num_boxes) {
-    if (!boxes || num_boxes <= 0) {
-        return NULL;
-    }
-    int num_columns = column_number(boxes, num_boxes);
-    if (num_columns <= 0) {
-        return NULL;
-    }
-
-    BoundingBox* boxes_2d = (BoundingBox*)calloc(num_columns, sizeof(BoundingBox));
-    if (!boxes_2d) {
-        return NULL;
-    }
-    int j = 0;
-    for (int i = 0; i < num_boxes && j < num_columns; i++) {
-        if (boxes[i].min_x == 0 && boxes[i].max_x == 0 && 
-            boxes[i].min_y == 0 && boxes[i].max_y == 0) {
-            continue;
-        }
-
-        boxes_2d[j] = boxes[i];
-        j++;
-    }
-
-    return boxes_2d;
-}
-
-
-/**
- * Sauvegarde une box individuelle en PNG
- * @param img Image source
- * @param box Box à sauvegarder
- * @param x Index de ligne
- * @param y Index de colonne
- */
-void save_box(custIMG *img, BoundingBox box, int x, int y) {
-    // Vérification des paramètres
-    if (!img) {
-        errx(EXIT_FAILURE, "Image source invalide");
-    }
-
-    // Vérification des coordonnées de la boîte
-    if (box.min_x < 0 || box.min_y < 0 || 
-        box.max_x < 0 || box.max_y < 0 ||
-        box.min_x > box.max_x || box.min_y > box.max_y ||
-        box.max_x >= (int)img->width || box.max_y >= (int)img->height) {
-        errx(EXIT_FAILURE, "Coordonnées invalides pour la boîte");
-    }
-
-    int box_width = box.max_x - box.min_x + 1;
-    int box_height = box.max_y - box.min_y + 1;
-
-    if (box_width <= 0 || box_height <= 0) {
-        errx(EXIT_FAILURE, "Dimensions invalides pour la boîte : largeur=%d, hauteur=%d", box_width, box_height);
-    }
-
-    // Création d'une surface SDL pour la boîte
-    SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, box_width, box_height, 
-                                                          32, SDL_PIXELFORMAT_RGBA32);
-    if (!surface) {
-        errx(EXIT_FAILURE, "Erreur lors de la création de la surface SDL : %s", SDL_GetError());
-    }
-
-    // Copier les pixels de l'image source vers la surface SDL
-    if (SDL_LockSurface(surface) < 0) {
-        SDL_FreeSurface(surface);
-        errx(EXIT_FAILURE, "Impossible de verrouiller la surface SDL : %s", SDL_GetError());
-    }
-
-    Uint32 *pixels = (Uint32 *)surface->pixels;
-
-    for (int y_coord = 0; y_coord < box_height; y_coord++) {
-        for (int x_coord = 0; x_coord < box_width; x_coord++) {
-            int src_y = box.min_y + y_coord;
-            int src_x = box.min_x + x_coord;
-            Pixel pixel = img->pixels[src_y][src_x];
-            Uint32 sdl_pixel = SDL_MapRGB(surface->format, pixel.r, pixel.g, pixel.b);
-            pixels[y_coord * surface->w + x_coord] = sdl_pixel;
-        }
-    }
-
-    SDL_UnlockSurface(surface);
-
-    // Création du dossier si nécessaire
-    struct stat st = {0};
-    if (stat("results_grid", &st) == -1) {
-        if (mkdir("results_grid", 0700) == -1) {
-            SDL_FreeSurface(surface);
-            errx(EXIT_FAILURE, "Impossible de créer le répertoire results_grid");
-        }
-    }
-
-    // Création du nom de fichier
-    char filename[256];
-    if (snprintf(filename, sizeof(filename), "results_grid/%d.%d.png", x, y) >= (int)sizeof(filename)) {
-        SDL_FreeSurface(surface);
-        errx(EXIT_FAILURE, "Nom de fichier trop long");
-    }
-
-    // Sauvegarde de la surface en PNG
-    if (IMG_SavePNG(surface, filename) != 0) {
-        SDL_FreeSurface(surface);
-        errx(EXIT_FAILURE, "Erreur lors de l'enregistrement de l'image : %s", IMG_GetError());
-    }
-
-    // Libération de la surface
-    SDL_FreeSurface(surface);
-}
-
-
-void save_boxes(custIMG *img, BoundingBox *boxes, int num_boxes, int num_columns) {
-    if (!img || !boxes || num_boxes <= 0 || num_columns <= 0) {
-        return;
-    }
-
-    // Supprimer et recréer le dossier
-    struct stat st = {0};
-    if (stat("results_grid", &st) == 0) {
-        int ret = system("rm -rf results_grid");
-        if (ret == -1) {
-            errx(EXIT_FAILURE, "Failed to remove results_grid directory");
-        }
-    }
-    if (mkdir("results_grid", 0700) == -1) {
-        errx(EXIT_FAILURE, "Failed to create results_grid directory");
-    }
-
-    // Sauvegarder chaque box
-    for (int i = 0; i < num_boxes; i++) {
-        int x = i / num_columns;
-        int y = i % num_columns;
-        save_box(img, boxes[i], x, y);
-    }
+void merge_include_boxes(BoundingBox* boxes){
+    errx(EXIT_FAILURE, "Not implemented yet!");
 }

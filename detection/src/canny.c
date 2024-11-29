@@ -234,25 +234,14 @@ void process(custIMG *img)
     int num_boxes;
     find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
 
-    merge_include_boxes(boxes, &num_boxes);
-
-    sorting_boxes(boxes, &num_boxes);
-
-    BoundingBox *sortBoxes;
-    sortBoxes = create_2d_boxes(boxes, num_boxes);
-
-    int num_columns = column_number(sortBoxes, num_boxes);
-    //save_boxes(img, sortBoxes, num_boxes, num_columns);
-
-
-
+    
     BoundingBox *gridBoxes;
     int numGridBox;
-    detect_word_grid(sortBoxes, num_boxes, &gridBoxes, &numGridBox);
+    detect_word_grid(boxes, num_boxes, &gridBoxes, &numGridBox);
 
-    num_columns = column_number(gridBoxes, numGridBox);
+    int num_columns = column_number(gridBoxes, numGridBox);
 
-    /*
+    
     BoundingBox **word_lists;
     int num_words;
     int *word_lengths;
@@ -269,7 +258,6 @@ void process(custIMG *img)
         free(word_lists);
         free(word_lengths);
     }   
-    */
 
 
     Color red = {255, 0, 0};
