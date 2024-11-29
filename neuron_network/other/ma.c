@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 //#include "transpose_image.c"
-#include "../solver/solve.c"
+#include "solve.c"
+
 #include "predict.c"
 
 int main()
@@ -11,6 +12,10 @@ int main()
 
     pro_grid();
     pro_word();
+    
+    printf("la");
+    pro_solv();
+    
     
     return 1;
 }

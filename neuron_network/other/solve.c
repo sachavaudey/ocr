@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+//#include "solve.h"
 
 //trouver le nombre de mots
 
@@ -145,7 +146,7 @@ int search_down_right(char** matrice, char* word ,int i,int j,int x)
 void solver(char *nom_fichier,char *word) 
 {   
 
-    FILE *file = fopen("../coordo", "a");
+   // FILE *file = fopen("../coordo", "a");
     int lignes, colonnes;
     char (*ma)[100] = lire_grille(nom_fichier, &lignes, &colonnes); 
     int x=0;
@@ -188,7 +189,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_left(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j-x+1,i);
-                        fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i);
+                        //fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i);
                         return;
                     }
                 }
@@ -197,7 +198,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_right(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j+x-1,i);
-                        fprintf(file, "%d,%d %d,%d\n", j,i,j+x-1,i);
+                        //fprintf(file, "%d,%d %d,%d\n", j,i,j+x-1,i);
                         return;
                     } 
                     
@@ -208,7 +209,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_up(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j,i+1-x);
-                        fprintf(file, "%d,%d %d,%d\n", j,i,j,i+1-x);
+                        //fprintf(file, "%d,%d %d,%d\n", j,i,j,i+1-x);
                         return;
                     }
                     
@@ -220,7 +221,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_down(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j,i+x-1);
-                        fprintf(file, "%d,%d %d,%d\n", j,i,j,i+x-1);
+                        //fprintf(file, "%d,%d %d,%d\n", j,i,j,i+x-1);
                         return;
                     }
                     
@@ -230,7 +231,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_up_left(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j-x+1,i-x+1);
-                        fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i-x+1);
+                        //fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i-x+1);
                         return;
                     }
                     
@@ -240,7 +241,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_up_right(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j+x-1,i-x+1);
-                        fprintf(file, "%d,%d %d,%d\n", j,i,j+x-1,i-x+1);
+                        //fprintf(file, "%d,%d %d,%d\n", j,i,j+x-1,i-x+1);
                         return;
                     }
                     
@@ -250,7 +251,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_down_left(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j-x+1,i+x-1);
-                        fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i+x-1);
+                        //fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i+x-1);
                         return;
                     }
                 }
@@ -259,7 +260,7 @@ void solver(char *nom_fichier,char *word)
                     if (search_down_right(matrice, word ,i, j, x)==1)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,-(j-x+1),(i+x-1));
-                        fprintf(file, "%d,%d %d,%d\n", j,i,-(j-x+1),(i+x-1));
+                        //fprintf(file, "%d,%d %d,%d\n", j,i,-(j-x+1),(i+x-1));
                         return;
                     }
                 }
@@ -267,7 +268,7 @@ void solver(char *nom_fichier,char *word)
         }
     }
     printf(" Not Found ");
-    fprintf(file, "%d,%d %d,%d\n", 0,0,0,0);
+    //fprintf(file, "%d,%d %d,%d\n", 0,0,0,0);
     //fprintf(file, "-1,-1 -1,-1\n" );
     return;
     
@@ -331,11 +332,11 @@ int process_solver(char* filename, char* word) {
 }
 
 
-int main()
+int pro_solv()
 {
-    
+    printf("ici");
     //process_solver(argv[1],argv[2]);
-    remove("../coordo");
+    //remove("../../coordo");
     char** grid=malloc(2*sizeof(char*));
     grid[0]=malloc(4*sizeof(char));
     sprintf(grid[0],"grid");
@@ -363,6 +364,17 @@ int main()
         
         printf("\n\n\n");
     }
+    
+    free(grid[0]);
+    free(grid[1]);
+    free(grid);
+    for (size_t i = 0; i < n[0]; i++)
+    {
+        free(word[i]);
+    }
+    free(word);
+    
+    free(n);
     
 
     

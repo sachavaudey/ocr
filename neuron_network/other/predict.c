@@ -264,7 +264,7 @@ int* search_size(int* res)
 //function which create the grid
 void create_grid(char* tab,int a,int b)
 {
-    FILE *file = fopen("../solver/grid", "w");
+    FILE *file = fopen("grid", "w");
     
     int c=0;
 
@@ -281,7 +281,7 @@ void create_grid(char* tab,int a,int b)
 //function which create the word
 void create_word(char* tab,int* a,int b)
 {
-    FILE *file = fopen("../solver/word", "w");
+    FILE *file = fopen("word", "w");
     
     int c=0;
 
@@ -454,7 +454,7 @@ int pro_grid()
         }
         for (int i = 0; i < OUTPUT_SIZE; i++) 
         {
-            //printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
+            printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
         }
         printf("La lettre %zu est %c\n",i+1,lettre[j]);
         printf("\n\n");
