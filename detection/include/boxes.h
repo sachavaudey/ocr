@@ -9,6 +9,7 @@
 #include <SDL2/SDL_image.h>
 #include <err.h>
 #include "constant.h"
+#include <unistd.h>
 
 typedef struct
 {

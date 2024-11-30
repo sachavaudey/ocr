@@ -73,21 +73,18 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
  */
 int check_box(BoundingBox* boxes, BoundingBox *box, int num_box)
 {
-    if(!is_box_included(boxes, num_box, box)) return 0;
+    if(is_box_included(boxes, num_box, box)) return 0;
     int height = box->max_y - box->min_y;
     int width = box->max_x - box->min_x;
     int surface = height * width;
 
     if(surface < MIN_SURFACE || surface > MAX_SURFACE){
-        printf("Incorrect box surface : %d\n", surface);
         return 0;
     }
     else if(height < MIN_HEIGHT || height > MAX_HEIGHT) {
-        printf("Incorrect box height %d\n", height);
         return 0;
     }
     else if(width < MIN_WIDTH || width > MAX_WIDTH) {
-        printf("Incorrect width : %d\n", width);
         return 0;
     }
 
@@ -167,8 +164,25 @@ void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsig
  */
 void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_columns, Color color)
 {
-    int x = 0;
-    int y = 0;
+    // Compter d'abord le nombre de boîtes valides
+    int valid_boxes = 0;
+    for (int i = 0; i < num_boxes; i++) {
+        int width = boxes[i].max_x - boxes[i].min_x;
+        int height = boxes[i].max_y - boxes[i].min_y;
+        if (width > MIN_WIDTH && height > MIN_HEIGHT) {
+            valid_boxes++;
+        }
+    }
+
+    // Créer le dossier si nécessaire
+    struct stat st = {0};
+    if (stat("results_grid", &st) == -1) 
+        mkdir("results_grid", 0700);
+
+    int counter = 0;
+    printf("\nEnregistrement des images : \n");
+    printf("[");
+    fflush(stdout);
 
     for (int i = 0; i < num_boxes; i++)
     {
@@ -181,6 +195,7 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_co
             int max_x = boxes[i].max_x;
             int max_y = boxes[i].max_y;
 
+            // Dessin des bordures
             for (int border_y = 0; border_y < PADDING; border_y++)
             {
                 for (int x_coord = min_x; x_coord <= max_x; x_coord++)
@@ -243,24 +258,31 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_co
                 }
             }
 
-            struct stat st = {0};
-            if (stat("results_grid", &st) == -1) mkdir("results_grid", 0700);
-
             char filename[256];
-            sprintf(filename, "results_grid/%d.%d.png", y, x);
-            if (IMG_SavePNG(surface, filename) != 0) errx(EXIT_FAILURE, "Error during the image saving!");
+            sprintf(filename, "results_grid/%d.png", counter++);
+            if (IMG_SavePNG(surface, filename) != 0) 
+                errx(EXIT_FAILURE, "Error during the image saving!");
 
             SDL_FreeSurface(surface);
             free_image(box_img);
 
-            y++;
-            if (y == num_columns)
-            {
-                y = 0;
-                x++;
+            usleep(30000);
+
+            float progress = (float)counter / valid_boxes;
+            int bar_width = 50;
+            int pos = bar_width * progress;
+
+            printf("\r[");
+            for (int j = 0; j < bar_width; j++) {
+                if (j < pos) printf("=");
+                else if (j == pos) printf(">");
+                else printf(" ");
             }
+            printf("] %d%% (%d/%d)", (int)(progress * 100.0), counter, valid_boxes);
+            fflush(stdout);
         }
     }
+    printf("\nTerminé !\n");
 }
 
 /**
@@ -359,26 +381,5 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
  * @return 1 if included, 9 otherwise
  */
 int is_box_included(BoundingBox *boxes, int num_boxes, BoundingBox *box) {
-    // Vérification des paramètres
-    if (!boxes || !box || num_boxes <= 0) {
-        return 1;
-    }
-
-    // Parcours de toutes les boîtes
-    for (int i = 0; i < num_boxes; i++) {
-        // Éviter la comparaison avec soi-même
-        if (&boxes[i] == box) {
-            continue;
-        }
-
-        // Vérifier si la boîte actuelle est incluse dans boxes[i]
-        if (box->min_x >= boxes[i].min_x && 
-            box->max_x <= boxes[i].max_x &&
-            box->min_y >= boxes[i].min_y && 
-            box->max_y <= boxes[i].max_y) {
-            return 0;  // La boîte est incluse dans une autre
-        }
-    }
-    
-    return 1;  // La boîte n'est incluse dans aucune autre
+    return 0;
 }
