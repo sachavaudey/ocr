@@ -264,7 +264,7 @@ void process(custIMG *img)
     Color green = {0, 255, 0};
 
     draw_rectangles(img, boxes, num_boxes, num_columns, green);
-    draw_rectangles(img, gridBoxes, numGridBox, num_columns, red);
+    //draw_rectangles(img, gridBoxes, numGridBox, num_columns, red);
     
     for (unsigned int i = 0; i < img->height; i++)
     {

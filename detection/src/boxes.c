@@ -44,7 +44,6 @@ int column_number(BoundingBox *boxes, int num_boxes)
  */
 int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
 {
-    /*
     unsigned int white_pixel_count = 0;
     unsigned int total_pixels = (box->max_x - box->min_x + 1) * (box->max_y - box->min_y + 1);
 
@@ -64,7 +63,6 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
     if (proportion < MIN_WHITE_PROP || proportion > MAX_WHITE_PROP) return 0;
        
     else
-    */
         return 1;
 }
 
@@ -73,13 +71,12 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
  * @param box the bounding box to process
  * @return 1 if incorrect, 0 otherwise
  */
-int check_box(BoundingBox *box)
+int check_box(BoundingBox* boxes, BoundingBox *box, int num_box)
 {
-    /*
+    if(!is_box_included(boxes, num_box, box)) return 0;
     int height = box->max_y - box->min_y;
     int width = box->max_x - box->min_x;
     int surface = height * width;
-    double ratio = height / width;
 
     if(surface < MIN_SURFACE || surface > MAX_SURFACE){
         printf("Incorrect box surface : %d\n", surface);
@@ -93,11 +90,6 @@ int check_box(BoundingBox *box)
         printf("Incorrect width : %d\n", width);
         return 0;
     }
-    /*
-    else if(ratio < MIN_RATIO || ratio > MAX_RATIO){
-        printf("Incorrect box ratio : %f\n", ratio);
-        return 0;
-    }*/
 
     return 1;
 }
@@ -321,7 +313,7 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
                 flood_fill(edge_map, label_map, x, y, height, width, label, &box);
 
                 
-                if (check_box(&box) && check_white_pixel_proportion(img, &box))
+                if (check_box(*boxes, &box, *num_boxes) && check_white_pixel_proportion(img, &box))
                 {
                     if (*num_boxes >= temp_capacity)
                     {
@@ -360,10 +352,33 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
 
 
 /**
- * This function merge tow (or more) boxes if one (or more) are completly included in the largest box. Only the largest is conserve
- * @param boxes liste of the boxes
- * @return VOID - modify in place
+ * This function detect if an given boxe is included ine one of the other ine the liste (execpted herself)
+ * @param boxes the list of the boxes
+ * @param num_boxes the number of boxes
+ * @param box the box to check
+ * @return 1 if included, 9 otherwise
  */
-void merge_include_boxes(BoundingBox* boxes){
-    errx(EXIT_FAILURE, "Not implemented yet!");
+int is_box_included(BoundingBox *boxes, int num_boxes, BoundingBox *box) {
+    // Vérification des paramètres
+    if (!boxes || !box || num_boxes <= 0) {
+        return 1;
+    }
+
+    // Parcours de toutes les boîtes
+    for (int i = 0; i < num_boxes; i++) {
+        // Éviter la comparaison avec soi-même
+        if (&boxes[i] == box) {
+            continue;
+        }
+
+        // Vérifier si la boîte actuelle est incluse dans boxes[i]
+        if (box->min_x >= boxes[i].min_x && 
+            box->max_x <= boxes[i].max_x &&
+            box->min_y >= boxes[i].min_y && 
+            box->max_y <= boxes[i].max_y) {
+            return 0;  // La boîte est incluse dans une autre
+        }
+    }
+    
+    return 1;  // La boîte n'est incluse dans aucune autre
 }
