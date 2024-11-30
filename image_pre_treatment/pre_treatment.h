@@ -7,7 +7,9 @@
 #include "rotation/rotation.h"
 #include "noise_reduction/noise_reduction.h"
 
-void PRT_Full(SDL_Surface* surface);
+void PRT_Heavy(SDL_Surface* surface);
+void PRT_Medium(SDL_Surface* surface);
+void PRT_Light(SDL_Surface* surface);
 void PRT_Rotate(SDL_Surface* surface, int angle);
 
 #endif

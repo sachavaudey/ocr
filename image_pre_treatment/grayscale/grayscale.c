@@ -33,7 +33,8 @@ void PRT_Grayscaling(SDL_Surface *surface)
 
         // Computing rgb average to scale it on 0-255 grey color
         //gray = (Uint8)(0.2126 * r + 0.7152* g + 0.0722 * b);
-        gray = (Uint8)(0.299 * r + 0.587 * g + 0.114 * b);
+        // gray = (Uint8)(0.299 * r + 0.587 * g + 0.114 * b);
+        gray= (Uint8)(0.400 * r + 0.500 * g + 0.100 * b);
 		
 		// Assigning grey value to pixel
         new_pixels[i] = SDL_MapRGB(surface->format, gray, gray, gray);

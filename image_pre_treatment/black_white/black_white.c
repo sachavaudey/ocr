@@ -1,5 +1,4 @@
 #include "black_white.h"
-#include <stdio.h>
 
 
 
@@ -35,7 +34,8 @@ void PRT_BlackWhite(SDL_Surface *surface)
 	if (LOG_LEVEL >= 2)
 		printf("avg before : %i", avg);
 
-	//avg = avg * 0.9;
+	if (avg >= 215)
+		avg = avg * 0.8;
 	
 	if (LOG_LEVEL >= 2)
 		printf("avg after : %i", avg);
