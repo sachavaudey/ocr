@@ -249,7 +249,7 @@ void process(custIMG *img)
     if (detect_words(boxes, num_boxes, gridBoxes, numGridBox, &word_lists, &num_words, &word_lengths)) {
         Color blue = {0, 0, 255};
         for (int i = 0; i < num_words; i++) {
-            draw_rectangles(img, word_lists[i], word_lengths[i], num_columns, blue);
+            //draw_rectangles(img, word_lists[i], word_lengths[i], blue);
         }
 
         for (int i = 0; i < num_words; i++) {
