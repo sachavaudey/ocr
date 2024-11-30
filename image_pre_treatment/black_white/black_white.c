@@ -18,18 +18,28 @@ void PRT_BlackWhite(SDL_Surface *surface)
 	SDL_LockSurface(surface);
 
 	if (LOG_LEVEL)
-		printf("---------------\nStarting conversion to black or white...\n");
+		printf("%s\nStarting conversion to black or white...\n",
+				LOG_SEPARATOR);
    
 	const int pixelCount = (surface->w * surface->h);
+
     Uint32 *pixels = surface->pixels;
     Uint8 gray;
    
 
-	Uint8 avg = RgbAverageSurface(surface)[0];
-	printf("avg before : %i", avg);
+	Uint8* temp = RgbAverageSurface(surface);
+	Uint8 avg = temp[0];
+	free(temp);
 
-	avg = avg * 0.9;
-	printf("avg after : %i", avg);
+	if (LOG_LEVEL >= 2)
+		printf("avg before : %i", avg);
+
+	if (avg >= 215)
+		avg = avg * 0.8;
+	
+	if (LOG_LEVEL >= 2)
+		printf("avg after : %i", avg);
+	
 	for (int i = 0; i < pixelCount; ++i)
     {
         //r == g == b
@@ -46,8 +56,9 @@ void PRT_BlackWhite(SDL_Surface *surface)
 	}
 
 	SDL_UnlockSurface(surface);
-
+	
 	if (LOG_LEVEL)
-		printf("Surface successfully converted to Black&White !\n---------------\n");
+		printf("Surface successfully converted to Black&White !\n%s\n",
+				LOG_SEPARATOR);
 }
 

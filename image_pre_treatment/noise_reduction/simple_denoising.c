@@ -23,9 +23,22 @@
 void PRT_SimpleDenoising(SDL_Surface *surface)
 {
 	SDL_LockSurface(surface);
-	
-	if (LOG_LEVEL)
-		printf("-------------------\nStarting simple denoise...\n");
+	pid_t parentId = getpid();
+	pid_t pid = fork();
+
+	if (pid == 0)
+	{
+		int status = 0;
+		if (LOG_LEVEL >= 1)
+		{
+			printf("%s\nStarting average denoising...\n",
+				LOG_SEPARATOR);
+			waitpid(parentId, &status, 0);
+ 			printf("Average denoising successfully finished !\n%s\n",
+					LOG_SEPARATOR);
+		}
+		_exit(EXIT_SUCCESS);
+	}
 
 	/* pseudo code
 	 * chq pixel :
@@ -66,7 +79,4 @@ void PRT_SimpleDenoising(SDL_Surface *surface)
 	memcpy(pixels, new_pixels, pixel_count*sizeof(Uint32));
 	free(new_pixels);
 	SDL_UnlockSurface(surface);
-
-	if (LOG_LEVEL)
-		printf("Simple denoise successfully completed !\n-----------------------\n");
 }

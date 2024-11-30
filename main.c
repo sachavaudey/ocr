@@ -65,10 +65,7 @@ int run_pretreatment(SDL_Surface *surface) {
 }
 
 int run_letterdetection() {
-    printf("Enter in function\n");
-    SDL_Surface *surface = load_surface("result.png");
-    printf("New image sucessfully load\n");
-    return lalala(surface);
+    return process_letterdetection("result.png");
 }
 
 int run_griddetection(SDL_Surface *surface) {
