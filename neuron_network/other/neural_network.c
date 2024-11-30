@@ -86,7 +86,8 @@ void backpropagation_batch(double** batch_input, double** batch_hidden,
     // Calcul des erreurs de sortie
     for (int img = 0; img < batch_size; img++) {
         for (int i = 0; i < OUTPUT_SIZE; i++) {
-            output_errors[img][i] = (batch_target[img][i] - batch_output[img][i]) * sigmoid_derivative(batch_output[img][i]);
+            output_errors[img][i] = (batch_target[img][i] - batch_output[img][i]) 
+            * sigmoid_derivative(batch_output[img][i]);
         }
     }
 
@@ -156,6 +157,7 @@ void softmax(double* input, double* output, size_t length) {
     }
 }
 
+// function which predict the letter
 void predict(double* input, double** hiddenWeight, double** outPutWeight, double* hiddenLayerBias, 
              double* outputLayerBias, double* outputLayer) {
     double* hiddenLayer = (double*)malloc(HIDDEN_SIZE * sizeof(double));
@@ -183,6 +185,7 @@ void predict(double* input, double** hiddenWeight, double** outPutWeight, double
     free(outputRaw);
 }
 
+//create the binary table
 void remplirTestAvecImages_black(double** test, char** images) {
     for (size_t i = 0; i < BATCH_SIZE; i++) {
         double* resultats = traitements_test(images[i]);
@@ -194,7 +197,7 @@ void remplirTestAvecImages_black(double** test, char** images) {
 }
 
 
-
+//create the way of file
 void remplir_chemins_images(char** images, const char* prefixe, const char* suffixe) {
     char* lettres_min[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
                            "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", 
@@ -212,6 +215,8 @@ void remplir_chemins_images(char** images, const char* prefixe, const char* suff
         snprintf(images[i], FILENAME_SIZE, "%s/%s/%c%s.PNG", prefixe, lettres_min[i], lettres[i], suffixe);
     }
 }
+
+//shuffle table
 void shuffle(int *array, size_t n) {
     if (n > 1) {
         for (size_t i = 0; i < n - 1; i++) {
@@ -223,6 +228,7 @@ void shuffle(int *array, size_t n) {
     }
 }
 
+//function which save the result in file
 void save_weights(double** hiddenoutput, double** outPutWeight, double* hiddenLayerBias, 
                   double* outputLayerBias) {
     FILE *file = fopen("../save_value/weight_hidden_output.txt", "w");
@@ -336,8 +342,10 @@ int main() {
     }
     free(images);
 
-    int trainingsetorder[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-                              26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52};
+    int trainingsetorder[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+     13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+    26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 
+    39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52};
     // Entraînement du réseau
     for (int epoch = 0; epoch < EPOCHS; epoch++) {
         shuffle(trainingsetorder, OUTPUT_SIZE);
@@ -388,9 +396,11 @@ int main() {
         double* prediction = malloc(OUTPUT_SIZE * sizeof(double));
         predict(new_input, weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, prediction);
 
-        char lettre[52] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                           'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-                           'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+        char lettre[52] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 
+        'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c',
+         'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+        'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
 
         int j = 0;
         double max = prediction[0];
@@ -437,9 +447,12 @@ char* res2[4];
                 new_input[j] = resultats[j];
             }               
             double prediction[4];
-            predict(new_input, weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, prediction);
-            char lettre[52]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X'
-            ,'Y','Z','a','b','c','d','e','f','g','h','i','j','q','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+            predict(new_input, weights_input_hidden, weights_hidden_output, 
+            hidden_bias, output_bias, prediction);
+            char lettre[52]={'A','B','C','D','E','F','G','H','I','J','K',
+            'L','M','N','O','P','Q','R','S','T','U','V','W','X'
+            ,'Y','Z','a','b','c','d','e','f','g','h','i','j','q','l','m',
+            'n','o','p','q','r','s','t','u','v','w','x','y','z'};
             
         
         // Afficher les résultats de la prédiction

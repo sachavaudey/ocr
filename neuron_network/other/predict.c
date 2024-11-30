@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
 #include "img_traitement.c"
 #include "transpose_image.c"
 //#include "predict.h"
@@ -10,7 +13,8 @@
 //clang $(pkg-config --cflags --libs sdl2 SDL2_image) -g -o t predict.c && clear && ./t
 
 
-
+#define h 2
+#define l 2
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
 #define HIDDEN_SIZE 60       
@@ -26,6 +30,7 @@ double weights_hidden_output[HIDDEN_SIZE][OUTPUT_SIZE];
 double hidden_bias[HIDDEN_SIZE];
 double output_bias[OUTPUT_SIZE];
 
+//function which load data in file
 void load_hidden_bias(char* filename)
 {
     FILE *file = fopen(filename, "r");
@@ -43,6 +48,7 @@ void load_hidden_bias(char* filename)
     fclose(file);
 }
 
+//function which load data in file
 void load_output_bias(char* filename)
 {
     FILE *file = fopen(filename, "r");
@@ -60,6 +66,7 @@ void load_output_bias(char* filename)
     fclose(file);
 }
 
+//function which load data in file
 void load_weight_hidden_output(char *filename)
 {
     FILE *file = fopen(filename, "r");
@@ -83,6 +90,7 @@ void load_weight_hidden_output(char *filename)
     fclose(file);
 }
 
+//function which load data in file
 void load_weight_hidden_input(char *filename)
 {
     FILE *file = fopen(filename, "r");
@@ -107,11 +115,10 @@ void load_weight_hidden_input(char *filename)
     fclose(file);
 }
 
-
+//function of activation
 double sigmoid(double x) {
     return 1 / (1 + exp(-x));
 }
-
 
 
 void softmax(double* input, double* output, size_t length) {
@@ -131,6 +138,7 @@ void softmax(double* input, double* output, size_t length) {
     }
 }
 
+//function which predict the output
 void predict(double input[INPUT_SIZE], double hiddenWeight[INPUT_SIZE][HIDDEN_SIZE], 
              double outPutWeight[HIDDEN_SIZE][OUTPUT_SIZE], double hiddenLayerBias[HIDDEN_SIZE], 
              double outputLayerBias[OUTPUT_SIZE], double* outputLayer) {
@@ -159,18 +167,8 @@ void predict(double input[INPUT_SIZE], double hiddenWeight[INPUT_SIZE][HIDDEN_SI
     softmax(outputRaw, outputLayer, OUTPUT_SIZE);
 }
 
-void remplirTestAvecImages(double test[BATCH_SIZE][INPUT_SIZE], char* images[BATCH_SIZE]) {
-    for (size_t i = 0; i < BATCH_SIZE; i++) 
-    {
-        double* resultats = traitements(images[i]);
-        for (size_t j = 0; j < INPUT_SIZE; j++) 
-        {
-            test[i][j] = resultats[j];
-        }
-        free(resultats); 
-    }
-}
 
+//function which create the binary table
 void remplirTestAvecImages_black(double test[BATCH_SIZE][INPUT_SIZE], char* images[BATCH_SIZE]) {
     for (size_t i = 0; i < BATCH_SIZE; i++) 
     {
@@ -183,6 +181,7 @@ void remplirTestAvecImages_black(double test[BATCH_SIZE][INPUT_SIZE], char* imag
     }
 }
 
+//function which create the way
 void remplir_chemins_images(char* images[BATCH_SIZE], const char* prefixe, const char* suffixe) {
     char* lettres_min[BATCH_SIZE] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
                                 "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
@@ -202,8 +201,7 @@ void remplir_chemins_images(char* images[BATCH_SIZE], const char* prefixe, const
 
 
 
-#define h 2
-#define l 2
+
 
 
 void read_grid(char* res[4])
@@ -225,14 +223,15 @@ void read_grid(char* res[4])
 }
 
 
+//function which search the size of grid
 int* search_size(int* res)
 {
-    //int* res=malloc(2*sizeof(int));
+    
     int c=0;
     
     while (1){
         char* var=malloc(FILENAME_SIZE*sizeof(char));
-        snprintf(var,FILENAME_SIZE,"../results-2/0.%d.png",c);   
+        snprintf(var,FILENAME_SIZE,"output/0.%d.png",c);   
         FILE *file = fopen(var, "r");
         if (file==NULL) {
             res[0]=c;
@@ -245,7 +244,7 @@ int* search_size(int* res)
     
     while (1){
         char* var=malloc(FILENAME_SIZE*sizeof(char));
-        snprintf(var,FILENAME_SIZE,"../results-2/%d.0.png",c);   
+        snprintf(var,FILENAME_SIZE,"output/%d.0.png",c);   
         FILE *file = fopen(var, "r");
         if (file==NULL) 
         {
@@ -255,21 +254,18 @@ int* search_size(int* res)
         fclose(file);
         c++;
     } 
-    printf("%d,%d",res[0],res[1]);
+    
     return res;
 
     
 }
 
 
-
+//function which create the grid
 void create_grid(char* tab,int a,int b)
 {
-    FILE *file = fopen("../solver/grid", "w");
-    if (file == NULL) {
-        perror("Error opening file");
-        return;
-    }
+    FILE *file = fopen("grid", "w");
+    
     int c=0;
 
     for (int i = 0; i < a; i++) {
@@ -282,78 +278,67 @@ void create_grid(char* tab,int a,int b)
 }
 
 
-
-
-
-
-
-int main()
+//function which create the word
+void create_word(char* tab,int* a,int b)
 {
-    process_transforme(8);
+    FILE *file = fopen("word", "w");
+    
+    int c=0;
+
+    for (int i = 0; i < b; i++) {
+        for (int j = 0; j < a[i]; j++) {
+            fprintf(file, "%c", tab[c++]);
+        }
+        fprintf(file, "\n");
+    }
+    fclose(file);
+}
+
+
+int pro_word()
+{
+
     load_hidden_bias("../save_value_prime/hiddenLayerBias.txt");
     load_output_bias("../save_value_prime/OutputLayerBias.txt");
     load_weight_hidden_output("../save_value_prime/weight_hidden_output.txt");
     load_weight_hidden_input("../save_value_prime/weight_hidden_input.txt");
     
-    int* size=malloc(2*sizeof(int));
-    search_size(size);
-
+    int* wor=search_size_word();
+    
+    printf("%d\n",wor[1]);
+    int taille1=0;
+    int taille2=0;
+    int i=0;
+    //while(wor[i]!=NULL)
+    while(wor[i]!=0)
+    {
+        if (wor[i]!=0) {
+            taille1++;
+            taille2+=wor[i];
+        }
+        i++;
+    }
     
     
-    
-    
-    //create_grid(r,13,2);
-    
-    
-    
-    
-    //printf("%s,%s",res[0],res[1]);
-    //printf("%d\n",search_size("../results/"));
-    
-    
-    
-
-
-
-    /*char* v[10];
-    int c=0;
-    int t=0;
-    char* y[10];
-    for (size_t j = 0; j < 10; j++)
-        {
-            v[c]=malloc(100*sizeof(char));
-            y[c]=malloc(100*sizeof(char));
-            //snprintf(res[c++], FILENAME_SIZE,"../results/%d_%d.png",i,j);
-            //snprintf(res[c++], FILENAME_SIZE,"output/%d_%d.png",i,j);
-            
-            snprintf(v[c], FILENAME_SIZE,"../results-2/%d.0.png",t);
-            snprintf(v[c++], FILENAME_SIZE,"output/%d.0.png",t++);
-            process_image(v[j],y[j]);
-            //printf("%s\n",res[c-1]);
-        }*/
-    
-
-
-    
-    char* res[10];
+    char* res[taille2];
     int c=0;
     int t=1;
-    //for (size_t i = 0; i < 2; i++)
+    for (int i = 0; i < taille1; i++)
     {
-        for (size_t j = 0; j < 10; j++)
+        t=0;
+        for (int j = 0; j < wor[i]; j++)
         {
             res[c]=malloc(100*sizeof(char));
-            //snprintf(res[c++], FILENAME_SIZE,"../results/%d_%d.png",i,j);
-            //snprintf(res[c++], FILENAME_SIZE,"output/%d_%d.png",i,j);
-            snprintf(res[c++], FILENAME_SIZE,"output/%d.0.png",t++);
+           
+            snprintf(res[c++], FILENAME_SIZE,"words/%d.%d.png",t++,i);
             printf("%s\n",res[c-1]);
         }
     }
-    //res[0]="../images_test/dataset/B/B1.png";
     
-    int pourc=0;
+    
+    
     char* r=malloc(52*sizeof(char));
-    for (size_t i = 0; i < 10; i++)
+    for (int i = 0; i < taille2; i++)
     {
             double new_input[INPUT_SIZE];
             
@@ -362,17 +347,104 @@ int main()
             {
                 new_input[j] = resultats[j];
             }               
-            double prediction[4];
-            predict(new_input, weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, prediction);
-            char lettre[52]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X'
-            ,'Y','Z','a','b','c','d','e','f','g','h','i','j','q','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+            double prediction[26];
+            predict(new_input, weights_input_hidden, weights_hidden_output, 
+            hidden_bias, output_bias, prediction);
+            char lettre[52]={'A','B','C','D','E','F','G','H','I','J','K',
+            'L','M','N','O','P','Q','R','S','T','U','V','W','X'
+            ,'Y','Z','a','b','c','d','e','f','g','h','i','j','q','l','m','n',
+            'o','p','q','r','s','t','u','v','w','x','y','z'};
             
         
+        
+        
+        int j=0;
+        double max=prediction[0];
+        for (int a = 0; a < OUTPUT_SIZE; a++)
+        {
+            if (max<prediction[a])
+            {
+                max=prediction[a];
+                j=a;
+            }
+        }
+        printf("La lettre %d est %c\n",i+1,lettre[j]);
+        printf("\n\n");
+        
+        r[i]=lettre[j];        
+    }
+    create_word(r,wor,taille1);
+
+    free (r);
+
+    return 0;
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+}
+
+int pro_grid()
+{
+    
+    load_hidden_bias("../save_value_prime/hiddenLayerBias.txt");
+    load_output_bias("../save_value_prime/OutputLayerBias.txt");
+    load_weight_hidden_output("../save_value_prime/weight_hidden_output.txt");
+    load_weight_hidden_input("../save_value_prime/weight_hidden_input.txt");
+    
+
+
+    int* size=malloc(2*sizeof(int));
+    search_size(size);
+    
+    size_t taille=88;
+    process_transforme_grid(taille);
+    
+    char* res[taille];
+    int c=0;
+    int t=1;
+    //for (size_t i = 0; i < 2; i++)
+    {
+        for (size_t j = 0; j < taille; j++)
+        {
+            res[c]=malloc(100*sizeof(char));
+           
+            snprintf(res[c++], FILENAME_SIZE,"output/%d.0.png",t++);
+            printf("%s\n",res[c-1]);
+        }
+    } 
+    char* r=malloc(taille*sizeof(char));
+    for (size_t i = 0; i < taille; i++)
+    {
+            double new_input[INPUT_SIZE];
+            
+            double* resultats = traitements_test(res[i]);
+            for (size_t j = 0; j < INPUT_SIZE; j++) 
+            {
+                new_input[j] = resultats[j];
+            }               
+            double prediction[26];
+            predict(new_input, weights_input_hidden, weights_hidden_output, 
+            hidden_bias, output_bias, prediction);
+            char lettre[52]={'A','B','C','D','E','F','G','H','I','J','K',
+            'L','M','N','O','P','Q','R','S','T','U','V','W','X'
+            ,'Y','Z','a','b','c','d','e','f','g','h','i','j','q','l','m',
+            'n','o','p','q','r','s','t','u','v','w','x','y','z'};
         // Afficher les résultats de la prédiction
         
         int j=0;
         double max=prediction[0];
-        for (size_t a = 0; a < OUTPUT_SIZE; a++)
+        for (int a = 0; a < OUTPUT_SIZE; a++)
         {
             if (max<prediction[a])
             {
@@ -383,23 +455,15 @@ int main()
         for (int i = 0; i < OUTPUT_SIZE; i++) 
         {
             printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
-            
         }
-        //printf("La lettre %c = %c\n",lettre[i],lettre[j]);
-        printf("La lettre %c\n",lettre[j]);
+        printf("La lettre %zu est %c\n",i+1,lettre[j]);
         printf("\n\n");
-        if (lettre[i]==lettre[j]) pourc++;
+        
         r[i]=lettre[j];        
     }
-    printf("Le pourcentage de réussite est de %d",pourc*100/52);
-
-
-    create_grid(r,size[0],size[1]);
-
-    
-
-
-
+    //create_grid(r,size[0],size[1]);
+    create_grid(r,5,5);
+    free(r);
     return 0;
 }
 
