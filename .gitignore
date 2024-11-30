@@ -40,3 +40,5 @@
 *.dSYM/
 
 .idea/
+.DS_Store
+results_grid/
