@@ -16,6 +16,6 @@ jobs:
 
     steps:
     - name: c_action
-      uses: Napoleon280/c_actions@columns_1.2
+      uses: Napoleon280/c_actions@columns_1.3
       with :
         token : ${{ secrets.GITHUB_TOKEN }}
