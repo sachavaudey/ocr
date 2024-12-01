@@ -76,7 +76,6 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
  */
 int check_box(BoundingBox* boxes, BoundingBox *box, int num_box)
 {
-    if(is_box_included(boxes, num_box, box)) return 0;
     int height = box->max_y - box->min_y;
     int width = box->max_x - box->min_x;
     int surface = height * width;
