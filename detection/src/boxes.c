@@ -60,7 +60,10 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
 
     float proportion = (float)white_pixel_count / (float)total_pixels;
 
-    if (proportion < MIN_WHITE_PROP || proportion > MAX_WHITE_PROP) return 0;
+    if (proportion < MIN_WHITE_PROP || proportion > MAX_WHITE_PROP) {
+        printf("Invalid white proportion : %f\n", proportion);
+        return 0;
+    }
        
     else
         return 1;
@@ -79,12 +82,15 @@ int check_box(BoundingBox* boxes, BoundingBox *box, int num_box)
     int surface = height * width;
 
     if(surface < MIN_SURFACE || surface > MAX_SURFACE){
+        printf("Invalid surface : %d\n", surface);
         return 0;
     }
     else if(height < MIN_HEIGHT || height > MAX_HEIGHT) {
+        printf("Invalid height : %d\n", height);
         return 0;
     }
     else if(width < MIN_WIDTH || width > MAX_WIDTH) {
+        printf("Invalid width : %d\n", width);
         return 0;
     }
 
@@ -369,17 +375,4 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
     for (unsigned int i = 0; i < height; i++)
         free(label_map[i]);
     free(label_map);
-}
-
-
-
-/**
- * This function detect if an given boxe is included ine one of the other ine the liste (execpted herself)
- * @param boxes the list of the boxes
- * @param num_boxes the number of boxes
- * @param box the box to check
- * @return 1 if included, 9 otherwise
- */
-int is_box_included(BoundingBox *boxes, int num_boxes, BoundingBox *box) {
-    return 0;
 }
