@@ -1,4 +1,5 @@
 #include "../include/boxes.h"
+#include <math.h> // Pour utiliser sqrt
 
 /**
  * This function check if a fivne Bounding box have the correct proportion of white pixel in it
@@ -42,33 +43,6 @@ int check_box(BoundingBox *boxes, BoundingBox *box, int num_boxes)
     int height = box->max_y - box->min_y;
     int width = box->max_x - box->min_x;
     int surface = height * width;
-
-    /*
-    for (int i = 0; i < num_boxes; i++)
-    {
-        BoundingBox *other = &boxes[i];
-        if (box == other)
-            continue;
-
-        if (box->min_x <= other->min_x && box->max_x <= other->max_x &&
-            box->min_y <= other->min_y && box->max_y <= other->max_y)
-        {
-            int other_height = other->max_y - other->min_y;
-            int other_width = other->max_x - other->min_x;
-            int other_surface = other_height * other_width;
-
-            if (other_surface >= surface)
-            {
-                return 0;
-            }
-            else
-            {
-                boxes[i] = *box;
-                return 1;
-            }
-        }
-    }
-    */
 
     if (surface < MIN_SURFACE || surface > MAX_SURFACE)
     {
@@ -165,12 +139,12 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
         int min_y = boxes[i].min_y;
         int max_x = boxes[i].max_x;
         int max_y = boxes[i].max_y;
+        int center_x = boxes[i].center_x;
+        int center_y = boxes[i].center_y;
 
-        // Dessiner les bordures horizontales avec PADDING
-        for (int p = 0; p < PADDING; p++)
+        for (unsigned int p = 0; p < PADDING; p++)
         {
-            // Ligne du haut
-            if (min_y + p < img->height)
+            if ((unsigned int)(min_y + p) < img->height)
             {
                 for (int x = min_x; x <= max_x; x++)
                 {
@@ -179,9 +153,7 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
                     img->pixels[min_y + p][x].b = color.b;
                 }
             }
-
-            // Ligne du bas
-            if (max_y - p >= 0)
+            if ((unsigned int)(max_y - p) < img->height)
             {
                 for (int x = min_x; x <= max_x; x++)
                 {
@@ -191,12 +163,9 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
                 }
             }
         }
-
-        // Dessiner les bordures verticales avec PADDING
-        for (int p = 0; p < PADDING; p++)
+        for (unsigned int p = 0; p < PADDING; p++)
         {
-            // Ligne de gauche
-            if (min_x + p < img->width)
+            if ((unsigned int)(min_x + p) < img->width)
             {
                 for (int y = min_y; y <= max_y; y++)
                 {
@@ -206,14 +175,29 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
                 }
             }
 
-            // Ligne de droite
-            if (max_x - p >= 0)
+            if ((unsigned int)(max_x - p) < img->width)
             {
                 for (int y = min_y; y <= max_y; y++)
                 {
                     img->pixels[y][max_x - p].r = color.r;
                     img->pixels[y][max_x - p].g = color.g;
                     img->pixels[y][max_x - p].b = color.b;
+                }
+            }
+        }
+
+        int point_size = 2;
+        for (int dy = -point_size; dy <= point_size; dy++)
+        {
+            for (int dx = -point_size; dx <= point_size; dx++)
+            {
+                int x = center_x + dx;
+                int y = center_y + dy;
+                if (x >= 0 && (unsigned int)x < img->width && y >= 0 && (unsigned int)y < img->height)
+                {
+                    img->pixels[y][x].r = color.r;
+                    img->pixels[y][x].g = color.g;
+                    img->pixels[y][x].b = color.b;
                 }
             }
         }
@@ -266,10 +250,12 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
         {
             if (edge_map[y][x] == 1 && label_map[y][x] == 0)
             {
-                BoundingBox box = {x, x, y, y};
+                BoundingBox box = {x, x, y, y, 0, 0};
                 flood_fill(edge_map, label_map, x, y, height, width, label, &box);
 
-                
+                box.center_x = (box.min_x + box.max_x) / 2;
+                box.center_y = (box.min_y + box.max_y) / 2;
+
                 if (check_box(*boxes, &box, *num_boxes) && check_white_pixel_proportion(img, &box))
                 {
                     if (*num_boxes >= temp_capacity)
@@ -287,6 +273,8 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
         }
     }
 
+    merge_bounding_boxes(temp_boxes, num_boxes);
+
     *boxes = (BoundingBox *)malloc(sizeof(BoundingBox) * (*num_boxes));
     if (!*boxes)
     {
@@ -298,10 +286,63 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
     }
 
     for (int i = 0; i < *num_boxes; i++)
+    {
         (*boxes)[i] = temp_boxes[i];
+    }
 
     free(temp_boxes);
     for (unsigned int i = 0; i < height; i++)
         free(label_map[i]);
     free(label_map);
+}
+
+/**
+ * Cette fonction fusionne les boîtes englobantes qui se chevauchent ou sont proches.
+ * @param boxes Tableau des boîtes englobantes.
+ * @param num_boxes Pointeur vers le nombre de boîtes dans le tableau.
+ */
+void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes)
+{
+    int merged = 1;
+    while (merged)
+    {
+        merged = 0;
+        for (int i = 0; i < *num_boxes; i++)
+        {
+            for (int j = i + 1; j < *num_boxes; j++)
+            {
+                if (boxes[j].min_x >= boxes[i].min_x &&
+                    boxes[j].max_x <= boxes[i].max_x &&
+                    boxes[j].min_y >= boxes[i].min_y &&
+                    boxes[j].max_y <= boxes[i].max_y)
+                {
+                    for (int k = j; k < *num_boxes - 1; k++)
+                    {
+                        boxes[k] = boxes[k + 1];
+                    }
+                    (*num_boxes)--;
+                    merged = 1;
+                    break;
+                }
+
+                if (boxes[i].min_x >= boxes[j].min_x &&
+                    boxes[i].max_x <= boxes[j].max_x &&
+                    boxes[i].min_y >= boxes[j].min_y &&
+                    boxes[i].max_y <= boxes[j].max_y)
+                {
+                    for (int k = i; k < *num_boxes - 1; k++)
+                    {
+                        boxes[k] = boxes[k + 1];
+                    }
+                    (*num_boxes)--;
+                    merged = 1;
+                    break;
+                }
+            }
+            if (merged)
+            {
+                break;
+            }
+        }
+    }
 }

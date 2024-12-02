@@ -234,18 +234,26 @@ void process(custIMG *img)
     int num_boxes;
     find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
 
-
     Color red = {255, 0, 0};
     Color green = {0, 255, 0};
+    Color blue = {0, 0, 255};
+
+
+
 
     draw_rectangles(img, boxes, num_boxes, green);
+
 
     BoundingBox *grid_boxes;
     int num_grid_box;
 
-    //filter_grid_boxes(&boxes, num_boxes, &grid_boxes, &num_grid_box);
+    filter_grid_boxes(boxes, num_boxes, &grid_boxes, &num_grid_box);
 
-    //draw_rectangles(img, grid_boxes, num_grid_box, red);
+    draw_rectangles(img, grid_boxes, num_grid_box, red);
+
+    BoundingBox **transform_boxes;
+    int num_transform;
+    //transform_to_2d_boxes(&grid_boxes,num_boxes, &transform_boxes, &num_transform);
 
 
 

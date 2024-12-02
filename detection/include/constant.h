@@ -72,7 +72,15 @@ static const Color BLUE  = {0, 0, 255};
 #define WORD_X_GAP         10
 #define WORD_Y_TOL         10
 
-#define MAX_Y_DIFF          10
-#define MIN_X_SPACING   10
+#define MAX_Y_DIFF          300
+#define MIN_Y_DIFF          0
+#define MAX_X_SPACING       300
+#define MIN_X_SPACING       100
+
+// Box filter
+#define MIN_CENTER_DISTANCE 25
+#define Y_THRESHOLD 10
+
+
 
 #endif
