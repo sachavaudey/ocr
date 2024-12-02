@@ -243,9 +243,9 @@ void process(custIMG *img)
     BoundingBox *grid_boxes;
     int num_grid_box;
 
-    filter_grid_boxes(&boxes, num_boxes, &grid_boxes, &num_grid_box);
+    //filter_grid_boxes(&boxes, num_boxes, &grid_boxes, &num_grid_box);
 
-    draw_rectangles(img, grid_boxes, num_grid_box, red);
+    //draw_rectangles(img, grid_boxes, num_grid_box, red);
 
 
 

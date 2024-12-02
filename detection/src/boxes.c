@@ -166,36 +166,56 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
         int max_x = boxes[i].max_x;
         int max_y = boxes[i].max_y;
 
-        // Dessiner la ligne du haut
-        for (int x = min_x; x <= max_x; x++)
+        // Dessiner les bordures horizontales avec PADDING
+        for (int p = 0; p < PADDING; p++)
         {
-            img->pixels[min_y][x].r = color.r;
-            img->pixels[min_y][x].g = color.g;
-            img->pixels[min_y][x].b = color.b;
+            // Ligne du haut
+            if (min_y + p < img->height)
+            {
+                for (int x = min_x; x <= max_x; x++)
+                {
+                    img->pixels[min_y + p][x].r = color.r;
+                    img->pixels[min_y + p][x].g = color.g;
+                    img->pixels[min_y + p][x].b = color.b;
+                }
+            }
+
+            // Ligne du bas
+            if (max_y - p >= 0)
+            {
+                for (int x = min_x; x <= max_x; x++)
+                {
+                    img->pixels[max_y - p][x].r = color.r;
+                    img->pixels[max_y - p][x].g = color.g;
+                    img->pixels[max_y - p][x].b = color.b;
+                }
+            }
         }
 
-        // Dessiner la ligne du bas
-        for (int x = min_x; x <= max_x; x++)
+        // Dessiner les bordures verticales avec PADDING
+        for (int p = 0; p < PADDING; p++)
         {
-            img->pixels[max_y][x].r = color.r;
-            img->pixels[max_y][x].g = color.g;
-            img->pixels[max_y][x].b = color.b;
-        }
+            // Ligne de gauche
+            if (min_x + p < img->width)
+            {
+                for (int y = min_y; y <= max_y; y++)
+                {
+                    img->pixels[y][min_x + p].r = color.r;
+                    img->pixels[y][min_x + p].g = color.g;
+                    img->pixels[y][min_x + p].b = color.b;
+                }
+            }
 
-        // Dessiner la ligne de gauche
-        for (int y = min_y; y <= max_y; y++)
-        {
-            img->pixels[y][min_x].r = color.r;
-            img->pixels[y][min_x].g = color.g;
-            img->pixels[y][min_x].b = color.b;
-        }
-
-        // Dessiner la ligne de droite
-        for (int y = min_y; y <= max_y; y++)
-        {
-            img->pixels[y][max_x].r = color.r;
-            img->pixels[y][max_x].g = color.g;
-            img->pixels[y][max_x].b = color.b;
+            // Ligne de droite
+            if (max_x - p >= 0)
+            {
+                for (int y = min_y; y <= max_y; y++)
+                {
+                    img->pixels[y][max_x - p].r = color.r;
+                    img->pixels[y][max_x - p].g = color.g;
+                    img->pixels[y][max_x - p].b = color.b;
+                }
+            }
         }
     }
 }
