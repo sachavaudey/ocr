@@ -45,7 +45,7 @@ static const int Gy[3][3] = {
 #define RAD_TO_DEG     (180.0 / PI)
 
 // Box dimension constants
-#define MIN_SURFACE    800
+#define MIN_SURFACE    600
 #define MAX_SURFACE    11700
 #define MIN_HEIGHT     10
 #define MAX_HEIGHT     200
@@ -71,5 +71,8 @@ static const Color BLUE  = {0, 0, 255};
 #define MIN_WORD_LEN        3
 #define WORD_X_GAP         10
 #define WORD_Y_TOL         10
+
+#define MAX_Y_DIFF          10
+#define MIN_X_SPACING   10
 
 #endif

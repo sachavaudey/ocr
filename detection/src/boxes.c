@@ -1,42 +1,6 @@
 #include "../include/boxes.h"
 
 /**
- * This function calculate the number of column according the box givin in parameter
- * @param boxes all the boxes detected in the image
- * @param num_boxes the number of boxes given
- * @return the number of column
- */
-int column_number(BoundingBox *boxes, int num_boxes)
-{
-    int num_columns = 0;
-    int *column_max_x = (int *)malloc(num_boxes * sizeof(int));
-
-    for (int i = 0; i < num_boxes; i++)
-    {
-        int max_x = boxes[i].max_x;
-        int found = 0;
-
-        for (int j = 0; j < num_columns; j++)
-        {
-            if (abs(max_x - column_max_x[j]) <= X_BIAS)
-            {
-                found = 1;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            column_max_x[num_columns] = max_x;
-            num_columns++;
-        }
-    }
-
-    free(column_max_x);
-    return num_columns;
-}
-
-/**
  * This function check if a fivne Bounding box have the correct proportion of white pixel in it
  * @param img base img (to check white pixel)
  * @param box Bounding box struct to check
@@ -61,7 +25,6 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
     float proportion = (float)white_pixel_count / (float)total_pixels;
 
     if (proportion < MIN_WHITE_PROP || proportion > MAX_WHITE_PROP) {
-        printf("Invalid white proportion : %f\n", proportion);
         return 0;
     }
        
@@ -74,22 +37,49 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
  * @param box the bounding box to process
  * @return 1 if incorrect, 0 otherwise
  */
-int check_box(BoundingBox* boxes, BoundingBox *box, int num_box)
+int check_box(BoundingBox *boxes, BoundingBox *box, int num_boxes)
 {
     int height = box->max_y - box->min_y;
     int width = box->max_x - box->min_x;
     int surface = height * width;
 
-    if(surface < MIN_SURFACE || surface > MAX_SURFACE){
-        printf("Invalid surface : %d\n", surface);
+    /*
+    for (int i = 0; i < num_boxes; i++)
+    {
+        BoundingBox *other = &boxes[i];
+        if (box == other)
+            continue;
+
+        if (box->min_x <= other->min_x && box->max_x <= other->max_x &&
+            box->min_y <= other->min_y && box->max_y <= other->max_y)
+        {
+            int other_height = other->max_y - other->min_y;
+            int other_width = other->max_x - other->min_x;
+            int other_surface = other_height * other_width;
+
+            if (other_surface >= surface)
+            {
+                return 0;
+            }
+            else
+            {
+                boxes[i] = *box;
+                return 1;
+            }
+        }
+    }
+    */
+
+    if (surface < MIN_SURFACE || surface > MAX_SURFACE)
+    {
         return 0;
     }
-    else if(height < MIN_HEIGHT || height > MAX_HEIGHT) {
-        printf("Invalid height : %d\n", height);
+    else if (height < MIN_HEIGHT || height > MAX_HEIGHT)
+    {
         return 0;
     }
-    else if(width < MIN_WIDTH || width > MAX_WIDTH) {
-        printf("Invalid width : %d\n", width);
+    else if (width < MIN_WIDTH || width > MAX_WIDTH)
+    {
         return 0;
     }
 
@@ -167,127 +157,47 @@ void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsig
  * @param i the number of rectangle
  * @return VOID
  */
-void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, int num_columns, Color color)
+void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color color)
 {
-    // Compter d'abord le nombre de boîtes valides
-    int valid_boxes = 0;
-    for (int i = 0; i < num_boxes; i++) {
-        int width = boxes[i].max_x - boxes[i].min_x;
-        int height = boxes[i].max_y - boxes[i].min_y;
-        if (width > MIN_WIDTH && height > MIN_HEIGHT) {
-            valid_boxes++;
-        }
-    }
-
-    // Créer le dossier si nécessaire
-    struct stat st = {0};
-    if (stat("results_grid", &st) == -1) 
-        mkdir("results_grid", 0700);
-
-    int counter = 0;
-    printf("\nEnregistrement des images : \n");
-    printf("[");
-    fflush(stdout);
-
     for (int i = 0; i < num_boxes; i++)
     {
-        int width = boxes[i].max_x - boxes[i].min_x;
-        int height = boxes[i].max_y - boxes[i].min_y;
-        if (width > MIN_WIDTH && height > MIN_HEIGHT)
+        int min_x = boxes[i].min_x;
+        int min_y = boxes[i].min_y;
+        int max_x = boxes[i].max_x;
+        int max_y = boxes[i].max_y;
+
+        // Dessiner la ligne du haut
+        for (int x = min_x; x <= max_x; x++)
         {
-            int min_x = boxes[i].min_x;
-            int min_y = boxes[i].min_y;
-            int max_x = boxes[i].max_x;
-            int max_y = boxes[i].max_y;
+            img->pixels[min_y][x].r = color.r;
+            img->pixels[min_y][x].g = color.g;
+            img->pixels[min_y][x].b = color.b;
+        }
 
-            // Dessin des bordures
-            for (int border_y = 0; border_y < PADDING; border_y++)
-            {
-                for (int x_coord = min_x; x_coord <= max_x; x_coord++)
-                {
-                    if (min_y + border_y >= 0 && (unsigned int)(min_y + border_y) < img->height)
-                    {
-                        img->pixels[min_y + border_y][x_coord].r = color.r;
-                        img->pixels[min_y + border_y][x_coord].g = color.g;
-                        img->pixels[min_y + border_y][x_coord].b = color.b;
-                    }
-                    if (max_y - border_y >= 0 && (unsigned int)(max_y - border_y) < img->height)
-                    {
-                        img->pixels[max_y - border_y][x_coord].r = color.r;
-                        img->pixels[max_y - border_y][x_coord].g = color.g;
-                        img->pixels[max_y - border_y][x_coord].b = color.b;
-                    }
-                }
-            }
+        // Dessiner la ligne du bas
+        for (int x = min_x; x <= max_x; x++)
+        {
+            img->pixels[max_y][x].r = color.r;
+            img->pixels[max_y][x].g = color.g;
+            img->pixels[max_y][x].b = color.b;
+        }
 
-            for (int border_x = 0; border_x < PADDING; border_x++)
-            {
-                for (int y_coord = min_y; y_coord <= max_y; y_coord++)
-                {
-                    if (min_x + border_x >= 0 && (unsigned int)(min_x + border_x) < img->width)
-                    {
-                        img->pixels[y_coord][min_x + border_x].r = color.r;
-                        img->pixels[y_coord][min_x + border_x].g = color.g;
-                        img->pixels[y_coord][min_x + border_x].b = color.b;
-                    }
-                    if (max_x - border_x >= 0 && (unsigned int)(max_x - border_x) < img->width)
-                    {
-                        img->pixels[y_coord][max_x - border_x].r = color.r;
-                        img->pixels[y_coord][max_x - border_x].g = color.g;
-                        img->pixels[y_coord][max_x - border_x].b = color.b;
-                    }
-                }
-            }
+        // Dessiner la ligne de gauche
+        for (int y = min_y; y <= max_y; y++)
+        {
+            img->pixels[y][min_x].r = color.r;
+            img->pixels[y][min_x].g = color.g;
+            img->pixels[y][min_x].b = color.b;
+        }
 
-            int box_width = max_x - min_x + 1;
-            int box_height = max_y - min_y + 1;
-
-            custIMG *box_img = create_image(box_width, box_height);
-
-            for (int y_coord = 0; y_coord < box_height; y_coord++)
-                for (int x_coord = 0; x_coord < box_width; x_coord++)
-                    box_img->pixels[y_coord][x_coord] = img->pixels[min_y + y_coord][min_x + x_coord];
-
-            SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, box_width, box_height, 32, SDL_PIXELFORMAT_RGBA32);
-            if (!surface) errx(EXIT_FAILURE, "Error while surface creation!");
-
-            for (int y_coord = 0; y_coord < box_height; y_coord++)
-            {
-                for (int x_coord = 0; x_coord < box_width; x_coord++)
-                {
-                    Uint32 pixel = SDL_MapRGB(surface->format,
-                                           box_img->pixels[y_coord][x_coord].r,
-                                           box_img->pixels[y_coord][x_coord].g,
-                                           box_img->pixels[y_coord][x_coord].b);
-                    ((Uint32 *)surface->pixels)[y_coord * surface->w + x_coord] = pixel;
-                }
-            }
-
-            char filename[256];
-            sprintf(filename, "results_grid/%d.png", counter++);
-            if (IMG_SavePNG(surface, filename) != 0) 
-                errx(EXIT_FAILURE, "Error during the image saving!");
-
-            SDL_FreeSurface(surface);
-            free_image(box_img);
-
-            usleep(30000);
-
-            float progress = (float)counter / valid_boxes;
-            int bar_width = 50;
-            int pos = bar_width * progress;
-
-            printf("\r[");
-            for (int j = 0; j < bar_width; j++) {
-                if (j < pos) printf("=");
-                else if (j == pos) printf(">");
-                else printf(" ");
-            }
-            printf("] %d%% (%d/%d)", (int)(progress * 100.0), counter, valid_boxes);
-            fflush(stdout);
+        // Dessiner la ligne de droite
+        for (int y = min_y; y <= max_y; y++)
+        {
+            img->pixels[y][max_x].r = color.r;
+            img->pixels[y][max_x].g = color.g;
+            img->pixels[y][max_x].b = color.b;
         }
     }
-    printf("\nTerminé !\n");
 }
 
 /**

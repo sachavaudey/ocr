@@ -10,13 +10,6 @@
 #include "boxes.h"
 #include "constant.h"
 
-
-int detect_word_grid(BoundingBox *boxes, int num_boxes, BoundingBox **grid_boxes, 
-                    int *num_grid_boxes);
-                    
-int detect_words(BoundingBox *all_boxes, int num_all_boxes,
-                BoundingBox *grid_boxes, int num_grid_boxes,
-                BoundingBox ***word_lists, int *num_words, int **word_lengths);
-
+void filter_grid_boxes(BoundingBox *boxes, int num_boxes, BoundingBox **grid_boxes, int *num_grid_boxes);
 
 #endif
