@@ -1,6 +1,36 @@
 #include "../include/boxes.h"
 #include <math.h> // Pour utiliser sqrt
 
+
+
+
+int compare_boxes(const void *a, const void *b)
+{
+    BoundingBox boxA = *(BoundingBox *)a;
+    BoundingBox boxB = *(BoundingBox *)b;
+    if (boxA.center_y < boxB.center_y)
+        return -1;
+    else if (boxA.center_y > boxB.center_y)
+        return 1;
+    else
+        return 0;
+}
+
+int compare_boxes_by_y(const void *a, const void *b)
+{
+    BoundingBox boxA = *(BoundingBox *)a;
+    BoundingBox boxB = *(BoundingBox *)b;
+    return boxA.center_y - boxB.center_y;
+}
+
+int compare_boxes_by_x(const void *a, const void *b)
+{
+    BoundingBox boxA = *(BoundingBox *)a;
+    BoundingBox boxB = *(BoundingBox *)b;
+    return boxA.center_x - boxB.center_x;
+}
+
+
 /**
  * This function check if a fivne Bounding box have the correct proportion of white pixel in it
  * @param img base img (to check white pixel)
@@ -128,11 +158,55 @@ void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsig
  * @param max_x the max_x coordinate
  * @param max_y the max_y coordinate
  * @param color the color of the rectangle
- * @param i the number of rectangle
+ * @param toSave 1 if save the box, 0 otherwise
  * @return VOID
  */
-void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color color)
+void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color color, int toSave)
 {
+    if (toSave)
+    {
+        struct stat st = {0};
+        if (stat("results_grid", &st) == -1) {
+            if (mkdir("results_grid", 0755) != 0) errx(EXIT_FAILURE, "Error during folder creation!");
+        }
+        BoundingBox **transform_boxes;
+        int *line_sizes;
+        int num_lines;
+        transform_to_2d_boxes(boxes, num_boxes, &transform_boxes, &line_sizes, &num_lines);
+        for (int i = 0; i < num_lines; i++) {
+            for (int j = 0; j < line_sizes[i]; j++) {
+                BoundingBox box = transform_boxes[i][j];
+
+                int width = box.max_x - box.min_x + 1;
+                int height = box.max_y - box.min_y + 1;
+                if (width <= 0 || height <= 0) errx(EXIT_FAILURE, "Wrong box coordinate (out of bounds)!");
+                SDL_Surface *box_surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA8888);
+                if (!box_surface) errx(EXIT_FAILURE, "Error during surface creation!");
+
+                for (int y = 0; y < height; y++) {
+                    Uint32 *pixels = (Uint32 *)((Uint8 *)box_surface->pixels + y * box_surface->pitch);
+                    for (int x = 0; x < width; x++) {
+                        if ((box.min_y + y) >= img->height || (box.min_x + x) >= img->width) errx(EXIT_FAILURE, "Wrong coordinate (out of bounds)!");
+
+                        Pixel pix = img->pixels[box.min_y + y][box.min_x + x];
+                        Uint32 color_px = SDL_MapRGBA(box_surface->format, pix.r, pix.g, pix.b, 255);
+                        pixels[x] = color_px;
+                    }
+                }
+                char filename[100];
+                snprintf(filename, sizeof(filename), "results_grid/%d.%d.png", i, j);
+
+                if (IMG_SavePNG(box_surface, filename) != 0) errx(EXIT_FAILURE, "Error during image saving!");
+                SDL_FreeSurface(box_surface);
+            }
+        }
+        for (int i = 0; i < num_lines; i++) {
+            free(transform_boxes[i]);
+        }
+        free(transform_boxes);
+        free(line_sizes);
+    }
+
     for (int i = 0; i < num_boxes; i++)
     {
         int min_x = boxes[i].min_x;
@@ -141,7 +215,6 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
         int max_y = boxes[i].max_y;
         int center_x = boxes[i].center_x;
         int center_y = boxes[i].center_y;
-
         for (unsigned int p = 0; p < PADDING; p++)
         {
             if ((unsigned int)(min_y + p) < img->height)
@@ -182,22 +255,6 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
                     img->pixels[y][max_x - p].r = color.r;
                     img->pixels[y][max_x - p].g = color.g;
                     img->pixels[y][max_x - p].b = color.b;
-                }
-            }
-        }
-
-        int point_size = 2;
-        for (int dy = -point_size; dy <= point_size; dy++)
-        {
-            for (int dx = -point_size; dx <= point_size; dx++)
-            {
-                int x = center_x + dx;
-                int y = center_y + dy;
-                if (x >= 0 && (unsigned int)x < img->width && y >= 0 && (unsigned int)y < img->height)
-                {
-                    img->pixels[y][x].r = color.r;
-                    img->pixels[y][x].g = color.g;
-                    img->pixels[y][x].b = color.b;
                 }
             }
         }
@@ -346,3 +403,111 @@ void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes)
         }
     }
 }
+
+
+/**
+ * This function transform a one dimension list of Bounding box into 2 dimension according to the corrdinate
+ * @param boxes the list of the boxes to process
+ * @param num_boxes the length of the boxes list
+ * @param transform_boxes the list of tranform boxes
+ * @param num_transform_boxes the length of the transform list
+ * @return VOID
+ */
+void transform_to_2d_boxes(BoundingBox *boxes, int num_boxes, BoundingBox ***transform_boxes, int **line_sizes, int *num_lines)
+{
+    if (num_boxes == 0) {
+        *transform_boxes = NULL;
+        *line_sizes = NULL;
+        *num_lines = 0;
+        return;
+    }
+
+    // Trier les boîtes par coordonnée Y (center_y)
+    qsort(boxes, num_boxes, sizeof(BoundingBox), compare_boxes_by_y);
+
+    // Allocation initiale pour les lignes
+    int lines_capacity = 10;
+    *transform_boxes = malloc(sizeof(BoundingBox *) * lines_capacity);
+    *line_sizes = malloc(sizeof(int) * lines_capacity);
+    if (!*transform_boxes || !*line_sizes) {
+        errx(EXIT_FAILURE, "Échec de l'allocation mémoire!");
+    }
+
+    *num_lines = 0;
+
+    // Variables pour la première ligne
+    int current_line_capacity = 10;
+    BoundingBox *current_line = malloc(sizeof(BoundingBox) * current_line_capacity);
+    if (!current_line) {
+        errx(EXIT_FAILURE, "Échec de l'allocation mémoire!");
+    }
+    int current_line_size = 0;
+
+    // Ajouter la première boîte à la première ligne
+    current_line[current_line_size++] = boxes[0];
+
+    for (int i = 1; i < num_boxes; i++) {
+        BoundingBox box = boxes[i];
+        BoundingBox last_box = current_line[current_line_size - 1];
+        int y_diff = abs(box.center_y - last_box.center_y);
+
+        if (y_diff <= Y_THRESHOLD) {
+            // Même ligne
+            if (current_line_size >= current_line_capacity) {
+                current_line_capacity *= 2;
+                current_line = realloc(current_line, sizeof(BoundingBox) * current_line_capacity);
+                if (!current_line) {
+                    errx(EXIT_FAILURE, "Échec de la réallocation mémoire!");
+                }
+            }
+            current_line[current_line_size++] = box;
+        } else {
+            // Nouvelle ligne
+            // Stocker la ligne précédente
+            if (*num_lines >= lines_capacity) {
+                lines_capacity *= 2;
+                *transform_boxes = realloc(*transform_boxes, sizeof(BoundingBox *) * lines_capacity);
+                *line_sizes = realloc(*line_sizes, sizeof(int) * lines_capacity);
+                if (!*transform_boxes || !*line_sizes) {
+                    errx(EXIT_FAILURE, "Échec de la réallocation mémoire!");
+                }
+            }
+
+            // Ajouter la ligne précédente aux transform_boxes
+            (*transform_boxes)[*num_lines] = current_line;
+            (*line_sizes)[*num_lines] = current_line_size;
+            (*num_lines)++;
+
+            // Commencer une nouvelle ligne
+            current_line_capacity = 10;
+            current_line = malloc(sizeof(BoundingBox) * current_line_capacity);
+            if (!current_line) {
+                errx(EXIT_FAILURE, "Échec de l'allocation mémoire!");
+            }
+            current_line_size = 0;
+            current_line[current_line_size++] = box;
+        }
+    }
+
+    // Ajouter la dernière ligne
+    if (*num_lines >= lines_capacity) {
+        lines_capacity++;
+        *transform_boxes = realloc(*transform_boxes, sizeof(BoundingBox *) * lines_capacity);
+        *line_sizes = realloc(*line_sizes, sizeof(int) * lines_capacity);
+        if (!*transform_boxes || !*line_sizes) {
+            errx(EXIT_FAILURE, "Échec de la réallocation mémoire!");
+        }
+    }
+    (*transform_boxes)[*num_lines] = current_line;
+    (*line_sizes)[*num_lines] = current_line_size;
+    (*num_lines)++;
+
+    // Trier chaque ligne par coordonnée X (center_x)
+    for (int i = 0; i < *num_lines; i++) {
+        qsort((*transform_boxes)[i], (*line_sizes)[i], sizeof(BoundingBox), compare_boxes_by_x);
+    }
+}
+
+
+
+// END OF FILE

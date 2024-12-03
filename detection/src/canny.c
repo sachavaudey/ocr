@@ -241,7 +241,7 @@ void process(custIMG *img)
 
 
 
-    draw_rectangles(img, boxes, num_boxes, green);
+    draw_rectangles(img, boxes, num_boxes, green, 0);
 
 
     BoundingBox *grid_boxes;
@@ -249,11 +249,7 @@ void process(custIMG *img)
 
     filter_grid_boxes(boxes, num_boxes, &grid_boxes, &num_grid_box);
 
-    draw_rectangles(img, grid_boxes, num_grid_box, red);
-
-    BoundingBox **transform_boxes;
-    int num_transform;
-    //transform_to_2d_boxes(&grid_boxes,num_boxes, &transform_boxes, &num_transform);
+    draw_rectangles(img, grid_boxes, num_grid_box, red, 1);
 
 
 
