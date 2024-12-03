@@ -24,7 +24,7 @@ typedef struct
 } BoundingBox;
 
 int check_white_pixel_proportion(custIMG *img, BoundingBox *box);
-int check_box(BoundingBox* boxes, BoundingBox *box, int num_box);
+int check_box(BoundingBox *box);
 void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsigned int y, unsigned int height, unsigned int width, int label, BoundingBox *box);
 void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color color, int toSave);
 void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int height, unsigned int width, BoundingBox **boxes, int *num_boxes);

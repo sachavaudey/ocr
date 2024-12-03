@@ -12,9 +12,7 @@
 void filter_grid_boxes(BoundingBox *boxes, int num_boxes, BoundingBox **grid_boxes, int *num_grid_boxes)
 {
     *grid_boxes = malloc(sizeof(BoundingBox) * num_boxes);
-    if (!*grid_boxes) {
-        errx(EXIT_FAILURE, "Memory allocation failed!");
-    }
+    if (!*grid_boxes) errx(EXIT_FAILURE, "Memory allocation failed!");
 
     *num_grid_boxes = 0;
 
@@ -56,21 +54,6 @@ void filter_grid_boxes(BoundingBox *boxes, int num_boxes, BoundingBox **grid_box
         {
             (*grid_boxes)[*num_grid_boxes] = current;
             (*num_grid_boxes)++;
-        }
-        else
-        {
-            if (i > 0)
-            {
-                BoundingBox prev = boxes[i - 1];
-                int xSpacePrev = abs(current.center_x - prev.center_x);
-                int ySpacePrev = abs(current.center_y - prev.center_y);
-            }
-            if (i < num_boxes - 1)
-            {
-                BoundingBox next = boxes[i + 1];
-                int xSpaceNext = abs(current.center_x - next.center_x);
-                int ySpaceNext = abs(current.center_y - next.center_y);
-            }
         }
     }
 

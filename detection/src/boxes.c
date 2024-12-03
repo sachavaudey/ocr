@@ -68,7 +68,7 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
  * @param box the bounding box to process
  * @return 1 if incorrect, 0 otherwise
  */
-int check_box(BoundingBox *boxes, BoundingBox *box, int num_boxes)
+int check_box(BoundingBox *box)
 {
     int height = box->max_y - box->min_y;
     int width = box->max_x - box->min_x;
@@ -186,7 +186,9 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
                 for (int y = 0; y < height; y++) {
                     Uint32 *pixels = (Uint32 *)((Uint8 *)box_surface->pixels + y * box_surface->pitch);
                     for (int x = 0; x < width; x++) {
-                        if ((box.min_y + y) >= img->height || (box.min_x + x) >= img->width) errx(EXIT_FAILURE, "Wrong coordinate (out of bounds)!");
+                        if ((box.min_y + y) >= (int)img->height || (box.min_x + x) >= (int)img->width) {
+                            errx(EXIT_FAILURE, "Wrong coordinate (out of bounds)!");
+                        }
 
                         Pixel pix = img->pixels[box.min_y + y][box.min_x + x];
                         Uint32 color_px = SDL_MapRGBA(box_surface->format, pix.r, pix.g, pix.b, 255);
@@ -213,8 +215,6 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
         int min_y = boxes[i].min_y;
         int max_x = boxes[i].max_x;
         int max_y = boxes[i].max_y;
-        int center_x = boxes[i].center_x;
-        int center_y = boxes[i].center_y;
         for (unsigned int p = 0; p < PADDING; p++)
         {
             if ((unsigned int)(min_y + p) < img->height)
@@ -313,7 +313,7 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
                 box.center_x = (box.min_x + box.max_x) / 2;
                 box.center_y = (box.min_y + box.max_y) / 2;
 
-                if (check_box(*boxes, &box, *num_boxes) && check_white_pixel_proportion(img, &box))
+                if (check_box(&box) && check_white_pixel_proportion(img, &box))
                 {
                     if (*num_boxes >= temp_capacity)
                     {
