@@ -132,6 +132,12 @@ void dilate_filter(unsigned char **input, unsigned char **output, unsigned int h
 
 /**
  * This function is an auxilary function of hysteresis filter to implement the recusion
+ * @param edge_map the map of edge detected on image
+ * @param y the y coordinate of reference pixel
+ * @param x the x coordinate of reference pixel
+ * @param heigth the height of the image
+ * @param width the width of the imahe
+ * @return VOID
  */
 void hyst_aux(unsigned char **edge_map, unsigned int y, unsigned int x, unsigned int height, unsigned int width)
 {
@@ -267,3 +273,7 @@ void process(custIMG *img)
     free(dilated_edge_map);
     free(boxes);
 }
+
+
+
+// END OF FILE

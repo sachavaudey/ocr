@@ -1,9 +1,12 @@
 #include "../include/boxes.h"
-#include <math.h> // Pour utiliser sqrt
 
 
-
-
+/**
+ * This function compare to boxe according to their center coordinate
+ * @param a pointer to first box
+ * @param b pointer to second box
+ * @return -1 if box 1 is under box b, 1 otherwise et 0 if their are equal
+ */
 int compare_boxes(const void *a, const void *b)
 {
     BoundingBox boxA = *(BoundingBox *)a;
@@ -16,6 +19,12 @@ int compare_boxes(const void *a, const void *b)
         return 0;
 }
 
+/**
+ * This function simply return the substraction according to the center_y coordinate of two boxe
+ * @param a pointer to the first boxe
+ * @param b pointer to the second box
+ * @return the value of the substraction
+ */
 int compare_boxes_by_y(const void *a, const void *b)
 {
     BoundingBox boxA = *(BoundingBox *)a;
@@ -23,6 +32,12 @@ int compare_boxes_by_y(const void *a, const void *b)
     return boxA.center_y - boxB.center_y;
 }
 
+/**
+ * This function return the substraction of the x_cordinate of each center_coordinate of the given two boxes
+ * @param a pointer on the first boxes
+ * @param b pointer on the second boxes
+ * @return the result of the substraction
+ */
 int compare_boxes_by_x(const void *a, const void *b)
 {
     BoundingBox boxA = *(BoundingBox *)a;
