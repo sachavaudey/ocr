@@ -182,7 +182,28 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
     {
         struct stat st = {0};
         if (stat("results_grid", &st) == -1) {
-            if (mkdir("results_grid", 0755) != 0) errx(EXIT_FAILURE, "Error during folder creation!");
+            if (mkdir("results_grid", 0755) != 0) {
+                errx(EXIT_FAILURE, "Erreur lors de la création du dossier results_grid!");
+            }
+        }
+        else {
+            DIR *dir = opendir("results_grid");
+            if (dir == NULL)errx(EXIT_FAILURE, "Impossible d'ouvrir le dossier results_grid!");
+
+            struct dirent *entry;
+            while ((entry = readdir(dir)) != NULL) {
+                if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+                    continue;
+                }
+                char filepath[PATH_MAX];
+                int ret = snprintf(filepath, sizeof(filepath), "results_grid/%s", entry->d_name);
+                if (ret < 0 || ret >= (int)sizeof(filepath)) {
+                    fprintf(stderr, "Chemin trop long pour le fichier: %s\n", entry->d_name);
+                    continue;
+                }
+            }
+
+            closedir(dir);
         }
         BoundingBox **transform_boxes;
         int *line_sizes;
