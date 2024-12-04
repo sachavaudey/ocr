@@ -11,6 +11,8 @@ void PRT_Heavy(SDL_Surface* surface);
 void PRT_Medium(SDL_Surface* surface);
 void PRT_Light(SDL_Surface* surface);
 void PRT_Rotate(SDL_Surface* surface, int angle);
+void PRT_Rotate_Auto(SDL_Surface* surface);
+
 
 #endif
 

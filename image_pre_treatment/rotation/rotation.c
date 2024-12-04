@@ -1,4 +1,7 @@
 #include "rotation.h"
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_surface.h>
+#include <math.h>
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -118,8 +121,11 @@ void rotate(SDL_Surface *surface, int angle)
 		printf("New width : %i, new height : %i\n",
 				newW, newH);}
 
-	SDL_Surface* newOne = SDL_CreateRGBSurface(0,
-			newW,newH,32,0,0,0,0);
+	SDL_Surface* newOne = 
+		SDL_CreateRGBSurfaceWithFormat(0,
+			newW,newH,32,
+			(surface->format)->format
+			);	
 
 	Uint32* pixelDepart = surface->pixels;
 	Uint32* pixelPtr = newOne->pixels;
@@ -145,14 +151,15 @@ void rotate(SDL_Surface *surface, int angle)
 		
 		if (pixelDepartNb == NOT_IN_IMAGE) 
 		{
-			pixelPtr[pixelNb] = 0;//SDL_MapRGBA(newOne->format, 0, 0, 0, 0);
+			pixelPtr[pixelNb] = SDL_MapRGBA(newOne->format, 0, 0, 0, 0);
 		}
 		else
 		{	
 			pixelPtr[pixelNb] = pixelDepart[pixelDepartNb];
 		}
 	}
-	*surface = *newOne;
+	memcpy(pixelDepart, pixelPtr, pixelCount);
+	SDL_FreeSurface(newOne);
 	SDL_UnlockSurface(surface);
 	
 	if (LOG_LEVEL)
