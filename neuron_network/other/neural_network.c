@@ -6,12 +6,12 @@
 
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
-#define HIDDEN_SIZE 60       
+#define HIDDEN_SIZE 90       
 #define OUTPUT_SIZE 26       
 #define BATCH_SIZE 26        
 #define LEARNING_RATE 0.1 
 #define NBTEST 70    
-#define EPOCHS 8000
+#define EPOCHS 10000
 //Au moins 1h
 
 // Fonction d'activation

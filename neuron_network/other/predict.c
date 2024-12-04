@@ -231,7 +231,7 @@ int* search_size(int* res)
     
     while (1){
         char* var=malloc(FILENAME_SIZE*sizeof(char));
-        snprintf(var,FILENAME_SIZE,"output/0.%d.png",c);   
+        snprintf(var,FILENAME_SIZE,"../results_grid-2/0.%d.png",c);   
         FILE *file = fopen(var, "r");
         if (file==NULL) {
             res[0]=c;
@@ -244,7 +244,7 @@ int* search_size(int* res)
     
     while (1){
         char* var=malloc(FILENAME_SIZE*sizeof(char));
-        snprintf(var,FILENAME_SIZE,"output/%d.0.png",c);   
+        snprintf(var,FILENAME_SIZE,"../results_grid-2/%d.0.png",c);   
         FILE *file = fopen(var, "r");
         if (file==NULL) 
         {
@@ -305,7 +305,7 @@ int pro_word()
     
     int* wor=search_size_word();
     
-    printf("%d\n",wor[1]);
+    
     int taille1=0;
     int taille2=0;
     int i=0;
@@ -318,6 +318,7 @@ int pro_word()
         }
         i++;
     }
+
     
     
     char* res[taille2];
@@ -326,11 +327,13 @@ int pro_word()
     for (int i = 0; i < taille1; i++)
     {
         t=0;
+        printf("%d\n",wor[i]);
         for (int j = 0; j < wor[i]; j++)
         {
+            
             res[c]=malloc(100*sizeof(char));
            
-            snprintf(res[c++], FILENAME_SIZE,"words/%d.%d.png",t++,i);
+            snprintf(res[c++], FILENAME_SIZE,"words/%d.%d.png",i,t++);
             printf("%s\n",res[c-1]);
         }
     }
@@ -342,7 +345,7 @@ int pro_word()
     {
             double new_input[INPUT_SIZE];
             
-            double* resultats = traitements_test(res[i]);
+            double* resultats = traitements(res[i]);
             for (size_t j = 0; j < INPUT_SIZE; j++) 
             {
                 new_input[j] = resultats[j];
@@ -364,14 +367,22 @@ int pro_word()
         {
             if (max<prediction[a])
             {
+                
+
                 max=prediction[a];
                 j=a;
             }
+            
+        }
+        
+        for (int i = 0; i < OUTPUT_SIZE; i++) 
+        {
+            printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
         }
         printf("La lettre %d est %c\n",i+1,lettre[j]);
         printf("\n\n");
-        
-        r[i]=lettre[j];        
+        if (prediction[j]<0.9) r[i]='0';
+        else r[i]=lettre[j];        
     }
     create_word(r,wor,taille1);
 
@@ -396,30 +407,30 @@ int pro_word()
 
 int pro_grid()
 {
-    
+    printf("ici");
     load_hidden_bias("../save_value_prime/hiddenLayerBias.txt");
     load_output_bias("../save_value_prime/OutputLayerBias.txt");
     load_weight_hidden_output("../save_value_prime/weight_hidden_output.txt");
     load_weight_hidden_input("../save_value_prime/weight_hidden_input.txt");
     
 
-
+    
     int* size=malloc(2*sizeof(int));
     search_size(size);
-    
-    size_t taille=88;
-    process_transforme_grid(taille);
+    printf("%d,%d\n",size[0],size[1]);
+    size_t taille=size[1]*size[0];
+    process_transforme_grid(size[0],size[1]);
     
     char* res[taille];
     int c=0;
     int t=1;
-    //for (size_t i = 0; i < 2; i++)
+    for (int i = 0; i < size[1]; i++)
     {
-        for (size_t j = 0; j < taille; j++)
+        for (int j = 0; j < size[0]; j++)
         {
             res[c]=malloc(100*sizeof(char));
            
-            snprintf(res[c++], FILENAME_SIZE,"output/%d.0.png",t++);
+            snprintf(res[c++], FILENAME_SIZE,"output/%d.%d.png",i,j);
             printf("%s\n",res[c-1]);
         }
     } 
@@ -428,7 +439,7 @@ int pro_grid()
     {
             double new_input[INPUT_SIZE];
             
-            double* resultats = traitements_test(res[i]);
+            double* resultats = traitements(res[i]);
             for (size_t j = 0; j < INPUT_SIZE; j++) 
             {
                 new_input[j] = resultats[j];
@@ -459,13 +470,15 @@ int pro_grid()
         printf("La lettre %zu est %c\n",i+1,lettre[j]);
         printf("\n\n");
         
-        r[i]=lettre[j];        
+        if (prediction[j]<0.9) r[i]='0';
+        else r[i]=lettre[j];       
     }
-    //create_grid(r,size[0],size[1]);
-    create_grid(r,5,5);
+    create_grid(r,size[1],size[0]);
+    //create_grid(r,5,5);
     free(r);
     return 0;
 }
+
 
 
 
