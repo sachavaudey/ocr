@@ -16,5 +16,8 @@
 
 void filter_grid_boxes(BoundingBox *boxes, int num_boxes, BoundingBox **grid_boxes, int *num_grid_boxes);
 void detect_word_boxes(BoundingBox *boxes, int num_boxes, BoundingBox *grid_boxes, int num_grid_boxes, BoundingBox **word_boxes, int *num_word_boxes);
+void remove_adjacent_grid_boxes(BoundingBox *grid_boxes, int *num_grid_boxes, BoundingBox **word_boxes, int *num_word_boxes);
+void calculate_average_adjacent_distance(BoundingBox *grid_boxes, int num_grid_boxes);
+void remove_boxes_with_high_averAdj(BoundingBox **grid_boxes, int *num_grid_boxes);
 
 #endif

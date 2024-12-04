@@ -23,6 +23,7 @@ typedef struct
     int max_y;
     int center_x;
     int center_y;
+    double averAdj;
 } BoundingBox;
 
 int check_white_pixel_proportion(custIMG *img, BoundingBox *box);

@@ -85,6 +85,7 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
  */
 int check_box(BoundingBox *box)
 {
+    
     int height = box->max_y - box->min_y;
     int width = box->max_x - box->min_x;
     int surface = height * width;
@@ -101,7 +102,7 @@ int check_box(BoundingBox *box)
     {
         return 0;
     }
-
+    
     return 1;
 }
 
@@ -255,6 +256,7 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
         for (int i = 0; i < num_lines; i++) {
             for (int j = 0; j < line_sizes[i]; j++) {
                 BoundingBox box = transform_boxes[i][j];
+                printf("AVERAGE FOR THIS BOX : %f\n", box.averAdj);
 
                 int width = box.max_x - box.min_x + 1;
                 int height = box.max_y - box.min_y + 1;
@@ -390,7 +392,7 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
         {
             if (edge_map[y][x] == 1 && label_map[y][x] == 0)
             {
-                BoundingBox box = {x, x, y, y, 0, 0};
+                BoundingBox box = {x, x, y, y, 0, 0, 0};
                 flood_fill(edge_map, label_map, x, y, height, width, label, &box);
 
                 box.center_x = (box.min_x + box.max_x) / 2;
@@ -451,11 +453,13 @@ void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes)
         {
             for (int j = i + 1; j < *num_boxes; j++)
             {
+                // Vérifier si boxes[j] est entièrement à l'intérieur de boxes[i]
                 if (boxes[j].min_x >= boxes[i].min_x &&
                     boxes[j].max_x <= boxes[i].max_x &&
                     boxes[j].min_y >= boxes[i].min_y &&
                     boxes[j].max_y <= boxes[i].max_y)
                 {
+                    // Supprimer boxes[j] en décalant les boîtes suivantes
                     for (int k = j; k < *num_boxes - 1; k++)
                     {
                         boxes[k] = boxes[k + 1];

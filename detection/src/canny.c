@@ -247,16 +247,20 @@ void process(custIMG *img)
     BoundingBox *grid_boxes;
     int num_grid_box;
 
-    filter_grid_boxes(boxes, num_boxes, &grid_boxes, &num_grid_box);
-    write_box_centers("resuls_grid", grid_boxes, num_grid_box);
-    draw_rectangles(img, grid_boxes, num_grid_box, red, 1);
-
-
     BoundingBox *word_boxes;
     int num_word_boxes;
 
+    filter_grid_boxes(boxes, num_boxes, &grid_boxes, &num_grid_box);
+    calculate_average_adjacent_distance(grid_boxes, num_grid_box);
+    remove_boxes_with_high_averAdj(&grid_boxes, &num_grid_box);
+    
+    write_box_centers("resuls_grid", grid_boxes, num_grid_box);
+
     detect_word_boxes(boxes, num_boxes, grid_boxes, num_grid_box, &word_boxes, &num_word_boxes);
 
+    remove_adjacent_grid_boxes(grid_boxes, &num_grid_box, &word_boxes, &num_word_boxes);
+
+    draw_rectangles(img, grid_boxes, num_grid_box, red, 1);
     draw_rectangles(img, word_boxes, num_word_boxes, blue, 2);
 
     for (unsigned int i = 0; i < img->height; i++)
