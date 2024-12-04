@@ -251,8 +251,6 @@ void process(custIMG *img)
     int num_word_boxes;
 
     filter_grid_boxes(boxes, num_boxes, &grid_boxes, &num_grid_box);
-    calculate_average_adjacent_distance(grid_boxes, num_grid_box);
-    remove_boxes_with_high_averAdj(&grid_boxes, &num_grid_box);
     
     write_box_centers("resuls_grid", grid_boxes, num_grid_box);
 

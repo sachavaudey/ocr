@@ -247,8 +247,6 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
 
             closedir(dir);
         }
-
-        // Transformation des boîtes et enregistrement des images
         BoundingBox **transform_boxes;
         int *line_sizes;
         int num_lines;
@@ -256,7 +254,6 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
         for (int i = 0; i < num_lines; i++) {
             for (int j = 0; j < line_sizes[i]; j++) {
                 BoundingBox box = transform_boxes[i][j];
-                printf("AVERAGE FOR THIS BOX : %f\n", box.averAdj);
 
                 int width = box.max_x - box.min_x + 1;
                 int height = box.max_y - box.min_y + 1;
@@ -292,8 +289,6 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
         free(transform_boxes);
         free(line_sizes);
     }
-
-    // Dessiner les rectangles sur l'image
     for (int i = 0; i < num_boxes; i++)
     {
         int min_x = boxes[i].min_x;
@@ -392,7 +387,7 @@ void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int he
         {
             if (edge_map[y][x] == 1 && label_map[y][x] == 0)
             {
-                BoundingBox box = {x, x, y, y, 0, 0, 0};
+                BoundingBox box = {x, x, y, y, 0, 0};
                 flood_fill(edge_map, label_map, x, y, height, width, label, &box);
 
                 box.center_x = (box.min_x + box.max_x) / 2;
@@ -453,13 +448,11 @@ void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes)
         {
             for (int j = i + 1; j < *num_boxes; j++)
             {
-                // Vérifier si boxes[j] est entièrement à l'intérieur de boxes[i]
                 if (boxes[j].min_x >= boxes[i].min_x &&
                     boxes[j].max_x <= boxes[i].max_x &&
                     boxes[j].min_y >= boxes[i].min_y &&
                     boxes[j].max_y <= boxes[i].max_y)
                 {
-                    // Supprimer boxes[j] en décalant les boîtes suivantes
                     for (int k = j; k < *num_boxes - 1; k++)
                     {
                         boxes[k] = boxes[k + 1];
@@ -508,11 +501,7 @@ void transform_to_2d_boxes(BoundingBox *boxes, int num_boxes, BoundingBox ***tra
         *num_lines = 0;
         return;
     }
-
-    // Trier les boîtes par coordonnée Y (center_y)
     qsort(boxes, num_boxes, sizeof(BoundingBox), compare_boxes_by_y);
-
-    // Allocation initiale pour les lignes
     int lines_capacity = 10;
     *transform_boxes = malloc(sizeof(BoundingBox *) * lines_capacity);
     *line_sizes = malloc(sizeof(int) * lines_capacity);
@@ -521,16 +510,12 @@ void transform_to_2d_boxes(BoundingBox *boxes, int num_boxes, BoundingBox ***tra
     }
 
     *num_lines = 0;
-
-    // Variables pour la première ligne
     int current_line_capacity = 10;
     BoundingBox *current_line = malloc(sizeof(BoundingBox) * current_line_capacity);
     if (!current_line) {
         errx(EXIT_FAILURE, "Échec de l'allocation mémoire!");
     }
     int current_line_size = 0;
-
-    // Ajouter la première boîte à la première ligne
     current_line[current_line_size++] = boxes[0];
 
     for (int i = 1; i < num_boxes; i++) {
@@ -539,7 +524,6 @@ void transform_to_2d_boxes(BoundingBox *boxes, int num_boxes, BoundingBox ***tra
         int y_diff = abs(box.center_y - last_box.center_y);
 
         if (y_diff <= Y_THRESHOLD) {
-            // Même ligne
             if (current_line_size >= current_line_capacity) {
                 current_line_capacity *= 2;
                 current_line = realloc(current_line, sizeof(BoundingBox) * current_line_capacity);
@@ -549,8 +533,6 @@ void transform_to_2d_boxes(BoundingBox *boxes, int num_boxes, BoundingBox ***tra
             }
             current_line[current_line_size++] = box;
         } else {
-            // Nouvelle ligne
-            // Stocker la ligne précédente
             if (*num_lines >= lines_capacity) {
                 lines_capacity *= 2;
                 *transform_boxes = realloc(*transform_boxes, sizeof(BoundingBox *) * lines_capacity);
@@ -559,13 +541,9 @@ void transform_to_2d_boxes(BoundingBox *boxes, int num_boxes, BoundingBox ***tra
                     errx(EXIT_FAILURE, "Échec de la réallocation mémoire!");
                 }
             }
-
-            // Ajouter la ligne précédente aux transform_boxes
             (*transform_boxes)[*num_lines] = current_line;
             (*line_sizes)[*num_lines] = current_line_size;
             (*num_lines)++;
-
-            // Commencer une nouvelle ligne
             current_line_capacity = 10;
             current_line = malloc(sizeof(BoundingBox) * current_line_capacity);
             if (!current_line) {
@@ -575,8 +553,6 @@ void transform_to_2d_boxes(BoundingBox *boxes, int num_boxes, BoundingBox ***tra
             current_line[current_line_size++] = box;
         }
     }
-
-    // Ajouter la dernière ligne
     if (*num_lines >= lines_capacity) {
         lines_capacity++;
         *transform_boxes = realloc(*transform_boxes, sizeof(BoundingBox *) * lines_capacity);
@@ -588,8 +564,6 @@ void transform_to_2d_boxes(BoundingBox *boxes, int num_boxes, BoundingBox ***tra
     (*transform_boxes)[*num_lines] = current_line;
     (*line_sizes)[*num_lines] = current_line_size;
     (*num_lines)++;
-
-    // Trier chaque ligne par coordonnée X (center_x)
     for (int i = 0; i < *num_lines; i++) {
         qsort((*transform_boxes)[i], (*line_sizes)[i], sizeof(BoundingBox), compare_boxes_by_x);
     }
