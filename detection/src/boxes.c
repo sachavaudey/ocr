@@ -178,17 +178,25 @@ void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsig
  */
 void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color color, int toSave)
 {
-    if (toSave)
+    char *folder_name = NULL;
+    if (toSave == 1) {
+        folder_name = "results_grid";
+    } else if (toSave == 2) {
+        folder_name = "results_word";
+    }
+
+    if (folder_name != NULL)
     {
         struct stat st = {0};
-        if (stat("results_grid", &st) == -1) {
-            if (mkdir("results_grid", 0755) != 0) {
-                errx(EXIT_FAILURE, "Erreur lors de la création du dossier results_grid!");
+        if (stat(folder_name, &st) == -1) {
+            if (mkdir(folder_name, 0755) != 0) {
+                errx(EXIT_FAILURE, "Erreur lors de la création du dossier %s!", folder_name);
             }
         }
         else {
-            DIR *dir = opendir("results_grid");
-            if (dir == NULL)errx(EXIT_FAILURE, "Impossible d'ouvrir le dossier results_grid!");
+            DIR *dir = opendir(folder_name);
+            if (dir == NULL)
+                errx(EXIT_FAILURE, "Impossible d'ouvrir le dossier %s!", folder_name);
 
             struct dirent *entry;
             while ((entry = readdir(dir)) != NULL) {
@@ -196,15 +204,21 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
                     continue;
                 }
                 char filepath[PATH_MAX];
-                int ret = snprintf(filepath, sizeof(filepath), "results_grid/%s", entry->d_name);
+                int ret = snprintf(filepath, sizeof(filepath), "%s/%s", folder_name, entry->d_name);
                 if (ret < 0 || ret >= (int)sizeof(filepath)) {
                     fprintf(stderr, "Chemin trop long pour le fichier: %s\n", entry->d_name);
                     continue;
+                }
+
+                if (remove(filepath) != 0) {
+                    fprintf(stderr, "Erreur lors de la suppression du fichier %s: %s\n", filepath, strerror(errno));
                 }
             }
 
             closedir(dir);
         }
+
+        // Transformation des boîtes et enregistrement des images
         BoundingBox **transform_boxes;
         int *line_sizes;
         int num_lines;
@@ -215,15 +229,17 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
 
                 int width = box.max_x - box.min_x + 1;
                 int height = box.max_y - box.min_y + 1;
-                if (width <= 0 || height <= 0) errx(EXIT_FAILURE, "Wrong box coordinate (out of bounds)!");
+                if (width <= 0 || height <= 0)
+                    errx(EXIT_FAILURE, "Coordonnées de boîte incorrectes (hors limites)!");
                 SDL_Surface *box_surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA8888);
-                if (!box_surface) errx(EXIT_FAILURE, "Error during surface creation!");
+                if (!box_surface)
+                    errx(EXIT_FAILURE, "Erreur lors de la création de la surface!");
 
                 for (int y = 0; y < height; y++) {
                     Uint32 *pixels = (Uint32 *)((Uint8 *)box_surface->pixels + y * box_surface->pitch);
                     for (int x = 0; x < width; x++) {
                         if ((box.min_y + y) >= (int)img->height || (box.min_x + x) >= (int)img->width) {
-                            errx(EXIT_FAILURE, "Wrong coordinate (out of bounds)!");
+                            errx(EXIT_FAILURE, "Coordonnée incorrecte (hors limites)!");
                         }
 
                         Pixel pix = img->pixels[box.min_y + y][box.min_x + x];
@@ -231,10 +247,11 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
                         pixels[x] = color_px;
                     }
                 }
-                char filename[100];
-                snprintf(filename, sizeof(filename), "results_grid/%d.%d.png", i, j);
+                char filename[PATH_MAX];
+                snprintf(filename, sizeof(filename), "%s/%d.%d.png", folder_name, i, j);
 
-                if (IMG_SavePNG(box_surface, filename) != 0) errx(EXIT_FAILURE, "Error during image saving!");
+                if (IMG_SavePNG(box_surface, filename) != 0)
+                    errx(EXIT_FAILURE, "Erreur lors de l'enregistrement de l'image!");
                 SDL_FreeSurface(box_surface);
             }
         }
@@ -245,6 +262,7 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
         free(line_sizes);
     }
 
+    // Dessiner les rectangles sur l'image
     for (int i = 0; i < num_boxes; i++)
     {
         int min_x = boxes[i].min_x;

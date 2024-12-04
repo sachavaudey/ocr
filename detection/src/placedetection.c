@@ -60,6 +60,46 @@ void filter_grid_boxes(BoundingBox *boxes, int num_boxes, BoundingBox **grid_box
     return;
 }
 
+/**
+ * Thist function have to detect the word to search in the grid
+ * @param boxes the list of all boxes
+ * @param num_boxes the number of boxes
+ * @param grid_boxes the list of grid boxes
+ * @param num_grid_boxes the number of grid boxes
+ * @param word_boxes the result list of word boxes
+ * @param num_word_boxes the number of word boxes
+ * @return VOID
+ */
+void detect_word_boxes(BoundingBox *boxes, int num_boxes, BoundingBox *grid_boxes, int num_grid_boxes, BoundingBox **word_boxes, int *num_word_boxes)
+{
+    *word_boxes = malloc(sizeof(BoundingBox) * num_boxes);
+    if (!*word_boxes) errx(EXIT_FAILURE, "Memory allocation failed!");
+
+    *num_word_boxes = 0;
+
+    for (int i = 0; i < num_boxes; i++)
+    {
+        BoundingBox current = boxes[i];
+        int found = 0;
+
+        for (int j = 0; j < num_grid_boxes; j++)
+        {
+            if (current.center_x == grid_boxes[j].center_x && current.center_y == grid_boxes[j].center_y)
+            {
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            (*word_boxes)[*num_word_boxes] = current;
+            (*num_word_boxes)++;
+        }
+    }
+}
+
+
 
 
 

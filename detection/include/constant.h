@@ -81,6 +81,10 @@ static const Color BLUE  = {0, 0, 255};
 #define MIN_CENTER_DISTANCE 25
 #define Y_THRESHOLD 10
 
+#define MIN_NEIGHBORS 2
+
+
+
 
 
 #endif

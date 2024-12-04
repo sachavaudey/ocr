@@ -241,12 +241,7 @@ void process(custIMG *img)
     find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
 
     Color red = {255, 0, 0};
-    Color green = {0, 255, 0};
-
-
-
-
-    draw_rectangles(img, boxes, num_boxes, green, 0);
+    Color blue = {0, 0, 255};
 
 
     BoundingBox *grid_boxes;
@@ -257,6 +252,12 @@ void process(custIMG *img)
     draw_rectangles(img, grid_boxes, num_grid_box, red, 1);
 
 
+    BoundingBox *word_boxes;
+    int num_word_boxes;
+
+    detect_word_boxes(boxes, num_boxes, grid_boxes, num_grid_box, &word_boxes, &num_word_boxes);
+
+    draw_rectangles(img, word_boxes, num_word_boxes, blue, 2);
 
     for (unsigned int i = 0; i < img->height; i++)
     {
