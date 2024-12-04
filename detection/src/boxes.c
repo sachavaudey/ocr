@@ -165,6 +165,35 @@ void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsig
     free(stack);
 }
 
+
+
+
+/**
+ * This function will save all the box center (according to the list given in parameter) in a file
+ * @param filename the filename where to save the coordinate
+ * @param boxes the boxes list to process
+ * @param num_boxes the number of boxes contained in the list
+ * @return VOID
+ */
+void write_box_centers(const char *filename, BoundingBox *boxes, int num_boxes) {
+    if (access(filename, F_OK) == 0) {
+        if (remove(filename) != 0) errx(EXIT_FAILURE, "Error during the file deletion!");
+    }
+
+    FILE *file = fopen(filename, "w");
+    if (file == NULL) errx(EXIT_FAILURE, "Error attempting the file opening!");
+
+    for (int i = 0; i < num_boxes; i++) {
+        int center_x = boxes[i].center_x;
+        int center_y = boxes[i].center_y;
+        fprintf(file, "%d,%d\n", center_x, center_y);
+    }
+
+    fclose(file);
+}
+
+
+
 /**
  * This function draw a rectangle of the given color arround the given box. This function also save the box in specific file according to the number
  * @param img the img to process

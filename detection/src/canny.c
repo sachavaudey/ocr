@@ -248,7 +248,7 @@ void process(custIMG *img)
     int num_grid_box;
 
     filter_grid_boxes(boxes, num_boxes, &grid_boxes, &num_grid_box);
-
+    write_box_centers("resuls_grid", grid_boxes, num_grid_box);
     draw_rectangles(img, grid_boxes, num_grid_box, red, 1);
 
 

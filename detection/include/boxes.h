@@ -28,6 +28,7 @@ typedef struct
 int check_white_pixel_proportion(custIMG *img, BoundingBox *box);
 int check_box(BoundingBox *box);
 void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsigned int y, unsigned int height, unsigned int width, int label, BoundingBox *box);
+void write_box_centers(const char *filename, BoundingBox *boxes, int num_boxes);
 void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color color, int toSave);
 void find_bounding_boxes(custIMG *img, unsigned char **edge_map, unsigned int height, unsigned int width, BoundingBox **boxes, int *num_boxes);
 void merge_bounding_boxes(BoundingBox *boxes, int *num_boxes);
