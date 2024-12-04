@@ -8,6 +8,6 @@
 
 	#include "../../Common/ocr.h"
 
-	void rotate(SDL_Surface *surface, int angle);
+	void rotate(SDL_Surface** surface_param, int angle);
 
 #endif

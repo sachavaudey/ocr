@@ -33,8 +33,6 @@ long find_top_pixel_index(SDL_Surface *surface)
 	Uint32* pixels = surface->pixels;
 	long width = surface->w,
 		 height = surface->h;
-	Uint8 r, g, b;
-	r = g = b = 0;
 	
 	for (int line = 6; line < height-6; line++)
 	{							
@@ -50,20 +48,19 @@ long find_top_pixel_index(SDL_Surface *surface)
 }
 
 long find_bottom_pixel_index(SDL_Surface *surface)
-{
+{	
+	SDL_PixelFormat *format = surface->format;
+	Uint32 whiteColor = SDL_MapRGB(format, 255, 255, 255);
+
 	Uint32* pixels = surface->pixels;
 	long width = surface->w,
 		 height = surface->h;
-	Uint8 r, g, b;
-	r = g = b = 0;
 	
 	for (int line = height-6; line > 6; line--)
 	{							
 		for (int col = 6; col < width-6; col++)
 		{
-			SDL_GetRGB(pixels[line * width + col], surface->format,
-					&r, &g, &b);
-			if (r == 255)
+			if(pixels[line * width + col] == whiteColor)
 			{
 				return line*width+col;
 			}					
@@ -74,20 +71,19 @@ long find_bottom_pixel_index(SDL_Surface *surface)
 }
 
 long find_left_pixel_index(SDL_Surface *surface)
-{
+{	
+	SDL_PixelFormat *format = surface->format;
+	Uint32 whiteColor = SDL_MapRGB(format, 255, 255, 255);
+
 	Uint32* pixels = surface->pixels;
 	long width = surface->w,
 		 height = surface->h;
-	Uint8 r, g, b;
-	r = g = b = 0;
 	
 	for (int col = 6; col < width-6; col++)
 	{							
 		for (int line = 6; line < height-6; line++)
 		{
-			SDL_GetRGB(pixels[line * width + col], surface->format,
-					&r, &g, &b);
-			if (r == 255)
+			if(pixels[line * width + col] == whiteColor)
 			{
 				return line*width+col;
 			}					
@@ -98,20 +94,19 @@ long find_left_pixel_index(SDL_Surface *surface)
 }
 
 long find_right_pixel_index(SDL_Surface *surface)
-{
+{	
+	SDL_PixelFormat *format = surface->format;
+	Uint32 whiteColor = SDL_MapRGB(format, 255, 255, 255);
+
 	Uint32* pixels = surface->pixels;
 	long width = surface->w,
 		 height = surface->h;
-	Uint8 r, g, b;
-	r = g = b = 0;
-	
+		
 	for (int col = width - 6; col > 6; col--)
 	{							
 		for (int line = 6; line < height - 6; line++)
 		{
-			SDL_GetRGB(pixels[line * width + col], surface->format,
-					&r, &g, &b);
-			if (r == 255)
+			if(pixels[line * width + col] == whiteColor)
 			{
 				return line*width+col;
 			}					
@@ -143,7 +138,7 @@ void rotate_auto(SDL_Surface *surface)
 		 a = x4 - x3,
 		 b = y4 - y3;
 
-	rotate(surface, 
+	rotate(&surface, 
 		MIN(
 			-atan2(y, x) * (180.0 / M_PI),
 			-atan2(a, b) * (180.0 / M_PI)

@@ -1,7 +1,9 @@
 #include "rotation.h"
+#include <SDL2/SDL_error.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_surface.h>
 #include <math.h>
+
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -98,8 +100,9 @@ long getPixelNbFromXY(int x, int y, unsigned int width, unsigned int height)
  *
  *	returns	: void
  */
-void rotate(SDL_Surface *surface, int angle) 
+void rotate(SDL_Surface** surface_param, int angle) 
 {   
+	SDL_Surface* surface = *surface_param;
 	if (LOG_LEVEL)
 		printf("---------------\nStarting rotation...\n");
 	
@@ -120,16 +123,15 @@ void rotate(SDL_Surface *surface, int angle)
 				initW, initH);
 		printf("New width : %i, new height : %i\n",
 				newW, newH);}
-
-	SDL_Surface* newOne = 
-		SDL_CreateRGBSurfaceWithFormat(0,
-			newW,newH,32,
-			(surface->format)->format
-			);	
-
+	
 	Uint32* pixelDepart = surface->pixels;
-	Uint32* pixelPtr = newOne->pixels;
 	unsigned long pixelCount = newW * newH;
+
+	SDL_Surface* new_surface = SDL_CreateRGBSurfaceWithFormat(0,
+				newW, newH, 32,
+				(surface->format)->format);
+
+	Uint32* rotated_pixels = new_surface->pixels;
 
 	for(unsigned long pixelNb=0; pixelNb < pixelCount; pixelNb++)
 	{	
@@ -151,16 +153,18 @@ void rotate(SDL_Surface *surface, int angle)
 		
 		if (pixelDepartNb == NOT_IN_IMAGE) 
 		{
-			pixelPtr[pixelNb] = SDL_MapRGBA(newOne->format, 0, 0, 0, 0);
+			rotated_pixels[pixelNb] = SDL_MapRGBA(new_surface->format, 0, 0, 0, 0);
 		}
 		else
 		{	
-			pixelPtr[pixelNb] = pixelDepart[pixelDepartNb];
+			rotated_pixels[pixelNb] = pixelDepart[pixelDepartNb];
 		}
 	}
-	memcpy(pixelDepart, pixelPtr, pixelCount);
-	SDL_FreeSurface(newOne);
-	SDL_UnlockSurface(surface);
+	
+	SDL_Surface* temp = *surface_param;
+	*surface_param = new_surface;
+	SDL_UnlockSurface(temp);
+	SDL_FreeSurface(temp);
 	
 	if (LOG_LEVEL)
 		printf("Image successfully rotated !\n---------------\n");

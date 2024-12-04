@@ -1,4 +1,5 @@
 #include "pre_treatment.h"
+#include "noise_reduction/average_denoising.h"
 #include "noise_reduction/simple_denoising.h"
 #include "rotation/rotation.h"
 #include "rotation/rotation_auto.h"
@@ -52,6 +53,7 @@ void PRT_Heavy(SDL_Surface* surface)
 
 void PRT_Medium(SDL_Surface* surface)
 {
+	//PRT_AverageDenoising(surface);
 	PRT_Grayscaling(surface);
 	PRT_BlackWhite(surface);
 	PRT_AverageDenoisingBlackWhite(surface);
@@ -70,7 +72,7 @@ void PRT_Light(SDL_Surface* surface)
 
 void PRT_Rotate(SDL_Surface* surface, int angle)
 {
-	rotate(surface, angle);
+	rotate(&surface, angle);
 }
 
 void PRT_Rotate_Auto(SDL_Surface* surface)
