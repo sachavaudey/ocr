@@ -1,5 +1,4 @@
 #include "main.h"
-#include <stdio.h>
 
 //Main file of the pre-treatment part of the OCR project
 int main(int argc, char *argv[]) {
@@ -21,9 +20,7 @@ int main(int argc, char *argv[]) {
 
 	if (!strcmp(argv[1],"rotate"))
 	{
-		printf("surface pre run : %ld\n", (long)surface);
 		rotate(&surface, -25);
-		printf("surface post run : %ld\n", (long)surface);
 	}
 	if (!strcmp(argv[1],"grayscale") || !strcmp(argv[1],"all"))
 		PRT_Grayscaling(surface);
