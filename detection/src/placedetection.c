@@ -154,6 +154,142 @@ void remove_adjacent_grid_boxes(BoundingBox *grid_boxes, int *num_grid_boxes, Bo
  * @param num_grid_boxes the number of grid boxes
  * @return VOID
  */
+void remove_outlier_boxes(BoundingBox **grid_boxes, int *num_grid_boxes)
+{
+    if (*num_grid_boxes < 2)
+        return;
+
+    double *all_distances = malloc(sizeof(double) * ((*num_grid_boxes - 1) * 2));
+    if (!all_distances)
+        errx(EXIT_FAILURE, "Memory allocation failed!");
+
+    int distance_count = 0;
+
+    double **box_distances = malloc(sizeof(double *) * (*num_grid_boxes));
+    int *neighbor_counts = malloc(sizeof(int) * (*num_grid_boxes));
+    if (!box_distances || !neighbor_counts)
+        errx(EXIT_FAILURE, "Memory allocation failed!");
+
+    for (int i = 0; i < *num_grid_boxes; i++)
+    {
+        box_distances[i] = malloc(sizeof(double) * 2); 
+        neighbor_counts[i] = 0;
+    }
+
+    for (int i = 0; i < *num_grid_boxes; i++)
+    {
+        if (i > 0)
+        {
+            int x_diff_prev = (*grid_boxes)[i].center_x - (*grid_boxes)[i - 1].center_x;
+            int y_diff_prev = (*grid_boxes)[i].center_y - (*grid_boxes)[i - 1].center_y;
+            double distance_prev = sqrt((double)(x_diff_prev * x_diff_prev + y_diff_prev * y_diff_prev));
+
+            box_distances[i][neighbor_counts[i]++] = distance_prev;
+            all_distances[distance_count++] = distance_prev;
+        }
+
+        if (i < *num_grid_boxes - 1)
+        {
+            int x_diff_next = (*grid_boxes)[i].center_x - (*grid_boxes)[i + 1].center_x;
+            int y_diff_next = (*grid_boxes)[i].center_y - (*grid_boxes)[i + 1].center_y;
+            double distance_next = sqrt((double)(x_diff_next * x_diff_next + y_diff_next * y_diff_next));
+
+            box_distances[i][neighbor_counts[i]++] = distance_next;
+            all_distances[distance_count++] = distance_next;
+        }
+    }
+
+    double sum = 0.0;
+    for (int i = 0; i < distance_count; i++)
+    {
+        sum += all_distances[i];
+    }
+    double mean = sum / distance_count;
+
+    double variance = 0.0;
+    for (int i = 0; i < distance_count; i++)
+    {
+        variance += (all_distances[i] - mean) * (all_distances[i] - mean);
+    }
+    variance /= distance_count;
+    double std_dev = sqrt(variance);
+
+    double threshold = mean + 2 * std_dev;
+
+    int *to_remove = calloc(*num_grid_boxes, sizeof(int));
+    if (!to_remove)
+        errx(EXIT_FAILURE, "Memory allocation failed!");
+
+    for (int i = 0; i < *num_grid_boxes; i++)
+    {
+        int outlier = 1;
+        for (int j = 0; j < neighbor_counts[i]; j++)
+        {
+            if (box_distances[i][j] <= threshold)
+            {
+                outlier = 0;
+                break;
+            }
+        }
+        if (outlier)
+        {
+            to_remove[i] = 1;
+        }
+    }
+
+    BoundingBox *filtered_boxes = malloc(sizeof(BoundingBox) * (*num_grid_boxes));
+    if (!filtered_boxes)
+        errx(EXIT_FAILURE, "Memory allocation failed!");
+
+    int new_num_boxes = 0;
+    for (int i = 0; i < *num_grid_boxes; i++)
+    {
+        if (!to_remove[i])
+        {
+            filtered_boxes[new_num_boxes++] = (*grid_boxes)[i];
+        }
+    }
+
+    free(*grid_boxes);
+    *grid_boxes = filtered_boxes;
+    *num_grid_boxes = new_num_boxes;
+    for (int i = 0; i < *num_grid_boxes; i++)
+    {
+        free(box_distances[i]);
+    }
+    free(box_distances);
+    free(neighbor_counts);
+    free(all_distances);
+    free(to_remove);
+}
+
+
+/**
+ * This function have to replace all the grid box by word box if an grid box is close to a word box
+ * @param grid_boxes the list of grid boxes
+ * @param num_grid_boxes the number of grid boxes
+ * @param word_boxes the list of word boxes
+ * @param num_word_boxes the number of word boxes
+ * @return VOID
+ */
+void replace_grid_boxes(BoundingBox **grid_boxes, int *num_grid_boxes, BoundingBox **word_boxes, int *num_word_boxes)
+{
+    for (int i = 0; i < *num_grid_boxes; i++)
+    {
+        BoundingBox grid_box = (*grid_boxes)[i];
+        for (int j = 0; j < *num_word_boxes; j++)
+        {
+            BoundingBox word_box = (*word_boxes)[j];
+            int x_diff = abs(grid_box.center_x - word_box.center_x);
+            int y_diff = abs(grid_box.center_y - word_box.center_y);
+            if (x_diff < MIN_X_SPACING && y_diff < MIN_Y_DIFF)
+            {
+                (*grid_boxes)[i] = word_box;
+                break;
+            }
+        }
+    }
+}
 
 
 

@@ -251,12 +251,17 @@ void process(custIMG *img)
     int num_word_boxes;
 
     filter_grid_boxes(boxes, num_boxes, &grid_boxes, &num_grid_box);
+    detect_word_boxes(boxes, num_boxes, grid_boxes, num_grid_box, &word_boxes, &num_word_boxes);
+    remove_adjacent_grid_boxes(grid_boxes, &num_grid_box, &word_boxes, &num_word_boxes);
+    remove_outlier_boxes(&grid_boxes, &num_grid_box);
+    remove_outlier_boxes(&word_boxes, &num_word_boxes);
+    replace_grid_boxes(&grid_boxes, &num_grid_box, &word_boxes, &num_word_boxes);
     
     write_box_centers("resuls_grid", grid_boxes, num_grid_box);
 
-    detect_word_boxes(boxes, num_boxes, grid_boxes, num_grid_box, &word_boxes, &num_word_boxes);
+    
 
-    remove_adjacent_grid_boxes(grid_boxes, &num_grid_box, &word_boxes, &num_word_boxes);
+    
 
     draw_rectangles(img, grid_boxes, num_grid_box, red, 1);
     draw_rectangles(img, word_boxes, num_word_boxes, blue, 2);
