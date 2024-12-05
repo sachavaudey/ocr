@@ -80,19 +80,8 @@ int process_enlarge(char* filepath) {
     return EXIT_SUCCESS;
 }
 
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        errx(EXIT_FAILURE, "Usage: %s <image>", argv[0]);
-    }
+int DET_All(SDL_Surface *surface) {
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        errx(EXIT_FAILURE, "Error initializing SDL: %s", SDL_GetError());
-    }
-
-    if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) {
-        SDL_Quit();
-        errx(EXIT_FAILURE, "Error initializing SDL_image: %s", IMG_GetError());
-    }
 
     
     if(process_enlarge(argv[1]) != EXIT_SUCCESS) {

@@ -25,43 +25,31 @@ void save_image(SDL_Surface *surface){
 }
 
 // Different process functions (6 different processes can be run)
-int run_pretreatment(SDL_Surface *surface) {
-    int set;
-    printf("## PRE-TREATMENT MENU ##\n");
-    printf("1. Run rotation function\n");
-    printf("2. Run all the pre-treatment functions (whitout rotation)\n");
-    printf("Please make your choice : ");
-
-    if (scanf("%d", &set) != 1) {
-        printf("Invalid input. Please enter the process you want:\n");
-        while (getchar() != '\n');
-    }
-
-    if (set == 1) {
-        int rotation_value;
-        printf("\n");
-        printf("Please enter a rotation value : ");
-
-        if (scanf("%d", &rotation_value) != 1) {
-            printf("Invalid input. Please enter the rotation value you want:\n");
-            while (getchar() != '\n');
-        }
-
-        PRT_Rotate(surface, rotation_value);
-        save_image(surface);
-        return EXIT_SUCCESS;
-    }
-    else if (set == 2){
-        PRT_Full(surface);
-        save_image(surface);
-        return EXIT_SUCCESS;
-    }
-    else{
-        printf("Wrong option (1 or 2)\n");
-        printf("Abort...\n");
-        return EXIT_FAILURE;
-    }
+int run_pretreatment(SDL_Surface *surface, int set, int angle) {
+    switch (set)
+    {
+    case 1:
+        PRT_Light(&surface);
+        break;
+    case 2 :
+        PRT_Medium(&surface);
+        break;
+    case 3 :
+        PRT_Heavy(&surface);
+        break;
+    case 4 :
+        PRT_Rotate(&surface, angle);
+        break;
+    case 5 :
+        PRT_Rotate_Auto(&surface);
+        break;
+    case 6 :
+        PRT_Contrast_Boost(&surface);
+        break;
     
+    default:
+        errx(EXIT_FAILURE, "Incorrect set for pre-treatment, abord!");
+    }
 }
 
 int run_letterdetection() {
