@@ -39,7 +39,6 @@ void quit_button(GtkWidget* widget, gpointer data)
 void image_button(GtkWidget* widget, gpointer data) 
 {
     const char* imagePath = (const char*)data;
-
     gtk_image_set_from_file(GTK_IMAGE(imageWidget), imagePath);
     g_print("Button clicked: %s\n", imagePath);
 }
