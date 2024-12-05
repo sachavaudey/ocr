@@ -3,6 +3,7 @@
 #include "noise_reduction/simple_denoising.h"
 #include "rotation/rotation.h"
 #include "rotation/rotation_auto.h"
+#include "tools/contrast_boost.h"
 
 int countWhitePixels(SDL_Surface *surface) {
     if (!surface) {
@@ -78,4 +79,9 @@ void PRT_Rotate(SDL_Surface* surface, int angle)
 void PRT_Rotate_Auto(SDL_Surface* surface)
 {
 	rotate_auto(surface);
+}
+
+void PRT_Contrast_Boost(SDL_Surface* surface)
+{
+	boost(surface);
 }

@@ -24,6 +24,8 @@ int main(int argc, char *argv[]) {
 	}
 	if (!strcmp(argv[1],"grayscale") || !strcmp(argv[1],"all"))
 		PRT_Grayscaling(surface);
+	if (!strcmp(argv[1],"boost"))
+		PRT_Contrast_Boost(surface);
 
 	if (!strcmp(argv[1],"heavy"))
 		PRT_Heavy(surface);

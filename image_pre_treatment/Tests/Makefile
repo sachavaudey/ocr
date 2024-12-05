@@ -10,7 +10,7 @@ SRC = main.c ../black_white/black_white.c \
 ../rotation/rotation_auto.c \
 ../tools/tools.c ../tools/image_tools.c \
 ../tools/surface_tools.c ../tools/pixel_tools.c\
-../pre_treatment.c
+../pre_treatment.c ../tools/contrast_boost.c
 
 all: $(TARGET)
 
