@@ -93,11 +93,6 @@ int main(int argc, char* argv[])
     {
         gtk_image_set_from_file(GTK_IMAGE(imageWidget), argv[1]);
     }
-    else
-    {
-        gtk_image_set_from_file(GTK_IMAGE(imageWidget), 
-                                "resultPretreatment.png");
-    }
     gtk_box_pack_start(GTK_BOX(topBox), imageWidget, TRUE, TRUE, 0);
 
     GtkWidget* searchBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
