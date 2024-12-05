@@ -1,9 +1,6 @@
 #include "grayscale.h"
-#include <SDL2/SDL_stdinc.h>
-#include <stdlib.h>
-#include <string.h>
 
-#define MAX3(a, b, c) (((a)>(b))?( (((a)>(c))?(a):(c)) ):( (((b)>(c))?(b):(c)) ))
+#define MAX3(a, b, c) (((a)>(b))?((((a)>(c))?(a):(c))):((((b)>(c))?(b):(c))))
 
 
 /*	Function : grayscaling
