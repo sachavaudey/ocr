@@ -46,7 +46,7 @@ void PRT_Heavy(SDL_Surface* surface)
 	PRT_SimpleDenoising(surface);
 	PRT_xy_denoising(surface);
 	PRT_AverageDenoisingBlackWhite(surface);
-	//PRT_SimpleDenoising(surface);
+	PRT_SimpleDenoising(surface);
 	PRT_AverageDenoisingBlackWhite(surface);
 	//PRT_AverageDenoisingBlackWhite(surface);
 
@@ -54,10 +54,10 @@ void PRT_Heavy(SDL_Surface* surface)
 
 void PRT_Medium(SDL_Surface* surface)
 {
-	//PRT_AverageDenoising(surface);
+	PRT_AverageDenoising(surface);
 	PRT_Grayscaling(surface);
 	PRT_BlackWhite(surface);
-	PRT_AverageDenoisingBlackWhite(surface);
+	//PRT_AverageDenoisingBlackWhite(surface);
 	PRT_SimpleDenoising(surface);
 	PRT_xy_denoising(surface);
 }
