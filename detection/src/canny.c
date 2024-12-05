@@ -257,7 +257,7 @@ void process(custIMG *img)
     remove_outlier_boxes(&word_boxes, &num_word_boxes);
     replace_grid_boxes(&grid_boxes, &num_grid_box, &word_boxes, &num_word_boxes);
     
-    write_box_centers("resuls_grid", grid_boxes, num_grid_box);
+    write_box_centers("../data/resuls_grid", grid_boxes, num_grid_box);
 
     
 

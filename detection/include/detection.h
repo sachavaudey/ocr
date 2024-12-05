@@ -13,6 +13,7 @@
 
 
 int process_letterdetection(char* filepath);
-int main(int argc, char* argv[]);
+int process_enlarge(char* filepath);
+void DET_All(char* filepath, char* outpath);
 
 #endif

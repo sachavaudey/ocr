@@ -10,10 +10,11 @@
 #include <SDL2/SDL_image.h>
 
 #include "../image_pre_treatment/pre_treatment.h"
+#include "../detection/include/detection.h"
 
 
 
-int run_pretreatment(SDL_Surface *surface, int set, int angle)
+void run_pretreatment(SDL_Surface *surface, int set, int angle)
 
 
 

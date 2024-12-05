@@ -210,9 +210,9 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
 {
     char *folder_name = NULL;
     if (toSave == 1) {
-        folder_name = "results_grid";
+        folder_name = "../data/results_grid";
     } else if (toSave == 2) {
-        folder_name = "results_word";
+        folder_name = "../data/results_word";
     }
 
     if (folder_name != NULL)
