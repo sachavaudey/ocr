@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include "img_traitement.h"
 
 // Function which load an image
 SDL_Surface* load_image(const char* filename) {

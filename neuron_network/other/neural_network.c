@@ -1,22 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include "img_traitement.c"
+#include "neural_network.h"
 
-
-#define FILENAME_SIZE 100 
-#define INPUT_SIZE 900         
-#define HIDDEN_SIZE 90       
-#define OUTPUT_SIZE 26       
-#define BATCH_SIZE 26        
-#define LEARNING_RATE 0.1 
-#define NBTEST 70    
-#define EPOCHS 10000
 //Au moins 1h
 
 // Fonction d'activation
-double sigmoid(double x) { return 1 / (1 + exp(-x)); }
-double sigmoid_derivative(double x) { return x * (1 - x); }
+double sigmoid_aux(double x) { return 1 / (1 + exp(-x)); }
+double sigmoid_derivative_aux(double x) { return x * (1 - x); }
 
 // Initialisation des poids avec des tableaux dynamiques
 void init_weights(double** weights, int rows, int cols) {
@@ -56,7 +44,7 @@ void forward_batch(double** batch_input, double** weights_input_hidden,
             for (int j = 0; j < INPUT_SIZE; j++) {
                 batch_hidden[img][i] += batch_input[img][j] * weights_input_hidden[j][i];
             }
-            batch_hidden[img][i] = sigmoid(batch_hidden[img][i]);
+            batch_hidden[img][i] = sigmoid_aux(batch_hidden[img][i]);
         }
 
         // Vers couche de sortie
@@ -65,7 +53,7 @@ void forward_batch(double** batch_input, double** weights_input_hidden,
             for (int j = 0; j < HIDDEN_SIZE; j++) {
                 batch_output[img][i] += batch_hidden[img][j] * weights_hidden_output[j][i];
             }
-            batch_output[img][i] = sigmoid(batch_output[img][i]);
+            batch_output[img][i] = sigmoid_aux(batch_output[img][i]);
         }
     }
 }
@@ -87,7 +75,7 @@ void backpropagation_batch(double** batch_input, double** batch_hidden,
     for (int img = 0; img < batch_size; img++) {
         for (int i = 0; i < OUTPUT_SIZE; i++) {
             output_errors[img][i] = (batch_target[img][i] - batch_output[img][i]) 
-            * sigmoid_derivative(batch_output[img][i]);
+            * sigmoid_derivative_aux(batch_output[img][i]);
         }
     }
 
@@ -98,7 +86,7 @@ void backpropagation_batch(double** batch_input, double** batch_hidden,
             for (int j = 0; j < OUTPUT_SIZE; j++) {
                 hidden_errors[img][i] += output_errors[img][j] * weights_hidden_output[i][j];
             }
-            hidden_errors[img][i] *= sigmoid_derivative(batch_hidden[img][i]);
+            hidden_errors[img][i] *= sigmoid_derivative_aux(batch_hidden[img][i]);
         }
     }
 
@@ -140,7 +128,7 @@ void backpropagation_batch(double** batch_input, double** batch_hidden,
     free(hidden_errors);
 }
 
-void softmax(double* input, double* output, size_t length) {
+void softmax_aux(double* input, double* output, size_t length) {
     double max = input[0];
     for (size_t i = 1; i < length; i++) {
         if (input[i] > max) max = input[i];
@@ -158,7 +146,7 @@ void softmax(double* input, double* output, size_t length) {
 }
 
 // function which predict the letter
-void predict(double* input, double** hiddenWeight, double** outPutWeight, double* hiddenLayerBias, 
+void predict_aux(double* input, double** hiddenWeight, double** outPutWeight, double* hiddenLayerBias, 
              double* outputLayerBias, double* outputLayer) {
     double* hiddenLayer = (double*)malloc(HIDDEN_SIZE * sizeof(double));
 
@@ -167,7 +155,7 @@ void predict(double* input, double** hiddenWeight, double** outPutWeight, double
         for (size_t k = 0; k < INPUT_SIZE; k++) {
             activation += input[k] * hiddenWeight[k][j];
         }
-        hiddenLayer[j] = sigmoid(activation);
+        hiddenLayer[j] = sigmoid_aux(activation);
     }
 
     double* outputRaw = (double*)malloc(OUTPUT_SIZE * sizeof(double));
@@ -179,7 +167,7 @@ void predict(double* input, double** hiddenWeight, double** outPutWeight, double
         outputRaw[j] = activation;
     }
 
-    softmax(outputRaw, outputLayer, OUTPUT_SIZE);
+    softmax_aux(outputRaw, outputLayer, OUTPUT_SIZE);
 
     free(hiddenLayer);
     free(outputRaw);
@@ -280,7 +268,7 @@ void save_weights(double** hiddenoutput, double** outPutWeight, double* hiddenLa
     fclose(file4);
 }
 
-int main() {
+int process_train() {
     
     
     double** weights_input_hidden = malloc(INPUT_SIZE * sizeof(double*));
@@ -394,7 +382,7 @@ int main() {
             new_input[j] = resultats[j];
         }
         double* prediction = malloc(OUTPUT_SIZE * sizeof(double));
-        predict(new_input, weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, prediction);
+        predict_aux(new_input, weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, prediction);
 
         char lettre[52] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 
         'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
@@ -447,7 +435,7 @@ char* res2[4];
                 new_input[j] = resultats[j];
             }               
             double prediction[4];
-            predict(new_input, weights_input_hidden, weights_hidden_output, 
+            predict_aux(new_input, weights_input_hidden, weights_hidden_output, 
             hidden_bias, output_bias, prediction);
             char lettre[52]={'A','B','C','D','E','F','G','H','I','J','K',
             'L','M','N','O','P','Q','R','S','T','U','V','W','X'

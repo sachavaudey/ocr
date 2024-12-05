@@ -13,8 +13,8 @@
 #include "../detection/include/detection.h"
 
 
-
-void run_pretreatment(SDL_Surface *surface, int set, int angle)
+void run_pretreatment(SDL_Surface *surface, int set, int angle);
+void run_detection();
 
 
 

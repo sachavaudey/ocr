@@ -27,6 +27,5 @@ int compterLignes(const char *nomFichier);
 
 // Main process handler
 int process_solver(char *filename, char *word);
-int main();
 
 #endif // WORD_SEARCH_H

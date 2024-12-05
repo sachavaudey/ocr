@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-//#include "solve.h"
+#include "solve.h"
 
 //trouver le nombre de mots
 

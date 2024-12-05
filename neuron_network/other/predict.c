@@ -1,28 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
-#include "img_traitement.c"
-#include "transpose_image.c"
-//#include "predict.h"
-
-
-//create ./o ou compile 
-//clang $(pkg-config --cflags --libs sdl2 SDL2_image) -g -o t predict.c && clear && ./t
-
-
-#define h 2
-#define l 2
-#define FILENAME_SIZE 100 
-#define INPUT_SIZE 900         
-#define HIDDEN_SIZE 60       
-#define OUTPUT_SIZE 26       
-#define BATCH_SIZE 26        
-#define LEARNING_RATE 0.1 
-#define NBTEST 70    
-#define EPOCHS 10000
+#include "predict.h"
 
 
 double weights_input_hidden[INPUT_SIZE][HIDDEN_SIZE];
@@ -169,58 +145,10 @@ void predict(double input[INPUT_SIZE], double hiddenWeight[INPUT_SIZE][HIDDEN_SI
 
 
 //function which create the binary table
-void remplirTestAvecImages_black(double test[BATCH_SIZE][INPUT_SIZE], char* images[BATCH_SIZE]) {
-    for (size_t i = 0; i < BATCH_SIZE; i++) 
-    {
-        double* resultats = traitements_test(images[i]);
-        for (size_t j = 0; j < INPUT_SIZE; j++) 
-        {
-            test[i][j] = resultats[j];
-        }
-        free(resultats); 
-    }
-}
-
-//function which create the way
-void remplir_chemins_images(char* images[BATCH_SIZE], const char* prefixe, const char* suffixe) {
-    char* lettres_min[BATCH_SIZE] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-                                "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
-    
-    char lettres[BATCH_SIZE] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-    
-    for (size_t i = 0; i < BATCH_SIZE; i++) {
-        
-        images[i] = (char*)malloc(FILENAME_SIZE * sizeof(char));
-        snprintf(images[i], FILENAME_SIZE, "%s/%s/%c%s.PNG", prefixe, lettres_min[i], lettres[i], suffixe);
-        
-
-    }
-}
 
 
 
 
-
-
-
-void read_grid(char* res[4])
-{
-    int c=0;
-    for (size_t i = 0; i < h; i++)
-    {
-        for (size_t j = 0; j < l; j++)
-        {
-            res[c]=malloc(20*sizeof(char));
-            snprintf(res[c], FILENAME_SIZE,"../results/%zu_%zu.png",i,j );
-            printf("%s et c= %d\n",res[c],c);
-            c++;
-
-        }
-        
-    }
-    
-}
 
 
 //function which search the size of grid

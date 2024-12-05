@@ -1,8 +1,4 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <stdio.h>
-#include <stdlib.h>
-
+#include "transpose_image.h"
 
 int is_green(Uint32 pixel, SDL_PixelFormat *format) {
     Uint8 r, g, b;
