@@ -148,7 +148,8 @@ void rotate(SDL_Surface** surface_param, int angle)
 		
 		if (pixelDepartNb == NOT_IN_IMAGE) 
 		{
-			rotated_pixels[pixelNb] = SDL_MapRGBA(new_surface->format, 255, 255, 255, 255);
+			rotated_pixels[pixelNb] = SDL_MapRGBA(new_surface->format,
+					255, 255, 255, 255);
 		}
 		else
 		{	
