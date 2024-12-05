@@ -1,9 +1,4 @@
 #include "pre_treatment.h"
-#include "noise_reduction/average_denoising.h"
-#include "noise_reduction/simple_denoising.h"
-#include "rotation/rotation.h"
-#include "rotation/rotation_auto.h"
-#include "tools/contrast_boost.h"
 
 int countWhitePixels(SDL_Surface *surface) {
     if (!surface) {
