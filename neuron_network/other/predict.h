@@ -6,6 +6,8 @@
 #include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include "transpose_image.h"
+#include "img_traitement.h"
 
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
