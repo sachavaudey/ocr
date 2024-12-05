@@ -45,7 +45,7 @@ void run_pretreatment(SDL_Surface *surface, int set, int angle){
 
 
 /**
- * Thos function run the detection function according to the image out of pre-treatment (auto detect)
+ * This function run the detection function according to the image out of pre-treatment (auto detect)
  * @param VOID
  * @return VOID
  */
