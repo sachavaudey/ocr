@@ -10,10 +10,10 @@
 int main()
 {
 
-    pro_grid();
-    pro_word();
+    //pro_grid();
+
+    //pro_word();
     
-    printf("la");
     pro_solv();
     
     

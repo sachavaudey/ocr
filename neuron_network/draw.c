@@ -104,10 +104,57 @@ void fin_coo(int** tableau)
     
 }
 
+void draw()
+{
+    int** tableau=malloc(1000*sizeof(int*));
+    for (size_t i = 0; i < 1000; i++)
+    {
+        tableau[i]=malloc(1*sizeof(int));
+    }
+
+    int** coord=malloc(1000*sizeof(int*));
+    for (size_t i = 0; i < 1000; i++)
+    {
+        coord[i]=malloc(1*sizeof(int));
+    }
+    
+    fin_coord( tableau);
+    fin_coo(coord);
+    SDL_Surface *image = IMG_Load("lv1.png");
+    Uint32 redColor = SDL_MapRGB(image->format, 255, 0, 0);
+    for (size_t i = 0; i < 4; i++)
+    {
+        if (coord[i][0]==0 && coord[i][1]==0 && coord[i][2]==0 && coord[i][3]==0)
+        {
+            
+        }
+        else 
+        {
+            int t=3;
+
+            int x1=tableau[coord[i][0]*t+coord[i][1]][0];
+            int y1=tableau[coord[i][0]*t+coord[i][1]][1];
+            int x2=tableau[coord[i][2]*t+coord[i][3]][0];
+            int y2=tableau[coord[i][2]*t+coord[i][3]][1];
+
+            printf("%d,%d  %d,%d\n",x1,y1,x2,y2);
+            drawRectangle(image,x1,y1,x2,y2,30,redColor);
+            
+
+        }
+
+
+
+
+    }
+    
+    
+    
+}
 
 
 int main(int argc, char *argv[]) {
-    /*if (argc != 2) {
+    if (argc != 2) {
         printf("Usage: %s <image_path>\n", argv[0]);
         return 1;
     }
@@ -138,7 +185,14 @@ int main(int argc, char *argv[]) {
     int x1 = 120, y1 = 120;
     int x2 = 310, y2 = 80;
 
-    drawRectangle(image, x1, y1, x2, y2, 30, redColor);
+
+    draw();
+
+
+
+
+    //drawRectangle(image, x1, y1, x2, y2, 30, redColor);
+    
 
     SDL_Window *window = SDL_CreateWindow("Image with Rectangle", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                           image->w, image->h, SDL_WINDOW_SHOWN);
@@ -176,10 +230,11 @@ int main(int argc, char *argv[]) {
     SDL_FreeSurface(image);
     SDL_DestroyWindow(window);
     IMG_Quit();
-    SDL_Quit();*/
+    SDL_Quit();
+    return 0;
 
 
-    int** tableau=malloc(1000*sizeof(int*));
+    /*int** tableau=malloc(1000*sizeof(int*));
     for (size_t i = 0; i < 1000; i++)
     {
         tableau[i]=malloc(1*sizeof(int));
@@ -193,7 +248,8 @@ int main(int argc, char *argv[]) {
     
     fin_coord( tableau);
     fin_coo(coord);
-
+    SDL_Surface *image = IMG_Load("lv1.png");
+    Uint32 redColor = SDL_MapRGB(image->format, 255, 0, 0);
     for (size_t i = 0; i < 4; i++)
     {
         if (coord[i][0]==0 && coord[i][1]==0 && coord[i][2]==0 && coord[i][3]==0)
@@ -208,6 +264,7 @@ int main(int argc, char *argv[]) {
             int y1=tableau[coord[i][0]*t+coord[i][1]][1];
             int x2=tableau[coord[i][2]*t+coord[i][3]][0];
             int y2=tableau[coord[i][2]*t+coord[i][3]][1];
+            drawRectangle(image,100,100,200,200,30,redColor);
             
 
         }
@@ -218,5 +275,5 @@ int main(int argc, char *argv[]) {
     }
     
     
-    return 0;
+    return 0;*/
 }

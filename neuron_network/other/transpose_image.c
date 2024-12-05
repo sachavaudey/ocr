@@ -21,6 +21,7 @@ int is_letter_pixel(Uint32 pixel, SDL_PixelFormat *format) {
 Uint32 invert_colors(Uint32 pixel, SDL_PixelFormat *format) {
     Uint8 r, g, b;
     SDL_GetRGB(pixel, format, &r, &g, &b);
+    
     if (r == 0 && g == 0 && b == 0) {
         return SDL_MapRGB(format, 255, 255, 255);
     } else if (r == 255 && g == 255 && b == 255) {
@@ -34,15 +35,24 @@ SDL_Surface* crop_image(SDL_Surface *image) {
     SDL_PixelFormat *format = image->format;
     Uint32 *pixels = (Uint32 *)image->pixels;
 
+
+    int black_pixel_count = 0; 
+    int total_pixels = image->w * image->h;
     int top = image->h, bottom = 0;
     int left = image->w, right = 0;
-
+    //if (left<30) printf("\n\n\naaaaaaaa\n\n");
 
     for (int y = 0; y < image->h; y++) {
         for (int x = 0; x < image->w; x++) {
             Uint32 pixel = pixels[y * image->w + x];
             
 
+             Uint8 r, g, b;
+            SDL_GetRGB(pixel, format, &r, &g, &b);
+
+            if (r > 200 && g > 200 && b >200 ) {
+                black_pixel_count++;
+            }
             if (is_letter_pixel(pixel, format)) {
                 if (y < top) top = y;
                 if (y > bottom) bottom = y;
@@ -50,6 +60,12 @@ SDL_Surface* crop_image(SDL_Surface *image) {
                 if (x > right) right = x;
             }
         }
+    }
+
+    float black_ratio = (float)black_pixel_count / total_pixels;
+    if (black_ratio >= 0.95) {
+        printf("Image Noir\n");
+        return NULL; // Retourner NULL si l'image est considérée comme noire
     }
 
 
@@ -84,7 +100,7 @@ void process_image(const char *input_path, const char *output_path) {
     }
 
     SDL_LockSurface(image);
-
+    
     SDL_PixelFormat *format = image->format;
     //Uint32 *pixels = (Uint32 *)image->pixels;
 
@@ -96,11 +112,12 @@ void process_image(const char *input_path, const char *output_path) {
     for (int y = 0; y < cropped->h; y++) {
         for (int x = 0; x < cropped->w; x++) {
             Uint32 *pixel = cropped_pixels + (y * cropped->w) + x;
-            if (is_green(*pixel, format)) {
+            /*if (is_green(*pixel, format)) {
                 *pixel = SDL_MapRGB(format, 255, 255, 255); 
             } else {
                 *pixel = invert_colors(*pixel, format);
-            }
+            }*/
+            //*pixel = invert_colors(*pixel, format);
         }
     }
     
@@ -115,22 +132,34 @@ void process_image(const char *input_path, const char *output_path) {
     SDL_Quit();
 }
 
-int process_transforme_grid(int b){
-    char** res=malloc((b-1)*sizeof(char*));
-    char** out=malloc((b-1)*sizeof(char*));
-    
-    for (int i = 1; i < b; i++)
+
+
+
+int process_transforme_grid(int a,int b){
+    char** res=malloc((a*b)*sizeof(char*));
+    char** out=malloc((a*b)*sizeof(char*));
+
+    int t=0;
+    for (int i = 0; i < b; i++)
     {
-        res[i-1]=malloc(100*sizeof(char));
-        out[i-1]=malloc(100*sizeof(char));
-        snprintf(res[i-1],100,"../results-2/%d.0.png",i);
-        snprintf(out[i-1],100,"output/%d.0.png",i);
+        
+    
+        for (int j = 0; j < a; j++)
+        {
+            res[t]=malloc(100*sizeof(char));
+            out[t]=malloc(100*sizeof(char));
+            snprintf(res[t],100,"../results_grid-2/%d.%d.png",i,j);
+            snprintf(out[t],100,"output/%d.%d.png",i,j);
+            t++;
+            printf("%d\n",t);
+        }
     }
-    printf("%s",res[0]);
+    //printf("%s",res[0]);
     
     
-    for (int i = 0; i < b-1; i++)
+    for (int i = 0; i < a*b; i++)
     {
+        printf("%s,    %s\n",res[i],out[i]);
         process_image(res[i],out[i]);
     }
     return 0;  
@@ -139,7 +168,8 @@ int process_transforme_grid(int b){
 
 int* search_size_word()
 {
-    int* word=malloc(10*sizeof(int));
+    remove("coordo");
+    int* word=malloc(100*sizeof(int));
     const char *directory_name = "words";
     char command[256];
     snprintf(command, sizeof(command), "mkdir %s", directory_name);
@@ -152,17 +182,18 @@ int* search_size_word()
         while (1) 
         {
             char* var=malloc(100*sizeof(char));
-            snprintf(file_path, sizeof(file_path), "../results2_words/%d.%d.png", counter,p);
-            snprintf(var, sizeof(file_path), "words/%d.%d.png", counter,p);
+            snprintf(file_path, sizeof(file_path), "../results_word/%d.%d.png", p,counter);
+            snprintf(var, sizeof(file_path), "words/%d.%d.png", p,counter);
             FILE *file = fopen(file_path, "r");
             if (file == NULL) {
-                word=realloc(word,(p+1)*sizeof(char));
+                
                 word[p]=counter;
                 //printf("%d",word[p]);
                 p++;
                 break;
             }
             process_image(file_path,var);
+            free(var);
             fclose(file);
             counter++;
         }
