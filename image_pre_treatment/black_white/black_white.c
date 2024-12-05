@@ -34,7 +34,7 @@ void PRT_BlackWhite(SDL_Surface *surface)
 	if (LOG_LEVEL >= 2)
 		printf("avg before : %i", avg);
 
-	if (avg >= 215)
+	if (avg >= 220)
 		avg = avg * 0.8;
 	
 	if (LOG_LEVEL >= 2)

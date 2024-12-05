@@ -26,19 +26,17 @@ void PRT_AverageDenoising(SDL_Surface *surface)
 
 	Uint8* threshold = RgbAverageSurface(surface);
 	
-	float coeff = 2;
-	Uint8 threshold_r = (threshold[0] * coeff),
-		  threshold_g = (threshold[1] * coeff),
-		  threshold_b = (threshold[2] * coeff);
+	float coef = 0.9;
+	int threshold_sum = (int)(threshold[0] * coef) + (int)(threshold[1] * coef) + (int)(threshold[2] * coef);
 
 
-	if (threshold_r > 200 && threshold_g > 200 && threshold_b > 200)
+	/*if (threshold_r > 200 && threshold_g > 200 && threshold_b > 200)
 	{
 		free(threshold);
 		return;
-	}
+	}*/
 	
-	printf("thresold %i %i %i", threshold_r, threshold_g, threshold_b);
+	printf("thresold %i", threshold_sum);
 	free(threshold);
 
     Uint32 *pixels = (Uint32 *)(surface->pixels);
@@ -60,27 +58,23 @@ void PRT_AverageDenoising(SDL_Surface *surface)
             Uint8 avg_r = retour[0];
             Uint8 avg_g = retour[1];
             Uint8 avg_b = retour[2];
-
-			free(retour);
 			
+			free(retour);
+			int contrast_around = (int)(avg_r) + (int)(avg_g) + (int)(avg_b);
+
 			Uint8 r,g,b;
 			r = g = b = 0;
 			SDL_GetRGB(pixels[line * width + row], surface->format,  &r, &g, &b);
-            
-			if ((avg_r >= threshold_r ||
-				avg_g >= threshold_g ||
-				avg_b >= threshold_b)
-				&&
-				(r>=threshold_r &&
-				 g>=threshold_g &&
-				 b>=threshold_b) )
+            int contrast = (int)(r) + (int)(g) + (int)(b);
+			if ((contrast < threshold_sum) &&
+				(contrast_around < threshold_sum))
 			{
 				new_pixels[line * width + row] = SDL_MapRGBA(surface->format,
 						avg_r, avg_g, avg_b, 255);
 			}
 			else
 				new_pixels[line * width + row] = SDL_MapRGBA(surface->format,
-						0, 0, 0, 255);
+						255, 255, 255, 255);
         }
     }
 
@@ -147,7 +141,7 @@ void PRT_AverageDenoisingBlackWhite(SDL_Surface *surface)
 		{
 			Uint8* retour = RgbAveragePixelsAround(surface,
 					line * width + row);
-            Uint8 avg = retour[0];
+            Uint8 avg = retour[0]*0.6;
 			free(retour);
 
 			Uint8 color=0;
@@ -155,7 +149,7 @@ void PRT_AverageDenoisingBlackWhite(SDL_Surface *surface)
 					&color, &color, &color);
             
 
-            if (avg >= threshold && color >= threshold)
+            if (avg >= threshold)
 				new_pixels[line * width + row] = SDL_MapRGBA(surface->format,
 						255, 255, 255, 255);
             else 

@@ -25,7 +25,7 @@ Uint8 xy_denoising_pixel(SDL_Surface* surface,
 	temp = RgbAverageRow(surface, pixel_index%(surface->w));
 	Uint8 avg_row = temp[0];
 	free(temp);
-
+	
 	if (avg_2 < 100 && (avg_line < threshold || (avg_row < threshold)))
 		return 0;
 	return 255;
@@ -65,7 +65,7 @@ void PRT_xy_denoising(SDL_Surface* surface)
 
 	Uint8* temp = RgbAverageSurface(surface);
 
-	Uint8 threshold = temp[0] * 0.8;
+	Uint8 threshold = temp[0];
 	free(temp);
 	Uint8 color = 0;
 	for (int line= 2; line < H -2; line++)

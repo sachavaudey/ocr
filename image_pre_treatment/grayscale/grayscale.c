@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX3(a, b, c) (((a)>(b))?( (((a)>(c))?(a):(c)) ):( (((b)>(c))?(b):(c)) ))
+
 
 /*	Function : grayscaling
  *
@@ -35,7 +37,8 @@ void PRT_Grayscaling(SDL_Surface *surface)
         //gray = (Uint8)(0.2126 * r + 0.7152* g + 0.0722 * b);
         // gray = (Uint8)(0.299 * r + 0.587 * g + 0.114 * b);
         gray= (Uint8)(0.400 * r + 0.500 * g + 0.100 * b);
-		
+		//gray = r;
+
 		// Assigning grey value to pixel
         new_pixels[i] = SDL_MapRGB(surface->format, gray, gray, gray);
     }
