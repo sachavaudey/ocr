@@ -1,5 +1,11 @@
 #include "../include/detection.h"
 
+
+/**
+ * Thos image process the letter detection process
+ * @param filepath the filepath to process
+ * @return EXIT_SUCESS if the process run sucessfully
+ */
 int process_letterdetection(char* filepath) {
     SDL_Surface *surface = IMG_Load(filepath);
     if (!surface) {
@@ -59,6 +65,12 @@ int process_letterdetection(char* filepath) {
 }
 
 
+
+/**
+ * This function process the necessary function to enlarge a given image
+ * @param filepath the filepath of the image to enlarge
+ * @return EXIT_SUCESS if the function run sucessfully the enlarge process
+ */
 int process_enlarge(char* filepath) {
     SDL_Surface *surface = IMG_Load(filepath);
     if (!surface) {
@@ -80,29 +92,21 @@ int process_enlarge(char* filepath) {
     return EXIT_SUCCESS;
 }
 
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        errx(EXIT_FAILURE, "Usage: %s <image>", argv[0]);
-    }
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        errx(EXIT_FAILURE, "Error initializing SDL: %s", SDL_GetError());
-    }
-
-    if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) {
-        SDL_Quit();
-        errx(EXIT_FAILURE, "Error initializing SDL_image: %s", IMG_GetError());
-    }
-
-    
-    if(process_enlarge(argv[1]) != EXIT_SUCCESS) {
+/**
+ * This function is the entrance function for detection process
+ * @param filepath the filepath for the image (IN)
+ * @param outpath the filepath for the result image (OUT)
+ * @return VOID
+ */
+void DET_All(char* filepath, char* outpath) {
+    if(process_enlarge(filepath) != EXIT_SUCCESS) {
         IMG_Quit();
         SDL_Quit();
         errx(EXIT_FAILURE, "Error during the image enlargement process!");
     }
 
-
-    if (process_letterdetection("enlarged.png") != EXIT_SUCCESS) {
+    if (process_letterdetection(outpath) != EXIT_SUCCESS) {
         IMG_Quit();
         SDL_Quit();
         errx(EXIT_FAILURE, "Error during the letter detection process!");
@@ -110,6 +114,4 @@ int main(int argc, char* argv[]) {
 
     IMG_Quit();
     SDL_Quit();
-
-    return EXIT_SUCCESS;
 }

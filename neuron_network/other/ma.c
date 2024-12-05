@@ -1,21 +1,16 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <stdio.h>
-#include <stdlib.h>
-//#include "transpose_image.c"
-#include "solve.c"
+#include "ma.h"
+#include "predict.h"
 
-#include "predict.c"
-
-int main()
+int process_NOE(int set)
 {
-
-    pro_grid();
-    pro_word();
-    
-    printf("la");
-    pro_solv();
-    
-    
-    return 1;
+    if(set == 1){
+        pro_grid();
+        pro_word();
+        return 1;
+    }
+    else if (set == 2) {
+        pro_solv();
+        return 1;
+    }
+    else errx(EXIT_FAILURE, "Invalid arg!");   
 }

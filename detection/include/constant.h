@@ -45,15 +45,15 @@ static const int Gy[3][3] = {
 #define RAD_TO_DEG     (180.0 / PI)
 
 // Box dimension constants
-#define MIN_SURFACE    200
+#define MIN_SURFACE    700
 #define MAX_SURFACE    11700
-#define MIN_HEIGHT     15
+#define MIN_HEIGHT     10
 #define MAX_HEIGHT     200
-#define MIN_WIDTH      15
+#define MIN_WIDTH      10
 #define MAX_WIDTH      200
 #define MIN_RATIO      0.5
 #define MAX_RATIO      2.0
-#define MIN_WHITE_PROP 0.3
+#define MIN_WHITE_PROP 0.2
 #define MAX_WHITE_PROP 0.9
 #define X_BIAS         125
 #define PADDING        5
@@ -71,5 +71,22 @@ static const Color BLUE  = {0, 0, 255};
 #define MIN_WORD_LEN        3
 #define WORD_X_GAP         10
 #define WORD_Y_TOL         10
+
+#define MAX_Y_DIFF          300
+#define MIN_Y_DIFF          0
+#define MAX_X_SPACING       300
+#define MIN_X_SPACING       100
+
+// Box filter
+#define MIN_CENTER_DISTANCE 25
+#define Y_THRESHOLD 10
+
+#define MIN_NEIGHBORS 2
+
+#define ADJACENT_THRESHOLD 50
+
+
+
+
 
 #endif

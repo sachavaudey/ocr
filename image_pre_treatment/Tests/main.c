@@ -3,7 +3,10 @@
 //Main file of the pre-treatment part of the OCR project
 int main(int argc, char *argv[]) {
     if (argc != 3) {
-        errx(EXIT_FAILURE, "Invalid number of arguments!\n./pre-treatment <all/rotate/blackwhite/grayscale/> <input_image_path>\n");
+        errx(EXIT_FAILURE, "Invalid number of arguments!\n"
+				"./pre-treatment"
+				"<all/rotate/blackwhite/grayscale/>"
+				"<input_image_path>\n");
     }
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -16,16 +19,18 @@ int main(int argc, char *argv[]) {
     }
 
 	if (!strcmp(argv[1],"rotate"))
-		rotate(surface, -25);
-
+	{
+		rotate(&surface, -25);
+	}
 	if (!strcmp(argv[1],"grayscale") || !strcmp(argv[1],"all"))
 		PRT_Grayscaling(surface);
+	if (!strcmp(argv[1],"boost"))
+		PRT_Contrast_Boost(surface);
 
 	if (!strcmp(argv[1],"heavy"))
 		PRT_Heavy(surface);
 	if (!strcmp(argv[1],"medium"))
 		PRT_Medium(surface);
-
 	if (!strcmp(argv[1],"light"))
 		PRT_Light(surface);
 

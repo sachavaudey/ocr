@@ -132,6 +132,12 @@ void dilate_filter(unsigned char **input, unsigned char **output, unsigned int h
 
 /**
  * This function is an auxilary function of hysteresis filter to implement the recusion
+ * @param edge_map the map of edge detected on image
+ * @param y the y coordinate of reference pixel
+ * @param x the x coordinate of reference pixel
+ * @param heigth the height of the image
+ * @param width the width of the imahe
+ * @return VOID
  */
 void hyst_aux(unsigned char **edge_map, unsigned int y, unsigned int x, unsigned int height, unsigned int width)
 {
@@ -234,38 +240,32 @@ void process(custIMG *img)
     int num_boxes;
     find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
 
-    
-    BoundingBox *gridBoxes;
-    int numGridBox;
-    detect_word_grid(boxes, num_boxes, &gridBoxes, &numGridBox);
-
-    int num_columns = column_number(gridBoxes, numGridBox);
-
-    
-    BoundingBox **word_lists;
-    int num_words;
-    int *word_lengths;
-
-    if (detect_words(boxes, num_boxes, gridBoxes, numGridBox, &word_lists, &num_words, &word_lengths)) {
-        Color blue = {0, 0, 255};
-        for (int i = 0; i < num_words; i++) {
-            //draw_rectangles(img, word_lists[i], word_lengths[i], blue);
-        }
-
-        for (int i = 0; i < num_words; i++) {
-            free(word_lists[i]);
-        }
-        free(word_lists);
-        free(word_lengths);
-    }   
-
-
     Color red = {255, 0, 0};
-    Color green = {0, 255, 0};
+    Color blue = {0, 0, 255};
 
-    draw_rectangles(img, boxes, num_boxes, num_columns, green);
-    //draw_rectangles(img, gridBoxes, numGridBox, num_columns, red);
+
+    BoundingBox *grid_boxes;
+    int num_grid_box;
+
+    BoundingBox *word_boxes;
+    int num_word_boxes;
+
+    filter_grid_boxes(boxes, num_boxes, &grid_boxes, &num_grid_box);
+    detect_word_boxes(boxes, num_boxes, grid_boxes, num_grid_box, &word_boxes, &num_word_boxes);
+    remove_adjacent_grid_boxes(grid_boxes, &num_grid_box, &word_boxes, &num_word_boxes);
+    remove_outlier_boxes(&grid_boxes, &num_grid_box);
+    remove_outlier_boxes(&word_boxes, &num_word_boxes);
+    replace_grid_boxes(&grid_boxes, &num_grid_box, &word_boxes, &num_word_boxes);
     
+    write_box_centers("../data/resuls_grid", grid_boxes, num_grid_box);
+
+    
+
+    
+
+    draw_rectangles(img, grid_boxes, num_grid_box, red, 1);
+    draw_rectangles(img, word_boxes, num_word_boxes, blue, 2);
+
     for (unsigned int i = 0; i < img->height; i++)
     {
         free(gradient_magnitude[i]);
@@ -281,3 +281,7 @@ void process(custIMG *img)
     free(dilated_edge_map);
     free(boxes);
 }
+
+
+
+// END OF FILE

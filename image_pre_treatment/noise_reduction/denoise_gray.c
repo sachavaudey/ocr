@@ -91,7 +91,11 @@ void mean_denoising(SDL_Surface *surface)
 		if (!Utils_IsOnSide(pixelI, W, H))
 		{
 			color = average_9_pixels(surface, pixelI);
-			pixels[pixelI] = SDL_MapRGB(surface->format, color[0], color[1], color[2]);
+			if (color[0] > 210 && color[1] > 210 && color[2] > 210)
+				pixels[pixelI] = SDL_MapRGB(surface->format, 255, 255, 255);
+	
+			else
+				pixels[pixelI] = SDL_MapRGB(surface->format, color[0], color[1], color[2]);
 			free(color);
 		}
 	}
