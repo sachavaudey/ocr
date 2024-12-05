@@ -61,36 +61,36 @@ void image_button(GtkWidget* widget, gpointer data)
             // Change the image to "../data/images/l11.png"
             gtk_image_set_from_file(GTK_IMAGE(imageWidget), "../data/images/l11.png");
 
-            SDL_Surface* backgroundImage = SDL_LoadBMP("../data/images/l11.png"); // Load the image as an SDL_Surface
+            SDL_Surface* backgroundImage = SDL_LoadBMP("../data/images/l11.png"); // Replace
             if (backgroundImage) 
             {
-                //run_pretreatment(backgroundImage, treatmentLevel);
+                //run_pretreatment(backgroundImage, treatmentLevel); // to fix bc ne reconnait pas
             }
         }
     } 
     else if (strcmp(buttonLabel, "Rotation") == 0) 
     {
         // Handle rotation button: Call run_rotation with parameter 4
-        SDL_Surface* backgroundImage = SDL_LoadBMP("background_image.bmp"); // Replace with the actual image path or SDL_Surface
+        SDL_Surface* backgroundImage = SDL_LoadBMP("background_image.bmp"); // Replace
         if (backgroundImage) 
         {
-            //run_rotation(backgroundImage, 4); // 4 for rotation
+            //run_rotation(backgroundImage, 4); // to fix bc ne reconnait pas
         }
     } 
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {
-        // Open the file located at "../dir/aux"
-        const char* filePath = "../neuron_network/other/word";  // Example file path with spaces
+        
+        const char* filePath = "../neuron_network/other/word";  //wrong path?  does not work ftm
 
         // Check if the file exists
         if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
         {
-            char command[512];  // Increase size for file path
+            char command[512]; 
 
-            // Wrap the file path in double quotes for spaces or special characters
+            // ca ca ne marche pas
             snprintf(command, sizeof(command), "xdg-open \"%s\"", filePath);
 
-            // Execute the command to open the file
+    
             int result = system(command);
             if (result == 0)
             {
@@ -108,7 +108,7 @@ void image_button(GtkWidget* widget, gpointer data)
     } 
     else 
     {
-        // Handle other buttons by setting the image
+    
         gtk_image_set_from_file(GTK_IMAGE(imageWidget), buttonLabel);
         g_print("Button clicked: %s\n", buttonLabel);
     }
