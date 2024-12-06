@@ -1,4 +1,5 @@
 #include "rotation.h"
+#include <SDL2/SDL_surface.h>
 #include <math.h>
 
 #ifndef M_PI
@@ -148,7 +149,7 @@ void rotate(SDL_Surface** surface_param, int angle)
 		}
 	}
 
-	int line_top = 0;
+	unsigned int line_top = 0;
 	while (line_top < newH)
 	{
 		Uint8* retour = RgbAverageLine(new_surface, line_top);
@@ -161,7 +162,7 @@ void rotate(SDL_Surface** surface_param, int angle)
 		line_top++;
 	}
 
-	int line_bottom = 0;
+	unsigned int line_bottom = 0;
 	while (line_bottom < newH)
 	{
 		Uint8* retour = RgbAverageLine(new_surface, newH-line_bottom-1);
@@ -173,17 +174,56 @@ void rotate(SDL_Surface** surface_param, int angle)
 		}
 		line_bottom++;
 	}
+	
+	unsigned int col_left = 0;
+	while (col_left < newW)
+	{
+		Uint8* retour = RgbAverageCol(new_surface, col_left);
+		Uint8 retour_int = *retour;
+		free(retour);
+		if (retour_int > 3)
+		{
+			break;
+		}
+		col_left++;
+	}
+
+	unsigned int col_right = 0;
+	while (col_right < newW)
+	{
+		Uint8* retour = RgbAverageCol(new_surface, newW -col_right-1);
+		Uint8 retour_int = *retour;
+		free(retour);
+		if (retour_int > 3)
+		{
+			break;
+		}
+		col_right++;
+	}
+
+	long final_w = newW - col_left - col_right,
+		 final_h = newH - line_top - line_bottom;
 
 	SDL_Surface* trimmed_surface = SDL_CreateRGBSurfaceWithFormat(0,
-				newW, newH - line_top - line_bottom, 32,
+				final_w,
+				final_h, 32,
 				(surface->format)->format);
 
 	Uint32* trimmed_pixels = trimmed_surface->pixels;
-	unsigned long trimmed_count = newW * (newH - line_top - line_bottom);
+	unsigned long trimmed_count = 
+		(final_w) 
+		* (final_h);
 
-	for (long pixel_index = 0; pixel_index < trimmed_count; pixel_index++) {
+	for (unsigned long pixel_index = 0;
+			pixel_index < trimmed_count;
+			pixel_index++) 
+	{
 		trimmed_pixels[pixel_index] =
-			rotated_pixels[pixel_index + (line_top * newW)];
+			rotated_pixels[
+			col_left + (line_top * newW) +
+			(newW * (pixel_index / final_w)) +
+			(pixel_index % final_w)
+			];
 	}
 
 	
@@ -191,7 +231,7 @@ void rotate(SDL_Surface** surface_param, int angle)
 	*surface_param = trimmed_surface;
 	SDL_UnlockSurface(temp);
 	SDL_FreeSurface(temp);
-	
+	SDL_FreeSurface(new_surface);
 	if (LOG_LEVEL)
 		printf("Image successfully rotated !\n---------------\n");
 }

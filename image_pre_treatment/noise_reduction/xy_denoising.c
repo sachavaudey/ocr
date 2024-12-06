@@ -22,7 +22,7 @@ Uint8 xy_denoising_pixel(SDL_Surface* surface,
 	Uint8 avg_line = temp[0];
 	free(temp);
 
-	temp = RgbAverageRow(surface, pixel_index%(surface->w));
+	temp = RgbAverageCol(surface, pixel_index%(surface->w));
 	Uint8 avg_row = temp[0];
 	free(temp);
 	
