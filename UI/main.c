@@ -1,5 +1,6 @@
 #include "main.h"
 #include "processor.h"
+#include <gtk/gtk.h>
 
 #define BUTTON_COUNT 7
 
@@ -7,7 +8,6 @@ typedef struct {
     GtkWidget *imageWidget;
     GtkWidget *loadingDialog;
 } DetectionData;
-
 
 GtkWidget* window;
 GtkWidget* mainBox;
@@ -57,7 +57,6 @@ gpointer detection_thread_func(gpointer data)
     return NULL;
 }
 
-
 void quit_button(GtkWidget* widget, gpointer data) 
 {
     gtk_main_quit();
@@ -90,137 +89,138 @@ void image_button(GtkWidget* widget, gpointer data)
 
         if(treatmentLevel > 0) 
         {
-
-            if(treatmentLevel == 1)
+            SDL_Surface* backgroundImage = IMG_Load(filename);
+            if (backgroundImage) 
             {
-                SDL_Surface* backgroundImage = IMG_Load(filename);
-                printf(".png to SDL surf work \n"); // Replace
-                if (backgroundImage) 
-                {
-                    run_pretreatment(backgroundImage, treatmentLevel,1); 
-                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-                    g_print("Loaded image: %s\n", "data/post_PRT.png");
-                }
+                run_pretreatment(backgroundImage, treatmentLevel, treatmentLevel); 
+                gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
+                g_print("Loaded image: %s\n", "data/post_PRT.png");
+                SDL_FreeSurface(backgroundImage);
             }
-            if(treatmentLevel == 2)
+            else
             {
-                SDL_Surface* backgroundImage = IMG_Load(filename);
-                printf(".png to SDL surf work \n"); // Replace
-                if (backgroundImage) 
-                {
-                    run_pretreatment(backgroundImage, treatmentLevel,2); 
-                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-                    g_print("Loaded image: %s\n", "data/post_PRT.png");
-                }
+                GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
+                                                                GTK_DIALOG_MODAL,
+                                                                GTK_MESSAGE_ERROR,
+                                                                GTK_BUTTONS_OK,
+                                                                "Failed to load image: %s", filename);
+                gtk_dialog_run(GTK_DIALOG(errorDialog));
+                gtk_widget_destroy(errorDialog);
             }
-            if(treatmentLevel == 3)
-            {
-                SDL_Surface* backgroundImage = IMG_Load(filename);
-                if (backgroundImage) 
-                {
-                    run_pretreatment(backgroundImage, treatmentLevel,3); 
-                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-                    g_print("Loaded image: %s\n", "data/post_PRT.png");
-                }
-            }   
         }
     } 
-    // TODO ############################################
     else if (strcmp(buttonLabel, "Rotation") == 0) 
     {
-        printf("jrejrugieooforeoeof!!!!!!!!!");
         SDL_Surface* backgroundImage = SDL_LoadBMP(filename); 
         if (backgroundImage) 
         {
             run_pretreatment(backgroundImage, 4,0); 
+            gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
+            SDL_FreeSurface(backgroundImage);
+        }
+        else
+        {
+            GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
+                                                            GTK_DIALOG_MODAL,
+                                                            GTK_MESSAGE_ERROR,
+                                                            GTK_BUTTONS_OK,
+                                                            "Failed to load image: %s", filename);
+            gtk_dialog_run(GTK_DIALOG(errorDialog));
+            gtk_widget_destroy(errorDialog);
         }
     }
-    //#########################################################
-
     else if(strcmp(buttonLabel,"Automatic Rotation") == 0) 
     {
-        printf("jrejrugieooforeoeof!!!!!!!!!");
         SDL_Surface* backgroundImage = SDL_LoadBMP("data/post_PRT.png"); 
-        printf("it worked");
         if (backgroundImage) 
         {
             run_pretreatment(backgroundImage, 4,0); 
             gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-            printf("Loaded image: %s\n", "data/post_PRT.png");
+            SDL_FreeSurface(backgroundImage);
         }
-    
+        else
+        {
+            GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
+                                                            GTK_DIALOG_MODAL,
+                                                            GTK_MESSAGE_ERROR,
+                                                            GTK_BUTTONS_OK,
+                                                            "Failed to load image: %s", "data/post_PRT.png");
+            gtk_dialog_run(GTK_DIALOG(errorDialog));
+            gtk_widget_destroy(errorDialog);
+        }
     } 
-    
     else if (strcmp(buttonLabel, "Detection") == 0) 
     {
         SDL_Surface* processedImage = IMG_Load("data/post_PRT.png");
         if (processedImage) 
         {
-            // Crée une boîte de dialogue de chargement
             GtkWidget* loadingDialog = gtk_message_dialog_new(GTK_WINDOW(window),
-                                                            GTK_DIALOG_MODAL,
-                                                            GTK_MESSAGE_INFO,
-                                                            GTK_BUTTONS_NONE,
-                                                            "Please wait a few minutes...");
+                                                              GTK_DIALOG_MODAL,
+                                                              GTK_MESSAGE_INFO,
+                                                              GTK_BUTTONS_NONE,
+                                                              "Please wait a few minutes...");
+            gtk_window_set_transient_for(GTK_WINDOW(loadingDialog), GTK_WINDOW(window));
+            gtk_window_set_position(GTK_WINDOW(loadingDialog), GTK_WIN_POS_CENTER_ON_PARENT);
+
             gtk_widget_show_now(loadingDialog);
+
             DetectionData *detectionData = g_new(DetectionData, 1);
             detectionData->imageWidget = imageWidget;
             detectionData->loadingDialog = loadingDialog;
+
             GThread *thread = g_thread_new("detection_thread", detection_thread_func, detectionData);
 
             SDL_FreeSurface(processedImage);
         }
-        else
+        else 
         {
-            g_print("Failed to load image: %s\n", "data/post_PRT.png");
+            GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
+                                                            GTK_DIALOG_MODAL,
+                                                            GTK_MESSAGE_ERROR,
+                                                            GTK_BUTTONS_OK,
+                                                            "Failed to load image: %s", "data/post_PRT.png");
+            gtk_dialog_run(GTK_DIALOG(errorDialog));
+            gtk_widget_destroy(errorDialog);
         }
     }
-    
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {
-        
-        const char* filePath = "../neuron_network/other/word";  //wrong path?  does not work ftm
+        const char* filePath = "../neuron_network/other/word";
 
-        
         if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
         {
             char command[512]; 
-
-            // ca ca ne marche pas
             snprintf(command, sizeof(command), "xdg-open \"%s\"", filePath);
 
-    
             int result = system(command);
-            if (result == 0)
+            if (result != 0)
             {
-                g_print("Opened AUX file: %s\n", filePath);
-            }
-            else
-            {
-                g_print("Failed to open AUX file: %s\n", filePath);
+                GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
+                                                                GTK_DIALOG_MODAL,
+                                                                GTK_MESSAGE_ERROR,
+                                                                GTK_BUTTONS_OK,
+                                                                "Failed to open AUX file: %s", filePath);
+                gtk_dialog_run(GTK_DIALOG(errorDialog));
+                gtk_widget_destroy(errorDialog);
             }
         }
         else
         {
-            g_print("File does not exist: %s\n", filePath);
+            GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
+                                                            GTK_DIALOG_MODAL,
+                                                            GTK_MESSAGE_ERROR,
+                                                            GTK_BUTTONS_OK,
+                                                            "File does not exist: %s", filePath);
+            gtk_dialog_run(GTK_DIALOG(errorDialog));
+            gtk_widget_destroy(errorDialog);
         }
     } 
-
     else if (strcmp(buttonLabel, "Solver") == 0) 
     {
-            g_print("re");
-            run_solver();
-
-
-        
+        run_solver();
     } 
-
-
-
-
     else 
     {
-    
         gtk_image_set_from_file(GTK_IMAGE(imageWidget), buttonLabel);
         g_print("Button clicked: %s\n", buttonLabel);
     }
@@ -230,7 +230,7 @@ void load_button(GtkWidget* widget, gpointer data)
 {
     const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
     if(strlen(filename) > 4 && 
-    strcmp(filename + strlen(filename) - 4, ".png") == 0)
+       strcmp(filename + strlen(filename) - 4, ".png") == 0)
     {
         if (g_file_test(filename, G_FILE_TEST_EXISTS))
         {
@@ -239,12 +239,24 @@ void load_button(GtkWidget* widget, gpointer data)
         }
         else 
         {
-            g_print("File does not exist: %s\n", filename);
+            GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
+                                                            GTK_DIALOG_MODAL,
+                                                            GTK_MESSAGE_ERROR,
+                                                            GTK_BUTTONS_OK,
+                                                            "File does not exist: %s", filename);
+            gtk_dialog_run(GTK_DIALOG(errorDialog));
+            gtk_widget_destroy(errorDialog);
         }
     }
     else
     {
-        g_print("Invalid file type: %s\n", filename);
+        GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
+                                                        GTK_DIALOG_MODAL,
+                                                        GTK_MESSAGE_ERROR,
+                                                        GTK_BUTTONS_OK,
+                                                        "Invalid file type: %s", filename);
+        gtk_dialog_run(GTK_DIALOG(errorDialog));
+        gtk_widget_destroy(errorDialog);
     }
 }
 
@@ -252,12 +264,12 @@ int main(int argc, char* argv[])
 {
     gtk_init(&argc, &argv);
 
-    GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "GTK Interface");
     gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-    GtkWidget* mainBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    mainBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_set_border_width(GTK_CONTAINER(mainBox), 10);
     gtk_container_add(GTK_CONTAINER(window), mainBox);
 
@@ -275,7 +287,6 @@ int main(int argc, char* argv[])
         g_signal_connect(button, "clicked", G_CALLBACK(image_button), (gpointer)buttonLabels[i]);
         gtk_box_pack_start(GTK_BOX(buttonBox), button, TRUE, TRUE, 0);
     }
-
 
     GtkWidget* quitButton = gtk_button_new_with_label("Quit");
     g_signal_connect(quitButton, "clicked", 
@@ -311,4 +322,4 @@ int main(int argc, char* argv[])
     gtk_main();
 
     return 0;
-} 
+}
