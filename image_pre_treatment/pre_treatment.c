@@ -66,7 +66,7 @@ void PRT_Light(SDL_Surface* surface)
 	//PRT_xy_denoising(surface);
 }
 
-void PRT_Rotate(SDL_Surface* surface, int angle)
+void PRT_Rotate(SDL_Surface** surface, int angle)
 {
 	rotate(surface, angle);
 }
