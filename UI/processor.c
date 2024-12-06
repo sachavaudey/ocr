@@ -52,3 +52,24 @@ void run_pretreatment(SDL_Surface *surface, int set, int angle){
 void run_detection(){
     DET_All("../data/post_PRT.png", "../data/post_DET.png");
 }
+
+
+/**
+ * This function run the detection function according to the image out of pre-treatment (auto detect)
+ * @param int
+ * @return VOID
+ */
+void run_neural(int set)
+{
+    process_NOE(1);
+}
+
+/**
+ * This function run the detection function according to the image out of pre-treatment (auto detect)
+ * @param int
+ * @return VOID
+ */
+void run_solver(int set)
+{
+    process_NOE(2);
+}
