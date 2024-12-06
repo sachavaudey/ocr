@@ -177,9 +177,7 @@ void flood_fill(unsigned char **edge_map, int **label_map, unsigned int x, unsig
  * @return VOID
  */
 void write_box_centers(const char *filename, BoundingBox *boxes, int num_boxes) {
-    if (access(filename, F_OK) == 0) {
-        if (remove(filename) != 0) errx(EXIT_FAILURE, "Error during the file deletion!");
-    }
+    if (access(filename, F_OK) == 0) remove(filename);
 
     FILE *file = fopen(filename, "w");
     if (file == NULL) errx(EXIT_FAILURE, "Error attempting the file opening!");
@@ -210,7 +208,7 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
 {
     char *folder_name = NULL;
     if (toSave == 1) {
-        folder_name = "data/results_grid";
+        folder_name = "data/results_gride";
     } else if (toSave == 2) {
         folder_name = "data/results_word";
     }
@@ -219,9 +217,9 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
     {
         struct stat st = {0};
         if (stat(folder_name, &st) == -1) {
-            if (mkdir(folder_name, 0755) != 0) {
-                errx(EXIT_FAILURE, "Erreur lors de la création du dossier %s!", folder_name);
-            }
+        char command[256];
+        snprintf(command, sizeof(command), "mkdir %s", folder_name);
+        system(command);
         }
         else {
             DIR *dir = opendir(folder_name);

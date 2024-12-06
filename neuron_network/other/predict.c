@@ -7,17 +7,18 @@ double hidden_bias[HIDDEN_SIZE];
 double output_bias[OUTPUT_SIZE];
 
 //function which load data in file
-void load_hidden_bias(char* filename)
+void load_hidden_bias(const char* filename)
 {
     FILE *file = fopen(filename, "r");
-    
+    if (file == NULL) {
+        errx(EXIT_FAILURE, "Erreur lors de l'ouverture du fichier %s", filename);
+    }
 
-    
     for (int i = 0; i < HIDDEN_SIZE; i++) {
-        if (fscanf(file, "%lf", &hidden_bias[i]) != 1) {  // Lecture en tant que double
-            printf("Erreur: fichier %s contient moins de %d valeurs.\n", filename, HIDDEN_SIZE);
+        if (fscanf(file, "%lf ", &hidden_bias[i]) != 1) {
+            fprintf(stderr, "Erreur : lecture insuffisante dans le fichier %s.\n", filename);
             fclose(file);
-            return;
+            errx(EXIT_FAILURE, "Error", filename);
         }
     }
 
@@ -160,7 +161,7 @@ int* search_size(int* res)
     while (1){
         char* var=malloc(FILENAME_SIZE*sizeof(char));
         //snprintf(var,FILENAME_SIZE,"../results_grid-2/0.%d.png",c); 
-        snprintf(var,FILENAME_SIZE,"data/results_grid/0.%d.png",c); 
+        snprintf(var,FILENAME_SIZE,"data/results_gride/0.%d.png",c); 
         FILE *file = fopen(var, "r");
         if (file==NULL) {
             res[0]=c;
@@ -173,7 +174,7 @@ int* search_size(int* res)
     
     while (1){
         char* var=malloc(FILENAME_SIZE*sizeof(char));
-        snprintf(var,FILENAME_SIZE,"../results_grid-2/%d.0.png",c);   
+        snprintf(var,FILENAME_SIZE,"data/results_gride/%d.0.png",c);   
         FILE *file = fopen(var, "r");
         if (file==NULL) 
         {
@@ -337,10 +338,10 @@ int pro_word()
 int pro_grid()
 {
     
-    load_hidden_bias("../save_value_prime/hiddenLayerBias.txt");
-    load_output_bias("../save_value_prime/OutputLayerBias.txt");
-    load_weight_hidden_output("../save_value_prime/weight_hidden_output.txt");
-    load_weight_hidden_input("../save_value_prime/weight_hidden_input.txt");
+    load_hidden_bias("neuron_network/save_value_prime/hiddenLayerBias.txt");
+    load_output_bias("neuron_network/save_value_prime/OutputLayerBias.txt");
+    load_weight_hidden_output("neuron_network/save_value_prime/weight_hidden_output.txt");
+    load_weight_hidden_input("neuron_network/save_value_prime/weight_hidden_input.txt");
     
 
     
@@ -359,7 +360,7 @@ int pro_grid()
         {
             res[c]=malloc(100*sizeof(char));
            
-            snprintf(res[c++], FILENAME_SIZE,"output/%d.%d.png",i,j);
+            snprintf(res[c++], FILENAME_SIZE,"neuron_network/other/output/%d.%d.png",i,j);
             printf("%s\n",res[c-1]);
         }
     } 
@@ -394,6 +395,7 @@ int pro_grid()
         }
         for (int i = 0; i < OUTPUT_SIZE; i++) 
         {
+            printf("WEIGHT : %f\n", weights_hidden_output[0]);
             printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
         }
         printf("La lettre %zu est %c\n",i+1,lettre[j]);
