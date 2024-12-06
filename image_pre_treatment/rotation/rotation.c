@@ -138,12 +138,23 @@ void rotate(SDL_Surface** surface_param, int angle)
 		
 		if (pixelDepartNb == NOT_IN_IMAGE) 
 		{
-			rotated_pixels[pixelNb] = SDL_MapRGBA(new_surface->format,
-					255, 255, 255, 255);
+		rotated_pixels[pixelNb] = SDL_MapRGB(new_surface->format,
+					0,0,0);
 		}
 		else
 		{	
 			rotated_pixels[pixelNb] = pixelDepart[pixelDepartNb];
+		}
+	}
+
+	for (unsigned long line = 0; line<newH; line++)
+	{
+		if (RgbAverageLine(new_surface, line) <= 5)
+		{
+			for(int i = 0; i<newW; i++)
+				rotated_pixels[i] = SDL_MapRGB(new_surface->format,
+					0,0,0);
+
 		}
 	}
 	
