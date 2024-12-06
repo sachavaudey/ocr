@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = `pkg-config --cflags gtk+-3.0`
-LIBS = `pkg-config --libs gtk+-3.0`
+LIBS = `pkg-config --libs gtk+-3.0` -lm -lSDL2 -lSDL2_image -g -fsanitize=address
 TARGET = ocr_interface
 SRC = main.c
 
