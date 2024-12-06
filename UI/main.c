@@ -259,7 +259,7 @@ void image_button(GtkWidget* widget, gpointer data)
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {
         
-        const char* filePath = "neuron_network/other/grid";  //wrong path?  does not work ftm
+        const char* filePath = "neuron_network/other/grid";  
 
         
         if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
