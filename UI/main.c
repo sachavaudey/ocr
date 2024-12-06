@@ -10,7 +10,7 @@ typedef struct {
     GtkWidget *loadingDialog;
 } DetectionData;
 
-GtkImage* displayedimage;
+char* displayedimage;
 GtkWidget* window;
 GtkWidget* mainBox;
 
@@ -51,7 +51,7 @@ gpointer detection_thread_func(gpointer data)
     return NULL;
 }
 
-void quit_button(GtkWidget* widget, gpointer data) 
+void quit_button() 
 {
     gtk_main_quit();
 }
@@ -73,7 +73,7 @@ void image_button(GtkWidget* widget, gpointer data)
             if (backgroundImage) 
             {
                 printf("SDL surface saved to: %s\n", outputPath);
-                displayedimage = outputPath;
+                displayedimage = (char *)outputPath;
                 gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                 g_print("Displayed image updated to: ");
             } 
@@ -251,7 +251,7 @@ void image_button(GtkWidget* widget, gpointer data)
             detectionData->imageWidget = imageWidget;
             detectionData->loadingDialog = loadingDialog;
 
-            GThread *thread = g_thread_new("detection_thread", detection_thread_func, detectionData);
+            g_thread_new("detection_thread", detection_thread_func, detectionData);
 
             SDL_FreeSurface(processedImage);
         }
@@ -319,7 +319,7 @@ void image_button(GtkWidget* widget, gpointer data)
     }
 }
 
-void load_button(GtkWidget* widget, gpointer data) 
+void load_button() 
 {
     const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
     if(strlen(filename) > 4 && 
