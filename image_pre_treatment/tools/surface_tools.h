@@ -1,9 +1,6 @@
 #ifndef SURFACE_TOOLS_H
 #define SURFACE_TOOLS_H
 
-//#include <SDL2/SDL_stdinc.h>
-//#include <stdio.h>
-//#include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <err.h>
