@@ -15,7 +15,7 @@
 #include "../neuron_network/draw.h"
 
 
-void run_pretreatment(SDL_Surface *surface, int set, int angle);
+void run_pretreatment(SDL_Surface **surface, int set, int angle);
 void run_detection();
 void run_neural();
 void run_solver();

@@ -3,19 +3,20 @@
 
 #define BUTTON_COUNT 7
 
+
 typedef struct {
     GtkWidget *imageWidget;
     GtkWidget *loadingDialog;
 } DetectionData;
 
-
+GtkImage* displayedimage;
 GtkWidget* window;
 GtkWidget* mainBox;
 
 const char* buttonLabels[BUTTON_COUNT] = 
 {
-    "Pretreatment",
     "Contrast Boost",
+    "Pretreatment",
     "Rotation",
     "Automatic Rotation",
     "Detection",
@@ -23,16 +24,7 @@ const char* buttonLabels[BUTTON_COUNT] =
     "AUX"
 };
 
-const char* imagePaths[BUTTON_COUNT] = 
-{
-    "data/post_PRT.png",
-    "contrastboost.png",
-    "rotation.png", 
-    "automaticrotation.png",
-    "../data/post_DET.png",
-    "solver.png",
-    "image.png"
-};
+
 
 GtkWidget* imageWidget;
 GtkWidget* searchEntry;
@@ -41,7 +33,8 @@ gboolean update_gui_after_detection(gpointer data)
 {
     DetectionData *detectionData = (DetectionData*) data;
     gtk_widget_destroy(detectionData->loadingDialog);
-    gtk_image_set_from_file(GTK_IMAGE(detectionData->imageWidget), "data/post_DET.png");
+    displayedimage = "data/post_DET.png";
+    gtk_image_set_from_file(GTK_IMAGE(detectionData->imageWidget), displayedimage);
     g_print("Detection process completed successfully!\n");
     g_free(detectionData);
 
@@ -68,7 +61,7 @@ void image_button(GtkWidget* widget, gpointer data)
     const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
     const char* buttonLabel = (const char*)data;
 
-    if(strcmp(buttonLabel, "Pretreatment") == 0) 
+    if (strcmp(buttonLabel, "Pretreatment") == 0) 
     {
         GtkWidget* dialog = gtk_dialog_new_with_buttons("Select Treatment Level",
                                                         GTK_WINDOW(gtk_widget_get_toplevel(widget)),
@@ -88,75 +81,151 @@ void image_button(GtkWidget* widget, gpointer data)
 
         gtk_widget_destroy(dialog);
 
-        if(treatmentLevel > 0) 
+        if (treatmentLevel > 0) 
         {
+            SDL_Surface* backgroundImage = IMG_Load(filename);
+            if (backgroundImage) 
+            {
+                printf(".png to SDL surface loaded successfully\n");
 
-            if(treatmentLevel == 1)
-            {
-                SDL_Surface* backgroundImage = IMG_Load(filename);
-                printf(".png to SDL surf work \n"); // Replace
+                run_pretreatment(&backgroundImage, treatmentLevel, 0); 
+
+                const char* outputPath = "data/post_PRT.png";
                 if (backgroundImage) 
                 {
-                    run_pretreatment(backgroundImage, treatmentLevel,1); 
-                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-                    g_print("Loaded image: %s\n", "data/post_PRT.png");
+                    printf("SDL surface saved to: %s\n", outputPath);
+                    displayedimage = outputPath;
+                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
+                    g_print("Displayed image updated to: %s\n", displayedimage);
+                } 
+                else 
+                {
+                    g_print("Failed to save SDL surface: %s\n", SDL_GetError());
                 }
+
+                SDL_FreeSurface(backgroundImage);
+            } 
+            else 
+            {
+                g_print("Failed to load SDL surface from: %s\n", filename);
             }
-            if(treatmentLevel == 2)
-            {
-                SDL_Surface* backgroundImage = IMG_Load(filename);
-                printf(".png to SDL surf work \n"); // Replace
-                if (backgroundImage) 
-                {
-                    run_pretreatment(backgroundImage, treatmentLevel,2); 
-                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-                    g_print("Loaded image: %s\n", "data/post_PRT.png");
-                }
-            }
-            if(treatmentLevel == 3)
-            {
-                SDL_Surface* backgroundImage = IMG_Load(filename);
-                if (backgroundImage) 
-                {
-                    run_pretreatment(backgroundImage, treatmentLevel,3); 
-                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-                    g_print("Loaded image: %s\n", "data/post_PRT.png");
-                }
-            }   
         }
-    } 
+    }
+    
+
+
+
+
     // TODO ############################################
     else if (strcmp(buttonLabel, "Rotation") == 0) 
     {
-        printf("jrejrugieooforeoeof!!!!!!!!!");
-        SDL_Surface* backgroundImage = SDL_LoadBMP(filename); 
-        if (backgroundImage) 
+        GtkWidget *dialog = gtk_dialog_new_with_buttons(
+            "Enter Rotation Angle",
+            GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+            GTK_DIALOG_MODAL,
+            "Rotate", GTK_RESPONSE_ACCEPT,
+            "Cancel", GTK_RESPONSE_CANCEL,
+            NULL);
+
+        GtkWidget *contentArea = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+        GtkWidget *entry = gtk_entry_new();
+        gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Enter angle in degrees");
+        gtk_box_pack_start(GTK_BOX(contentArea), entry, TRUE, TRUE, 0);
+
+        gtk_widget_show_all(dialog);
+
+        gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+
+        if (response == GTK_RESPONSE_ACCEPT) 
         {
-            run_pretreatment(backgroundImage, 4,0); 
+            const char *angleText = gtk_entry_get_text(GTK_ENTRY(entry));
+            if (angleText != NULL && strlen(angleText) > 0)
+            {
+                int angle = atoi(angleText);
+                printf("Rotating image by %d degrees\n", angle);
+                SDL_Surface* backgroundImage = IMG_Load(displayedimage);
+                if (backgroundImage) 
+                {
+                    run_pretreatment(&backgroundImage, 4, angle);
+                    const char* outputPath = "data/post_PRT.png";
+                    
+                    if (backgroundImage) 
+                    {
+                        printf("SDL surface saved to: %s\n", outputPath);
+                        displayedimage = outputPath;
+                        gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
+                        g_print("Displayed image updated to: %s\n", displayedimage);
+                    } 
+                    else 
+                    {
+                        g_print("Failed to save SDL surface: %s\n", SDL_GetError());
+                    }
+
+                    SDL_FreeSurface(backgroundImage);
+                } 
+                else 
+                {
+                    g_print("Failed to load image for rotation: %s\n", displayedimage);
+                }
+            } 
+            else 
+            {
+                g_print("Invalid input or no angle provided. Rotation canceled.\n");
+            }
         }
+
+        gtk_widget_destroy(dialog);
     }
     //#########################################################
 
-    else if(strcmp(buttonLabel,"Automatic Rotation") == 0) 
+    else if (strcmp(buttonLabel, "Automatic Rotation") == 0) 
     {
-        printf("jrejrugieooforeoeof!!!!!!!!!");
-        SDL_Surface* backgroundImage = SDL_LoadBMP("data/post_PRT.png"); 
-        printf("it worked");
+        SDL_Surface* backgroundImage = IMG_Load(displayedimage);
         if (backgroundImage) 
         {
-            run_pretreatment(backgroundImage, 4,0); 
-            gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-            printf("Loaded image: %s\n", "data/post_PRT.png");
+            run_pretreatment(&backgroundImage, 5, 0);
+            const char* outputPath = "data/post_PRT.png";
+            
+            if (backgroundImage) 
+            {
+                printf("SDL surface saved to: %s\n", outputPath);
+
+                displayedimage = outputPath;
+                gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
+                g_print("Displayed image updated to: ");
+            } 
+            else 
+            {
+                g_print("Failed to save SDL surface: %s\n", SDL_GetError());
+            }
+
+            SDL_FreeSurface(backgroundImage);
+        } 
+        else 
+        {
+            g_print("Failed to load image for automatic rotation");
         }
-    
-    } 
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     else if (strcmp(buttonLabel, "Detection") == 0) 
     {
         SDL_Surface* processedImage = IMG_Load("data/post_PRT.png");
         if (processedImage) 
         {
-            // Crée une boîte de dialogue de chargement
             GtkWidget* loadingDialog = gtk_message_dialog_new(GTK_WINDOW(window),
                                                             GTK_DIALOG_MODAL,
                                                             GTK_MESSAGE_INFO,
@@ -179,15 +248,14 @@ void image_button(GtkWidget* widget, gpointer data)
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {
         
-        const char* filePath = "../neuron_network/other/word";  //wrong path?  does not work ftm
+        const char* filePath = "neuron_network/other/grid";  //wrong path?  does not work ftm
 
         
         if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
         {
             char command[512]; 
 
-            // ca ca ne marche pas
-            snprintf(command, sizeof(command), "xdg-open \"%s\"", filePath);
+            snprintf(command, sizeof(command), "vim %s", filePath);
 
     
             int result = system(command);
@@ -208,9 +276,10 @@ void image_button(GtkWidget* widget, gpointer data)
 
     else if (strcmp(buttonLabel, "Solver") == 0) 
     {
-            
-            //run_solver();
-            run_draw();
+
+            g_print("re");
+            run_solver(2);
+ 
 
 
         
@@ -254,7 +323,7 @@ int main(int argc, char* argv[])
     gtk_init(&argc, &argv);
 
     GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "GTK Interface");
+    gtk_window_set_title(GTK_WINDOW(window), "ANSN Studio OCR");
     gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
