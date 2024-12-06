@@ -228,10 +228,10 @@ void create_word(char* tab,int* a,int b)
 int pro_word()
 {
 
-    load_hidden_bias("../save_value_prime/hiddenLayerBias.txt");
-    load_output_bias("../save_value_prime/OutputLayerBias.txt");
-    load_weight_hidden_output("../save_value_prime/weight_hidden_output.txt");
-    load_weight_hidden_input("../save_value_prime/weight_hidden_input.txt");
+    load_hidden_bias("neuron_network/save_value_prime/hiddenLayerBias.txt");
+    load_output_bias("neuron_network/save_value_prime/OutputLayerBias.txt");
+    load_weight_hidden_output("neuron_network/save_value_prime/weight_hidden_output.txt");
+    load_weight_hidden_input("neuron_network/save_value_prime/weight_hidden_input.txt");
     
     int* wor=search_size_word();
     
@@ -263,14 +263,14 @@ int pro_word()
             
             res[c]=malloc(100*sizeof(char));
            
-            snprintf(res[c++], FILENAME_SIZE,"words/%d.%d.png",i,t++);
+            snprintf(res[c++], FILENAME_SIZE,"neuron_network/other/words/%d.%d.png",i,t++);
             printf("%s\n",res[c-1]);
         }
     }
     
     
     
-    char* r=malloc(52*sizeof(char));
+    char* r=malloc(taille2*sizeof(char));
     for (int i = 0; i < taille2; i++)
     {
             double new_input[INPUT_SIZE];
@@ -337,7 +337,6 @@ int pro_word()
 
 int pro_grid()
 {
-    
     load_hidden_bias("neuron_network/save_value_prime/hiddenLayerBias.txt");
     load_output_bias("neuron_network/save_value_prime/OutputLayerBias.txt");
     load_weight_hidden_output("neuron_network/save_value_prime/weight_hidden_output.txt");
@@ -395,7 +394,6 @@ int pro_grid()
         }
         for (int i = 0; i < OUTPUT_SIZE; i++) 
         {
-            printf("WEIGHT : %f\n", weights_hidden_output[0]);
             printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
         }
         printf("La lettre %zu est %c\n",i+1,lettre[j]);

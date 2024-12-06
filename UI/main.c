@@ -270,7 +270,7 @@ void image_button(GtkWidget* widget, gpointer data)
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {
         
-        const char* filePath = "neuron_network/other/grid";  
+        const char* filePath = "data/grid";  
 
         if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
         {
@@ -304,10 +304,9 @@ void image_button(GtkWidget* widget, gpointer data)
     else if (strcmp(buttonLabel, "Solver") == 0) 
     {
 
-            run_draw();
-
            
-            //run_solver(2);
+            run_solver(2);
+	    run_draw();
 
             
 
