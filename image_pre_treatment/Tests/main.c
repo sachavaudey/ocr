@@ -33,6 +33,18 @@ int main(int argc, char *argv[]) {
 		PRT_Medium(surface);
 	if (!strcmp(argv[1],"light"))
 		PRT_Light(surface);
+	if (!strcmp(argv[1],"heavyr"))
+		PRT_Heavy(surface);
+	if (!strcmp(argv[1],"mediumr"))
+	{
+		PRT_Medium(surface);
+		PRT_Rotate_Auto(&surface);
+	}
+	if (!strcmp(argv[1],"lightr"))
+	{
+		PRT_Light(surface);
+		PRT_Rotate_Auto(&surface);
+	}
 
 
 	if (!strcmp(argv[1],"dgray"))
