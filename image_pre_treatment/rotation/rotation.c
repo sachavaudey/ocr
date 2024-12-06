@@ -148,23 +148,47 @@ void rotate(SDL_Surface** surface_param, int angle)
 		}
 	}
 
-	for (unsigned long line = 0; line<newH; line++)
+	int line_top = 0;
+	while (line_top < newH)
 	{
-		Uint8* retour = RgbAverageLine(new_surface, line);
+		Uint8* retour = RgbAverageLine(new_surface, line_top);
 		Uint8 retour_int = *retour;
 		free(retour);
-		if (retour_int <= 3)
+		if (retour_int > 3)
 		{
-			for(unsigned int i = 0; i<newW; i++)
-			{
-				rotated_pixels[i*line] = SDL_MapRGB(new_surface->format,
-					0,0,0);
-			}
+			break;
 		}
+		line_top++;
 	}
+
+	int line_bottom = 0;
+	while (line_bottom < newH)
+	{
+		Uint8* retour = RgbAverageLine(new_surface, newH-line_bottom-1);
+		Uint8 retour_int = *retour;
+		free(retour);
+		if (retour_int > 3)
+		{
+			break;
+		}
+		line_bottom++;
+	}
+
+	SDL_Surface* trimmed_surface = SDL_CreateRGBSurfaceWithFormat(0,
+				newW, newH - line_top - line_bottom, 32,
+				(surface->format)->format);
+
+	Uint32* trimmed_pixels = trimmed_surface->pixels;
+	unsigned long trimmed_count = newW * (newH - line_top - line_bottom);
+
+	for (long pixel_index = 0; pixel_index < trimmed_count; pixel_index++) {
+		trimmed_pixels[pixel_index] =
+			rotated_pixels[pixel_index + (line_top * newW)];
+	}
+
 	
 	SDL_Surface* temp = *surface_param;
-	*surface_param = new_surface;
+	*surface_param = trimmed_surface;
 	SDL_UnlockSurface(temp);
 	SDL_FreeSurface(temp);
 	
