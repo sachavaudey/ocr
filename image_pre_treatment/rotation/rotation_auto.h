@@ -10,6 +10,5 @@
 	#include "rotation.h"
 	#include "../../Common/ocr.h"
 
-	void rotate_auto(SDL_Surface *surface);
-
+	void rotate_auto(SDL_Surface **surface);
 #endif
