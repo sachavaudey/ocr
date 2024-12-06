@@ -12,12 +12,14 @@
 #include "../image_pre_treatment/pre_treatment.h"
 #include "../detection/include/detection.h"
 #include "../neuron_network/other/ma.h"
+#include "../neuron_network/draw.h"
 
 
 void run_pretreatment(SDL_Surface *surface, int set, int angle);
 void run_detection();
 void run_neural();
 void run_solver();
+void run_draw();
 
 
 

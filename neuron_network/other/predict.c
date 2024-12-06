@@ -160,7 +160,7 @@ int* search_size(int* res)
     while (1){
         char* var=malloc(FILENAME_SIZE*sizeof(char));
         //snprintf(var,FILENAME_SIZE,"../results_grid-2/0.%d.png",c); 
-        snprintf(var,FILENAME_SIZE,"../../data/results_grid/0.%d.png",c); 
+        snprintf(var,FILENAME_SIZE,"data/results_grid/0.%d.png",c); 
         FILE *file = fopen(var, "r");
         if (file==NULL) {
             res[0]=c;
@@ -193,7 +193,7 @@ int* search_size(int* res)
 //function which create the grid
 void create_grid(char* tab,int a,int b)
 {
-    FILE *file = fopen("grid", "w");
+    FILE *file = fopen("data/grid", "w");
     
     int c=0;
 
@@ -210,7 +210,7 @@ void create_grid(char* tab,int a,int b)
 //function which create the word
 void create_word(char* tab,int* a,int b)
 {
-    FILE *file = fopen("word", "w");
+    FILE *file = fopen("data/word", "w");
     
     int c=0;
 
@@ -336,7 +336,7 @@ int pro_word()
 
 int pro_grid()
 {
-    printf("ici");
+    
     load_hidden_bias("../save_value_prime/hiddenLayerBias.txt");
     load_output_bias("../save_value_prime/OutputLayerBias.txt");
     load_weight_hidden_output("../save_value_prime/weight_hidden_output.txt");

@@ -81,3 +81,8 @@ void run_solver()
 {
     process_NOE(2);
 }
+
+void run_draw()
+{
+    draw();
+}

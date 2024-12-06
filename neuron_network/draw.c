@@ -1,8 +1,4 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include "draw.h"
 
 void drawLine(SDL_Surface *surface, int x1, int y1, int x2, int y2, Uint32 color) {
     if (!surface) return;
@@ -54,12 +50,14 @@ void drawRectangle(SDL_Surface *surface, int x1, int y1, int x2, int y2, int wid
     drawLine(surface, xB, yB, xD, yD, color);
     drawLine(surface, xD, yD, xC, yC, color);
     drawLine(surface, xC, yC, xA, yA, color);
+
+    
 }
 
 
 void fin_coord(int** tableau)
 {
-    FILE *file = fopen("placement", "r");
+    FILE *file = fopen("data/placement", "r");
     if (file == NULL) {
         perror("Erreur lors de l'ouverture du fichier");
        
@@ -83,7 +81,7 @@ void fin_coord(int** tableau)
 
 void fin_coo(int** tableau)
 {
-    FILE *file = fopen("coordo", "r");
+    FILE *file = fopen("data/coordo", "r");
     
     int i = 0;
     while (i < 1000 && !feof(file)) {
@@ -104,6 +102,9 @@ void fin_coo(int** tableau)
     
 }
 
+
+
+
 void draw()
 {
     int** tableau=malloc(1000*sizeof(int*));
@@ -120,9 +121,9 @@ void draw()
     
     fin_coord( tableau);
     fin_coo(coord);
-    SDL_Surface *image = IMG_Load("lv1.png");
+    SDL_Surface *image = IMG_Load("data/images/l11.png");
     Uint32 redColor = SDL_MapRGB(image->format, 255, 0, 0);
-    for (size_t i = 0; i < 4; i++)
+    for (size_t i = 0; i < 3; i++)
     {
         if (coord[i][0]==0 && coord[i][1]==0 && coord[i][2]==0 && coord[i][3]==0)
         {
@@ -130,15 +131,16 @@ void draw()
         }
         else 
         {
-            int t=3;
-
-            int x1=tableau[coord[i][0]*t+coord[i][1]][0];
-            int y1=tableau[coord[i][0]*t+coord[i][1]][1];
-            int x2=tableau[coord[i][2]*t+coord[i][3]][0];
-            int y2=tableau[coord[i][2]*t+coord[i][3]][1];
+            int t=12;
+            printf("%d\n",coord[i][1]);
+            int y1=tableau[coord[i][0]*t+coord[i][1]][0]/5;
+            int x1=tableau[coord[i][0]*t+coord[i][1]][1]/5;
+            int y2=tableau[coord[i][2]*t+coord[i][3]][0]/5;
+            int x2=tableau[coord[i][2]*t+coord[i][3]][1]/5;
 
             printf("%d,%d  %d,%d\n",x1,y1,x2,y2);
-            drawRectangle(image,x1,y1,x2,y2,30,redColor);
+            //drawRectangle(image,x1,y1,x2,y2,35,redColor);
+            
             
 
         }
@@ -147,7 +149,7 @@ void draw()
 
 
     }
-    
+    IMG_SavePNG(image, "image_sauvegardee.png"); 
     
     
 }
