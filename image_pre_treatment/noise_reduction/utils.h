@@ -14,6 +14,6 @@
 long Utils_IsOnSide(long pixel_index, long width, long height);
 long Utils_IsOnSideRange4(long pixel_index, long width, long height);
 int Utils_WhiteNeighboursCount(long pixel_index, SDL_Surface *surface);
-Uint8* Utils_AveragePixelsAround(SDL_Surface* surface, uint index);
+Uint8* Utils_AveragePixelsAround(SDL_Surface* surface, unsigned int index);
 
 #endif
