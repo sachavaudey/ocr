@@ -69,7 +69,7 @@ void run_neural(int set)
  * @param int
  * @return VOID
  */
-void run_neural(int set)
+void run_solver(int set)
 {
     process_NOE(2);
 }
