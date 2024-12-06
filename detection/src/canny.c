@@ -229,19 +229,23 @@ void process(custIMG *img)
     }
     hysteresis_filter(img, edges, LOW_THRESH, HIGH_THRESH, edge_map);
 
+
     unsigned char **dilated_edge_map = (unsigned char **)malloc(img->height * sizeof(unsigned char *));
     for (unsigned int i = 0; i < img->height; i++)
     {
         dilated_edge_map[i] = (unsigned char *)malloc(img->width * sizeof(unsigned char));
     }
-    dilate_filter(edge_map, dilated_edge_map, img->height, img->width);
+    //dilate_filter(edge_map, dilated_edge_map, img->height, img->width);
 
     BoundingBox *boxes;
     int num_boxes;
-    find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
+    find_bounding_boxes(img, edge_map, img->height, img->width, &boxes, &num_boxes);
 
     Color red = {255, 0, 0};
     Color blue = {0, 0, 255};
+    //Color green = {0, 255, 0};
+
+    //draw_rectangles(img, boxes, num_boxes, green, 0);
 
 
     BoundingBox *grid_boxes;
@@ -257,11 +261,9 @@ void process(custIMG *img)
     remove_outlier_boxes(&word_boxes, &num_word_boxes);
     replace_grid_boxes(&grid_boxes, &num_grid_box, &word_boxes, &num_word_boxes);
     
-    write_box_centers("../data/resuls_grid", grid_boxes, num_grid_box);
+    write_box_centers("data/resuls_grid", grid_boxes, num_grid_box);
 
-    
-
-    
+       
 
     draw_rectangles(img, grid_boxes, num_grid_box, red, 1);
     draw_rectangles(img, word_boxes, num_word_boxes, blue, 2);
