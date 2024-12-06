@@ -116,7 +116,7 @@ void DET_All(char* filepath) {
     SDL_Quit();
 }
 
-
+/*
 int main(int agrc, char* argv[]){
     if (agrc != 2) {
         errx(EXIT_FAILURE, "Usage: %s <image>", argv[0]);
@@ -125,4 +125,4 @@ int main(int agrc, char* argv[]){
     DET_All(argv[1]);
 
     return EXIT_SUCCESS;
-}
+}*/
