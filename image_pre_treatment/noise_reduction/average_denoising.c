@@ -1,6 +1,4 @@
 #include "average_denoising.h"
-#include <stdio.h>
-
 
 /*	Function : AverageDenoising
  *
@@ -27,7 +25,9 @@ void PRT_AverageDenoising(SDL_Surface *surface)
 	Uint8* threshold = RgbAverageSurface(surface);
 	
 	float coef = 0.9;
-	int threshold_sum = (int)(threshold[0] * coef) + (int)(threshold[1] * coef) + (int)(threshold[2] * coef);
+	int threshold_sum = (int)(threshold[0] * coef) +
+		(int)(threshold[1] * coef) +
+		(int)(threshold[2] * coef);
 
 
 	/*if (threshold_r > 200 && threshold_g > 200 && threshold_b > 200)
