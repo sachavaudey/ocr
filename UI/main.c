@@ -154,6 +154,15 @@ void image_button(GtkWidget* widget, gpointer data)
         }
     } 
 
+    else if (strcmp(buttonLabel, "Solver") == 0) 
+    {
+            g_print("re");
+            run_solver(2);
+
+
+        
+    } 
+
 
 
 
