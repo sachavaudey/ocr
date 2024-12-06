@@ -136,8 +136,8 @@ void rotate_auto(SDL_Surface **surface_param)
 	rotate(surface_param, 
 		MIN(
 			-atan2(y, x) * (180.0 / M_PI),
-			-atan2(a, b) * (180.0 / M_PI)
+			-atan2(b, a) * (180.0 / M_PI)
 			));
-	printf("\nx : %ld, y : %ld\n", x, y);
+	printf("\nx : %ld, y : %ld\na : %ld, b : %ld\n", x, y, a, b);
 }
 
