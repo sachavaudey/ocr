@@ -60,8 +60,38 @@ void image_button(GtkWidget* widget, gpointer data)
 {
     const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
     const char* buttonLabel = (const char*)data;
+    if (strcmp(buttonLabel, "Contrast Boost") == 0)
+    {
+        SDL_Surface* backgroundImage = IMG_Load(displayedimage);
+        printf("sachafait caca1");
+        if (backgroundImage) 
+        {
+            run_pretreatment(&backgroundImage, 6, 0);
+            printf("sachafait caca");
+            const char* outputPath = "data/post_PRT.png";
+            
+            if (backgroundImage) 
+            {
+                printf("SDL surface saved to: %s\n", outputPath);
+                displayedimage = outputPath;
+                gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
+                g_print("Displayed image updated to: ");
+            } 
+            else 
+            {
+                g_print("Failed to save SDL surface: %s\n", SDL_GetError());
+            }
 
-    if (strcmp(buttonLabel, "Pretreatment") == 0) 
+            SDL_FreeSurface(backgroundImage);
+        } 
+        else 
+        {
+            g_print("Failed to load image for automatic rotation");
+        }
+    }
+
+
+    else if (strcmp(buttonLabel, "Pretreatment") == 0) 
     {
         GtkWidget* dialog = gtk_dialog_new_with_buttons("Select Treatment Level",
                                                         GTK_WINDOW(gtk_widget_get_toplevel(widget)),
@@ -112,11 +142,6 @@ void image_button(GtkWidget* widget, gpointer data)
         }
     }
     
-
-
-
-
-    // TODO ############################################
     else if (strcmp(buttonLabel, "Rotation") == 0) 
     {
         GtkWidget *dialog = gtk_dialog_new_with_buttons(
@@ -176,7 +201,6 @@ void image_button(GtkWidget* widget, gpointer data)
 
         gtk_widget_destroy(dialog);
     }
-    //#########################################################
 
     else if (strcmp(buttonLabel, "Automatic Rotation") == 0) 
     {
@@ -205,21 +229,8 @@ void image_button(GtkWidget* widget, gpointer data)
         {
             g_print("Failed to load image for automatic rotation");
         }
+
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     
     else if (strcmp(buttonLabel, "Detection") == 0) 
     {
@@ -258,7 +269,7 @@ void image_button(GtkWidget* widget, gpointer data)
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {
         
-        const char* filePath = "neuron_network/other/grid";  //wrong path?  does not work ftm
+        const char* filePath = "neuron_network/other/grid";  
 
         if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
         {
@@ -317,6 +328,7 @@ void load_button(GtkWidget* widget, gpointer data)
         if (g_file_test(filename, G_FILE_TEST_EXISTS))
         {
             gtk_image_set_from_file(GTK_IMAGE(imageWidget), filename);
+            displayedimage = filename;
             g_print("Loaded image: %s\n", filename);
         }
         else 
