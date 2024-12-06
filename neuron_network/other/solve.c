@@ -1,5 +1,6 @@
 #include "solve.h"
 
+#include <gtk/gtk.h>
 //trouver le nombre de mots
 
 
@@ -142,7 +143,7 @@ int search_down_right(char** matrice, char* word ,int i,int j,int x)
 
 void solver(char *nom_fichier,char *word) 
 {   
-    
+    printf("mamamamamammamama");
     FILE *file = fopen("../coordo", "a");
     int lignes, colonnes;
     char (*ma)[100] = lire_grille(nom_fichier, &lignes, &colonnes); 
@@ -311,7 +312,8 @@ char **read_fichier(const char *nom_fichier, int *nombre_mots) {
 }
 
 int compterLignes(const char *nomFichier) {
-    FILE *fichier = fopen(nomFichier, "r");
+    FILE *fichier = fopen("word", "r");
+    if (fichier==NULL) g_print("eerr");
     int nbLignes = 0;
     char caractere;
     while ((caractere = fgetc(fichier)) != EOF) {
@@ -331,29 +333,29 @@ int process_solver(char* filename, char* word) {
 
 int pro_solv()
 {
+    g_print("ici");
     
-    printf("ici");
     //process_solver(argv[1],argv[2]);
     remove("../coordo");
     char** grid=malloc(2*sizeof(char*));
-    grid[0]=malloc(4*sizeof(char));
+    grid[0]=malloc(5*sizeof(char));
     sprintf(grid[0],"grid");
     
     
 
     int* n=malloc(sizeof(int));
     
-    grid[1]=malloc(4*sizeof(char));
+    grid[1]=malloc(5*sizeof(char));
     sprintf(grid[1],"word");
-    n[0]=compterLignes(grid[1]);
+    //n[0]=compterLignes(grid[1]);
     
 
-    char** word=read_fichier(grid[1],n);
+    //char** word=read_fichier(grid[1],n);
 
 
     
 
-    
+    /*
     for (int i = 0; i < n[0]; i++)
     {
         //printf("\n%s\n",word[i]);
@@ -372,7 +374,7 @@ int pro_solv()
     }
     free(word);
     
-    free(n);
+    free(n);*/
     
 
     

@@ -8,6 +8,7 @@
 #include "solve.h"
 #include <err.h>
 
+#include "solve.h"
 #include "predict.h"
 
 int process_NOE(int set);
