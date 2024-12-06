@@ -15,8 +15,8 @@ GtkWidget* mainBox;
 
 const char* buttonLabels[BUTTON_COUNT] = 
 {
-    "Pretreatment",
     "Contrast Boost",
+    "Pretreatment",
     "Rotation",
     "Automatic Rotation",
     "Detection",
@@ -24,16 +24,7 @@ const char* buttonLabels[BUTTON_COUNT] =
     "AUX"
 };
 
-const char* imagePaths[BUTTON_COUNT] = 
-{
-    "data/post_PRT.png",
-    "contrastboost.png",
-    "rotation.png", 
-    "automaticrotation.png",
-    "../data/post_DET.png",
-    "solver.png",
-    "image.png"
-};
+
 
 GtkWidget* imageWidget;
 GtkWidget* searchEntry;
@@ -97,14 +88,12 @@ void image_button(GtkWidget* widget, gpointer data)
             {
                 printf(".png to SDL surface loaded successfully\n");
 
-                run_pretreatment(backgroundImage, treatmentLevel, 0); 
+                run_pretreatment(&backgroundImage, treatmentLevel, 0); 
 
                 const char* outputPath = "data/post_PRT.png";
                 if (backgroundImage) 
                 {
                     printf("SDL surface saved to: %s\n", outputPath);
-
-        
                     displayedimage = outputPath;
                     gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                     g_print("Displayed image updated to: %s\n", displayedimage);
@@ -157,13 +146,9 @@ void image_button(GtkWidget* widget, gpointer data)
                 SDL_Surface* backgroundImage = IMG_Load(displayedimage);
                 if (backgroundImage) 
                 {
-                    printf("ifbackgroundimage ok \n");
                     run_pretreatment(&backgroundImage, 4, angle);
-                    int res = backgroundImage == NULL;
-                    printf("IS NULL : %d\n", res);
-                    printf("run pretreatment ok \n");
                     const char* outputPath = "data/post_PRT.png";
-
+                    
                     if (IMG_SavePNG(backgroundImage, outputPath) != NULL) 
                     {
                         printf("SDL surface saved to: %s\n", outputPath);
@@ -198,7 +183,7 @@ void image_button(GtkWidget* widget, gpointer data)
         SDL_Surface* backgroundImage = IMG_Load(displayedimage);
         if (backgroundImage) 
         {
-            run_pretreatment(backgroundImage, 4, 0);
+            run_pretreatment(&backgroundImage, 4, 0);
             const char* outputPath = "data/post_PRT.png";
             
             if (backgroundImage) 
