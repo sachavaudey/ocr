@@ -42,7 +42,8 @@ gboolean update_gui_after_detection(gpointer data)
 {
     DetectionData *detectionData = (DetectionData*) data;
     gtk_widget_destroy(detectionData->loadingDialog);
-    gtk_image_set_from_file(GTK_IMAGE(detectionData->imageWidget), "data/post_DET.png");
+    displayedimage = "data/post_DET.png";
+    gtk_image_set_from_file(GTK_IMAGE(detectionData->imageWidget), displayedimage);
     g_print("Detection process completed successfully!\n");
     g_free(detectionData);
 
@@ -69,7 +70,7 @@ void image_button(GtkWidget* widget, gpointer data)
     const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
     const char* buttonLabel = (const char*)data;
 
-    if(strcmp(buttonLabel, "Pretreatment") == 0) 
+    if (strcmp(buttonLabel, "Pretreatment") == 0) 
     {
         GtkWidget* dialog = gtk_dialog_new_with_buttons("Select Treatment Level",
                                                         GTK_WINDOW(gtk_widget_get_toplevel(widget)),
@@ -89,108 +90,138 @@ void image_button(GtkWidget* widget, gpointer data)
 
         gtk_widget_destroy(dialog);
 
-        if(treatmentLevel > 0) 
+        if (treatmentLevel > 0) 
         {
+            SDL_Surface* backgroundImage = IMG_Load(filename);
+            if (backgroundImage) 
+            {
+                printf(".png to SDL surface loaded successfully\n");
 
-            if(treatmentLevel == 1)
-            {
-                SDL_Surface* backgroundImage = IMG_Load(filename);
-                printf(".png to SDL surf work \n"); // Replace
+                run_pretreatment(backgroundImage, treatmentLevel, 0); 
+
+                const char* outputPath = "data/post_PRT.png";
                 if (backgroundImage) 
                 {
-                    run_pretreatment(backgroundImage, treatmentLevel,1); 
-                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-                    g_print("Loaded image: %s\n", "data/post_PRT.png");
+                    printf("SDL surface saved to: %s\n", outputPath);
+
+        
+                    displayedimage = outputPath;
+                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
+                    g_print("Displayed image updated to: %s\n", displayedimage);
+                } 
+                else 
+                {
+                    g_print("Failed to save SDL surface: %s\n", SDL_GetError());
                 }
+
+                SDL_FreeSurface(backgroundImage);
+            } 
+            else 
+            {
+                g_print("Failed to load SDL surface from: %s\n", filename);
             }
-            if(treatmentLevel == 2)
-            {
-                SDL_Surface* backgroundImage = IMG_Load(filename);
-                printf(".png to SDL surf work \n"); // Replace
-                if (backgroundImage) 
-                {
-                    run_pretreatment(backgroundImage, treatmentLevel,2); 
-                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-                    g_print("Loaded image: %s\n", "data/post_PRT.png");
-                }
-            }
-            if(treatmentLevel == 3)
-            {
-                SDL_Surface* backgroundImage = IMG_Load(filename);
-                if (backgroundImage) 
-                {
-                    run_pretreatment(backgroundImage, treatmentLevel,3); 
-                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-                    g_print("Loaded image: %s\n", "data/post_PRT.png");
-                }
-            }   
         }
-    } 
+    }
     
+
+
+
+
     // TODO ############################################
     else if (strcmp(buttonLabel, "Rotation") == 0) 
     {
         GtkWidget *dialog = gtk_dialog_new_with_buttons(
-        "Enter Rotation Angle",
-        GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-        GTK_DIALOG_MODAL,
-        "Rotate", GTK_RESPONSE_ACCEPT,
-        "Cancel", GTK_RESPONSE_CANCEL,
-        NULL);
+            "Enter Rotation Angle",
+            GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+            GTK_DIALOG_MODAL,
+            "Rotate", GTK_RESPONSE_ACCEPT,
+            "Cancel", GTK_RESPONSE_CANCEL,
+            NULL);
 
-    GtkWidget *contentArea = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
-    GtkWidget *entry = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Enter angle in degrees");
-    gtk_box_pack_start(GTK_BOX(contentArea), entry, TRUE, TRUE, 0);
+        GtkWidget *contentArea = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+        GtkWidget *entry = gtk_entry_new();
+        gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Enter angle in degrees");
+        gtk_box_pack_start(GTK_BOX(contentArea), entry, TRUE, TRUE, 0);
 
-    gtk_widget_show_all(dialog);
+        gtk_widget_show_all(dialog);
 
-    gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+        gint response = gtk_dialog_run(GTK_DIALOG(dialog));
 
-    if (response == GTK_RESPONSE_ACCEPT) 
-    {
-        const char *angleText = gtk_entry_get_text(GTK_ENTRY(entry));
-        if (strlen(angleText) > 0) 
+        if (response == GTK_RESPONSE_ACCEPT) 
         {
-            int angle = atoi(angleText); 
-            g_print("Rotating image by %d degrees\n", angle);
-
-            SDL_Surface* backgroundImage = IMG_Load(filename);
-            if (backgroundImage) 
+            const char *angleText = gtk_entry_get_text(GTK_ENTRY(entry));
+            if (angleText != NULL && strlen(angleText) > 0)
             {
-                
-                run_pretreatment(backgroundImage, 4,angle);
-                gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-                g_print("Image rotated\n");
+                int angle = atoi(angleText);
+                printf("Rotating image by %d degrees\n", angle);
+                SDL_Surface* backgroundImage = IMG_Load(displayedimage);
+                if (backgroundImage) 
+                {
+                    printf("ifbackgroundimage ok \n");
+                    run_pretreatment(&backgroundImage, 4, angle);
+                    int res = backgroundImage == NULL;
+                    printf("IS NULL : %d\n", res);
+                    printf("run pretreatment ok \n");
+                    const char* outputPath = "data/post_PRT.png";
+
+                    if (IMG_SavePNG(backgroundImage, outputPath) != NULL) 
+                    {
+                        printf("SDL surface saved to: %s\n", outputPath);
+                        displayedimage = outputPath;
+                        gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
+                        g_print("Displayed image updated to: %s\n", displayedimage);
+                    } 
+                    else 
+                    {
+                        g_print("Failed to save SDL surface: %s\n", SDL_GetError());
+                    }
+
+                    SDL_FreeSurface(backgroundImage);
+                } 
+                else 
+                {
+                    g_print("Failed to load image for rotation: %s\n", displayedimage);
+                }
             } 
             else 
             {
-                g_print("Failed to load image for rotation.\n");
+                g_print("Invalid input or no angle provided. Rotation canceled.\n");
             }
+        }
+
+        gtk_widget_destroy(dialog);
+    }
+    //#########################################################
+
+    else if (strcmp(buttonLabel, "Automatic Rotation") == 0) 
+    {
+        SDL_Surface* backgroundImage = IMG_Load(displayedimage);
+        if (backgroundImage) 
+        {
+            run_pretreatment(backgroundImage, 4, 0);
+            const char* outputPath = "data/post_PRT.png";
+            
+            if (backgroundImage) 
+            {
+                printf("SDL surface saved to: %s\n", outputPath);
+
+                displayedimage = outputPath;
+                gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
+                g_print("Displayed image updated to: ");
+            } 
+            else 
+            {
+                g_print("Failed to save SDL surface: %s\n", SDL_GetError());
+            }
+
+            SDL_FreeSurface(backgroundImage);
         } 
         else 
         {
-            g_print("No angle provided. Rotation canceled.\n");
+            g_print("Failed to load image for automatic rotation");
         }
     }
 
-    gtk_widget_destroy(dialog);
-}
-    //#########################################################
-
-    else if(strcmp(buttonLabel,"Automatic Rotation") == 0) 
-    {
-        
-        SDL_Surface* backgroundImage = IMG_Load("data/post_PRT.png"); 
-        if (backgroundImage) 
-        {
-            run_pretreatment(backgroundImage, 4,0); 
-            gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
-            printf("test ok");
-            printf("Loaded image: %s\n", "data/post_PRT.png");
-        }
-    
-    } 
 
 
 
@@ -261,7 +292,7 @@ void image_button(GtkWidget* widget, gpointer data)
     else if (strcmp(buttonLabel, "Solver") == 0) 
     {
             g_print("re");
-            run_solver();
+            run_solver(2);
 
 
         
