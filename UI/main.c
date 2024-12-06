@@ -149,7 +149,7 @@ void image_button(GtkWidget* widget, gpointer data)
                     run_pretreatment(&backgroundImage, 4, angle);
                     const char* outputPath = "data/post_PRT.png";
                     
-                    if (IMG_SavePNG(backgroundImage, outputPath) != NULL) 
+                    if (backgroundImage) 
                     {
                         printf("SDL surface saved to: %s\n", outputPath);
                         displayedimage = outputPath;
@@ -183,7 +183,7 @@ void image_button(GtkWidget* widget, gpointer data)
         SDL_Surface* backgroundImage = IMG_Load(displayedimage);
         if (backgroundImage) 
         {
-            run_pretreatment(&backgroundImage, 4, 0);
+            run_pretreatment(&backgroundImage, 5, 0);
             const char* outputPath = "data/post_PRT.png";
             
             if (backgroundImage) 
