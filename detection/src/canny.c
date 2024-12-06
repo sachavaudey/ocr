@@ -234,11 +234,11 @@ void process(custIMG *img)
     {
         dilated_edge_map[i] = (unsigned char *)malloc(img->width * sizeof(unsigned char));
     }
-    dilate_filter(edge_map, dilated_edge_map, img->height, img->width);
+    //dilate_filter(edge_map, dilated_edge_map, img->height, img->width);
 
     BoundingBox *boxes;
     int num_boxes;
-    find_bounding_boxes(img, dilated_edge_map, img->height, img->width, &boxes, &num_boxes);
+    find_bounding_boxes(img, edge_map, img->height, img->width, &boxes, &num_boxes);
 
     Color red = {255, 0, 0};
     Color blue = {0, 0, 255};
@@ -257,7 +257,7 @@ void process(custIMG *img)
     remove_outlier_boxes(&word_boxes, &num_word_boxes);
     replace_grid_boxes(&grid_boxes, &num_grid_box, &word_boxes, &num_word_boxes);
     
-    write_box_centers("../data/resuls_grid", grid_boxes, num_grid_box);
+    write_box_centers("data/resuls_grid", grid_boxes, num_grid_box);
 
     
 

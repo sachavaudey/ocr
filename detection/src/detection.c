@@ -52,7 +52,7 @@ int process_letterdetection(char* filepath) {
         }
     }
 
-    if (IMG_SavePNG(result_surface, "result.png") != 0) {
+    if (IMG_SavePNG(result_surface, "data/post_DET.png") != 0) {
         free_image(img);
         SDL_FreeSurface(result_surface);
         errx(EXIT_FAILURE, "Error saving result image!");
@@ -99,14 +99,14 @@ int process_enlarge(char* filepath) {
  * @param outpath the filepath for the result image (OUT)
  * @return VOID
  */
-void DET_All(char* filepath, char* outpath) {
+void DET_All(char* filepath) {
     if(process_enlarge(filepath) != EXIT_SUCCESS) {
         IMG_Quit();
         SDL_Quit();
         errx(EXIT_FAILURE, "Error during the image enlargement process!");
     }
 
-    if (process_letterdetection(outpath) != EXIT_SUCCESS) {
+    if (process_letterdetection("enlarged.png") != EXIT_SUCCESS) {
         IMG_Quit();
         SDL_Quit();
         errx(EXIT_FAILURE, "Error during the letter detection process!");
