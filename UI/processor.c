@@ -27,7 +27,7 @@ void run_pretreatment(SDL_Surface *surface, int set, int angle){
         break;
 
     case 4:
-        PRT_Rotate(surface, angle);
+        PRT_Rotate(&surface, angle);
         IMG_SavePNG(surface, "/data/post_PRT.png");
         break;
 
@@ -58,7 +58,7 @@ void run_pretreatment(SDL_Surface *surface, int set, int angle){
  * @return VOID
  */
 void run_detection(){
-    DET_All("data/post_PRT.png", "data/post_DET.png");
+    DET_All("data/post_PRT.png");
 }
 
 

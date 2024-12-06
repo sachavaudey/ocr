@@ -3,6 +3,15 @@
 
 #define BUTTON_COUNT 7
 
+typedef struct {
+    GtkWidget *imageWidget;
+    GtkWidget *loadingDialog;
+} DetectionData;
+
+
+GtkWidget* window;
+GtkWidget* mainBox;
+
 const char* buttonLabels[BUTTON_COUNT] = 
 {
     "Pretreatment",
@@ -27,6 +36,27 @@ const char* imagePaths[BUTTON_COUNT] =
 
 GtkWidget* imageWidget;
 GtkWidget* searchEntry;
+
+gboolean update_gui_after_detection(gpointer data)
+{
+    DetectionData *detectionData = (DetectionData*) data;
+    gtk_widget_destroy(detectionData->loadingDialog);
+    gtk_image_set_from_file(GTK_IMAGE(detectionData->imageWidget), "data/post_DET.png");
+    g_print("Detection process completed successfully!\n");
+    g_free(detectionData);
+
+    return FALSE;
+}
+
+gpointer detection_thread_func(gpointer data)
+{
+    DetectionData *detectionData = (DetectionData*) data;
+    run_detection();
+    g_idle_add(update_gui_after_detection, detectionData);
+
+    return NULL;
+}
+
 
 void quit_button(GtkWidget* widget, gpointer data) 
 {
@@ -99,32 +129,104 @@ void image_button(GtkWidget* widget, gpointer data)
     // TODO ############################################
     else if (strcmp(buttonLabel, "Rotation") == 0) 
     {
+        GtkWidget *dialog = gtk_dialog_new_with_buttons(
+        "Enter Rotation Angle",
+        GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+        GTK_DIALOG_MODAL,
+        "Rotate", GTK_RESPONSE_ACCEPT,
+        "Cancel", GTK_RESPONSE_CANCEL,
+        NULL);
 
-        printf("jrejrugiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaf!!!!!!!!!\n");
-        SDL_Surface* backgroundImage = SDL_LoadBMP(filename); 
-        if (backgroundImage) 
+    GtkWidget *contentArea = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+    GtkWidget *entry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Enter angle in degrees");
+    gtk_box_pack_start(GTK_BOX(contentArea), entry, TRUE, TRUE, 0);
+
+    gtk_widget_show_all(dialog);
+
+    gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+
+    if (response == GTK_RESPONSE_ACCEPT) 
+    {
+        const char *angleText = gtk_entry_get_text(GTK_ENTRY(entry));
+        if (strlen(angleText) > 0) 
         {
-            run_pretreatment(backgroundImage, 4,0); 
+            int angle = atoi(angleText); 
+            g_print("Rotating image by %d degrees\n", angle);
+
+            SDL_Surface* backgroundImage = IMG_Load(filename);
+            if (backgroundImage) 
+            {
+                
+                run_pretreatment(backgroundImage, 4,angle);
+                gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
+                g_print("Image rotated\n");
+            } 
+            else 
+            {
+                g_print("Failed to load image for rotation.\n");
+            }
+        } 
+        else 
+        {
+            g_print("No angle provided. Rotation canceled.\n");
         }
     }
+
+    gtk_widget_destroy(dialog);
+}
     //#########################################################
 
     else if(strcmp(buttonLabel,"Automatic Rotation") == 0) 
     {
-        printf("jrejrugieooforeoeof!!!!!!!!!\n");
-        SDL_Surface* backgroundImage = SDL_LoadBMP("data/post_PRT.png"); 
-        printf("it worked\n");
+        
+        SDL_Surface* backgroundImage = IMG_Load("data/post_PRT.png"); 
         if (backgroundImage) 
         {
             run_pretreatment(backgroundImage, 4,0); 
             gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
+            printf("test ok");
             printf("Loaded image: %s\n", "data/post_PRT.png");
         }
     
     } 
+
+
+
+
+
+
+
+
+
+
+
+
+
     
-    
-    
+    else if (strcmp(buttonLabel, "Detection") == 0) 
+    {
+        SDL_Surface* processedImage = IMG_Load("data/post_PRT.png");
+        if (processedImage) 
+        {
+            GtkWidget* loadingDialog = gtk_message_dialog_new(GTK_WINDOW(window),
+                                                            GTK_DIALOG_MODAL,
+                                                            GTK_MESSAGE_INFO,
+                                                            GTK_BUTTONS_NONE,
+                                                            "Please wait a few minutes...");
+            gtk_widget_show_now(loadingDialog);
+            DetectionData *detectionData = g_new(DetectionData, 1);
+            detectionData->imageWidget = imageWidget;
+            detectionData->loadingDialog = loadingDialog;
+            GThread *thread = g_thread_new("detection_thread", detection_thread_func, detectionData);
+
+            SDL_FreeSurface(processedImage);
+        }
+        else
+        {
+            g_print("Failed to load image: %s\n", "data/post_PRT.png");
+        }
+    }
     
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {
@@ -153,6 +255,15 @@ void image_button(GtkWidget* widget, gpointer data)
         {
             g_print("File does not exist: %s\n", filePath);
         }
+    } 
+
+    else if (strcmp(buttonLabel, "Solver") == 0) 
+    {
+            g_print("re");
+            run_solver(2);
+
+
+        
     } 
 
 
