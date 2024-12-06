@@ -14,9 +14,6 @@ void run_pretreatment(SDL_Surface *surface, int set, int angle){
     {
     case 1:
         PRT_Light(surface);
-        printf("aaaaaaaa");
-        IMG_SavePNG(surface, "/data/post_PRT.png");
-        printf("le sve marche");
         break;
 
     case 2 :
@@ -47,6 +44,9 @@ void run_pretreatment(SDL_Surface *surface, int set, int angle){
     default:
         errx(EXIT_FAILURE, "Incorrect arg!");
     }
+
+
+    IMG_SavePNG(surface, "data/post_PRT.png");
 
     
 }

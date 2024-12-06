@@ -16,7 +16,7 @@ const char* buttonLabels[BUTTON_COUNT] =
 
 const char* imagePaths[BUTTON_COUNT] = 
 {
-    "../data/post_PRT.png",
+    "data/post_PRT.png",
     "contrastboost.png",
     "rotation.png", 
     "automaticrotation.png",
@@ -67,7 +67,7 @@ void image_button(GtkWidget* widget, gpointer data)
                 if (backgroundImage) 
                 {
                     run_pretreatment(backgroundImage, treatmentLevel,0); // to fix bc ne reconnait pas
-                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "/data/post_PRT.png");
+                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
                     g_print("Loaded image: %s\n", "data/post_PRT.png");
                 }
 
