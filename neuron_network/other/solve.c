@@ -1,11 +1,12 @@
 #include "solve.h"
 
 #include <gtk/gtk.h>
+#include <stdio.h>
 //trouver le nombre de mots
 
 
-char (*lire_grille(char *nom_fichier, int *lignes, int *colonnes))[100] {
-    FILE *fichier = fopen(nom_fichier, "r");
+char (*lire_grille(int *lignes, int *colonnes))[100] {
+    FILE *fichier = fopen("neuron_network/other/grid", "r");
     
 
     static char grille[100][100];
@@ -141,12 +142,23 @@ int search_down_right(char** matrice, char* word ,int i,int j,int x)
                     return 0;
 }
 
-void solver(char *nom_fichier,char *word) 
+
+
+void solver(char *word) 
 {   
-   
-    FILE *file = fopen("neural_network/other/coordo", "a");
+    
+    FILE *file = fopen("data/coordo", "a");
+    //fprintf(file,"hello");
+    if (file == NULL) {
+    perror("Erreur d'ouverture du fichier");
+    g_print("lmlm\n");
+    
+      
+}
+    
     int lignes, colonnes;
-    char (*ma)[100] = lire_grille("neural_network/other/grid", &lignes, &colonnes); 
+    char (*ma)[100] = lire_grille(&lignes, &colonnes); 
+    
     int x=0;
     while (word[x]!=0) 
     {
@@ -173,7 +185,8 @@ void solver(char *nom_fichier,char *word)
         printf("\n");
         
     }
-
+    
+    
     for (int i = 0; i < n; i++)        // start of search
     {            
         
@@ -188,6 +201,7 @@ void solver(char *nom_fichier,char *word)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j-x+1,i);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i);
+                        fclose(file);
                         return;
                     }
                 }
@@ -197,6 +211,7 @@ void solver(char *nom_fichier,char *word)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j+x-1,i);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j+x-1,i);
+                        fclose(file);
                         return;
                     } 
                     
@@ -208,6 +223,7 @@ void solver(char *nom_fichier,char *word)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j,i+1-x);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j,i+1-x);
+                        fclose(file);
                         return;
                     }
                     
@@ -220,6 +236,7 @@ void solver(char *nom_fichier,char *word)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j,i+x-1);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j,i+x-1);
+                        fclose(file);
                         return;
                     }
                     
@@ -230,6 +247,7 @@ void solver(char *nom_fichier,char *word)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j-x+1,i-x+1);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i-x+1);
+                        fclose(file);
                         return;
                     }
                     
@@ -240,6 +258,7 @@ void solver(char *nom_fichier,char *word)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j+x-1,i-x+1);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j+x-1,i-x+1);
+                        fclose(file);
                         return;
                     }
                     
@@ -250,6 +269,7 @@ void solver(char *nom_fichier,char *word)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,j-x+1,i+x-1);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i+x-1);
+                        fclose(file);
                         return;
                     }
                 }
@@ -259,6 +279,7 @@ void solver(char *nom_fichier,char *word)
                     {
                         printf("(%d,%d),(%d,%d)",j,i,(j+x-1),(i+x-1));
                         fprintf(file, "%d,%d %d,%d\n", j,i,(j+x-1),(i+x-1));
+                        fclose(file);
                         return;
                     }
                 }
@@ -266,8 +287,11 @@ void solver(char *nom_fichier,char *word)
         }
     }
     printf(" Not Found ");
+    
     fprintf(file, "%d,%d %d,%d\n", 0,0,0,0);
-    //fprintf(file, "-1,-1 -1,-1\n" );
+    
+    fclose(file);
+    
     return;
     
     
@@ -276,7 +300,7 @@ void solver(char *nom_fichier,char *word)
 }   
     
     
-char **read_fichier(const char *nom_fichier, int *nombre_mots) {
+char **read_fichier( int *nombre_mots) {
     FILE *fichier = fopen("neuron_network/other/word", "r");
     if (!fichier) {
         perror("Erreur d'ouverture duuu fichier");
@@ -311,8 +335,8 @@ char **read_fichier(const char *nom_fichier, int *nombre_mots) {
     return mots;
 }
 
-int compterLignes(const char *nomFichier) {
-    g_print("la\n");
+int compterLignes() {
+    
     FILE *fichier = fopen("neuron_network/other/word", "r");
     if (fichier==NULL) g_print("eerr\n");
     int nbLignes = 0;
@@ -326,8 +350,8 @@ int compterLignes(const char *nomFichier) {
     return nbLignes;
 }
 
-int process_solver(char* filename, char* word) {   
-    solver(filename,word);
+int process_solver( char* word) {   
+    solver(word);
     return 0;
 }
 
@@ -337,7 +361,7 @@ int pro_solv()
     
     
     //process_solver(argv[1],argv[2]);
-    //remove("../coordo");
+    remove("data/coordo");
     char** grid=malloc(2*sizeof(char*));
     grid[0]=malloc(5*sizeof(char));
     sprintf(grid[0],"grid");
@@ -349,22 +373,23 @@ int pro_solv()
     grid[1]=malloc(5*sizeof(char));
     sprintf(grid[1],"word");
 
-    n[0],compterLignes(grid[1]);
+    n[0]=compterLignes();
     
 
-    char** word=read_fichier(grid[1],n);
+    char** word=read_fichier(n);
 
 
     
+    
+    
 
-    //process_solver(grid[0],word[0]);
-    /*for (int i = 0; i < n[0]; i++)
+    for (int i = 0; i < n[0]; i++)
     {
-        //printf("\n%s\n",word[i]);
-        printf("%s\n",word[i]);
-        process_solver(grid[0],word[i]);
         
-        printf("\n\n\n");
+        
+        process_solver(word[i]);
+        
+        
     }
     
     free(grid[0]);
@@ -376,7 +401,7 @@ int pro_solv()
     }
     free(word);
     
-    free(n);*/
+    free(n);
     
 
     
