@@ -352,7 +352,7 @@ int pro_grid()
     
     char* res[taille];
     int c=0;
-    int t=1;
+    //int t=1;
     for (int i = 0; i < size[1]; i++)
     {
         for (int j = 0; j < size[0]; j++)
