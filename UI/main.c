@@ -303,14 +303,14 @@ void image_button(GtkWidget* widget, gpointer data)
     else if (strcmp(buttonLabel, "Solver") == 0) 
     {
 
-            //run_draw();
+            run_draw();
 
            
-            run_solver(2);
+            //run_solver(2);
 
+            
 
-
-        
+         gtk_image_set_from_file(GTK_IMAGE(imageWidget), "image_sauvegardee.png");
     } 
     else 
     {
