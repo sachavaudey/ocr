@@ -60,6 +60,8 @@ void image_button(GtkWidget* widget, gpointer data)
 {
     const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
     const char* buttonLabel = (const char*)data;
+    const char* output_path_PRT = "data/post_PRT.png";
+
     if (strcmp(buttonLabel, "Contrast Boost") == 0)
     {
         SDL_Surface* backgroundImage = IMG_Load(displayedimage);
@@ -68,12 +70,11 @@ void image_button(GtkWidget* widget, gpointer data)
         {
             run_pretreatment(&backgroundImage, 6, 0);
             printf("sachafait caca");
-            const char* outputPath = "data/post_PRT.png";
             
             if (backgroundImage) 
             {
-                printf("SDL surface saved to: %s\n", outputPath);
-                displayedimage = (char *)outputPath;
+                printf("SDL surface saved to: %s\n", output_path_PRT);
+                displayedimage = (char *)output_path_PRT;
                 gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                 g_print("Displayed image updated to: ");
             } 
@@ -120,11 +121,10 @@ void image_button(GtkWidget* widget, gpointer data)
 
                 run_pretreatment(&backgroundImage, treatmentLevel, 0); 
 
-                const char* outputPath = "data/post_PRT.png";
                 if (backgroundImage) 
                 {
-                    printf("SDL surface saved to: %s\n", outputPath);
-                    displayedimage = outputPath;
+                    printf("SDL surface saved to: %s\n", output_path_PRT);
+                    displayedimage = (char *)output_path_PRT;
                     gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                     g_print("Displayed image updated to: %s\n", displayedimage);
                 } 
@@ -172,12 +172,11 @@ void image_button(GtkWidget* widget, gpointer data)
                 if (backgroundImage) 
                 {
                     run_pretreatment(&backgroundImage, 4, angle);
-                    const char* outputPath = "data/post_PRT.png";
                     
                     if (backgroundImage) 
                     {
-                        printf("SDL surface saved to: %s\n", outputPath);
-                        displayedimage = outputPath;
+                        printf("SDL surface saved to: %s\n", output_path_PRT);
+                        displayedimage = (char*)output_path_PRT;
                         gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                         g_print("Displayed image updated to: %s\n", displayedimage);
                     } 
@@ -208,13 +207,12 @@ void image_button(GtkWidget* widget, gpointer data)
         if (backgroundImage) 
         {
             run_pretreatment(&backgroundImage, 5, 0);
-            const char* outputPath = "data/post_PRT.png";
-            
+                       
             if (backgroundImage) 
             {
-                printf("SDL surface saved to: %s\n", outputPath);
+                printf("SDL surface saved to: %s\n", output_path_PRT);
 
-                displayedimage = outputPath;
+                displayedimage = (char*)output_path_PRT;
                 gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                 g_print("Displayed image updated to: ");
             } 
@@ -328,7 +326,7 @@ void load_button()
         if (g_file_test(filename, G_FILE_TEST_EXISTS))
         {
             gtk_image_set_from_file(GTK_IMAGE(imageWidget), filename);
-            displayedimage = filename;
+            displayedimage = (char*)filename;
             g_print("Loaded image: %s\n", filename);
         }
         else 
