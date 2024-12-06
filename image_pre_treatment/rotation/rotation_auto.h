@@ -4,12 +4,12 @@
 	#include <err.h>
 	#include <SDL2/SDL.h>
 	#include <SDL2/SDL_image.h>
+	#include <SDL2/SDL_surface.h>
 	#include <math.h>
 	#include <stdlib.h>
 	
 	#include "rotation.h"
 	#include "../../Common/ocr.h"
 
-	void rotate_auto(SDL_Surface *surface);
-
+	void rotate_auto(SDL_Surface **surface);
 #endif

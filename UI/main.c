@@ -121,8 +121,23 @@ void image_button(GtkWidget* widget, gpointer data)
     
     } 
     
-    
-    
+    else if (strcmp(buttonLabel, "Detection") == 0) 
+    {
+        SDL_Surface* processedImage = IMG_Load("data/post_PRT.png");
+        if (processedImage) 
+        {
+            run_detection();
+
+            gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_DET.png");
+            g_print("Detection process end successfully\n");
+            
+            SDL_FreeSurface(processedImage);
+        }
+        else
+        {
+            g_print("Fail to load image: %s\n", "data/post_PRT.png");
+        }
+    }
     
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {

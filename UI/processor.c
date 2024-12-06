@@ -58,7 +58,7 @@ void run_pretreatment(SDL_Surface *surface, int set, int angle){
  * @return VOID
  */
 void run_detection(){
-    DET_All("data/post_PRT.png", "data/post_DET.png");
+    DET_All("data/post_PRT.png");
 }
 
 

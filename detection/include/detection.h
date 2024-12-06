@@ -14,6 +14,6 @@
 
 int process_letterdetection(char* filepath);
 int process_enlarge(char* filepath);
-void DET_All(char* filepath, char* outpath);
+void DET_All(char* filepath);
 
 #endif

@@ -1,9 +1,4 @@
 #include "rotation.h"
-#include <SDL2/SDL_error.h>
-#include <SDL2/SDL_stdinc.h>
-#include <SDL2/SDL_surface.h>
-#include <math.h>
-
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -11,6 +6,11 @@
 
 #define NOT_IN_IMAGE -1
 
+/* 
+ * Absolute value of a double
+ * @param double x
+ * @return absolute value
+ */
 double absf(double x)
 {
 	if (x < 0)
@@ -19,18 +19,12 @@ double absf(double x)
 }
 
 
-
-/*	Function : getXFromPixelNb
- *
- *	--------------------------
- *
- *	Computes X coordinate from pixel number of 
+/*
+ * 	Computes X coordinate from pixel number of 
  *	an image of given width
- *
- *	x		: pixel number in image's pixels array
- *  width	: image's width
- *
- *	returns	: coordinate on X axis (from LEFT to RIGHT) 
+ *	@param x : pixel index in image's pixels array
+ *  @param width : image's width
+ *	@return	coordinate on X axis (from LEFT to RIGHT) 
  */
 int getXFromPixelNb(int x, unsigned int width)
 {
@@ -39,18 +33,15 @@ int getXFromPixelNb(int x, unsigned int width)
 
 
 
- /*	Function : getYFromPixelNb
- *
- *	--------------------------
- *
+/*	
  *	Computes Y coordinate from pixel number of 
  *	an image of given width and height
  *
- *	x		: pixel number in image pixels' array
- *	width	: image's width
- *	height	: image's heigth
+ *	@param x : pixel number in image pixels' array
+ *	@param width : image's width
+ *	@param height : image's heigth
  *
- *	returns	: coordinate on Y axis (from TOP to BOTTOM) 
+ *	@return coordinate on Y axis (from TOP to BOTTOM) 
  */
 int getYFromPixelNb(int x, unsigned int width, unsigned int height)
 {
@@ -59,20 +50,17 @@ int getYFromPixelNb(int x, unsigned int width, unsigned int height)
 
 
 
- /*	Function : getPixelNbFromXY
- *
- *	--------------------------
- *
+/*
  *	Computes  coordinate from pixel number of 
  *	an image of given width and height.
  *	If coordinates are not in image, returns NOT_IN_IMAGE.
  *
- *	x		: pixel's X axis cootdinate (from LEFT to RIGHT)
- *	y		: pixel's Y axis coordinate (from TOP to BOTTOM)
- *	width	: image's width
- *	height	: image's heigth
+ *	@param x : pixel's X axis cootdinate (from LEFT to RIGHT)
+ *	@param y : pixel's Y axis coordinate (from TOP to BOTTOM)
+ *	@param width : image's width
+ *	@param height : image's heigth
  *
- *	returns	: pixel's index in image array, 
+ *	@return pixel's index in image array, 
  *			or NOT_IN_IMAGE.
  */
 long getPixelNbFromXY(int x, int y, unsigned int width, unsigned int height)
@@ -89,16 +77,13 @@ long getPixelNbFromXY(int x, int y, unsigned int width, unsigned int height)
 }
 
 
- /*	Function : rotate
+/*
+ * Rotates a surface of <angle> degrees
  *
- *	--------------------------
+ *	@param surface : surface to rotate
+ *	@param angle : angle (degrees) to rotate the surface with
  *
- *	Rotates a surface of <angle> degrees
- *
- *	surface	: surface to rotate
- *	angle	: angle (degrees) to rotate the surface with
- *
- *	returns	: void
+ *	@return void
  */
 void rotate(SDL_Surface** surface_param, int angle) 
 {   
@@ -153,7 +138,8 @@ void rotate(SDL_Surface** surface_param, int angle)
 		
 		if (pixelDepartNb == NOT_IN_IMAGE) 
 		{
-			rotated_pixels[pixelNb] = SDL_MapRGBA(new_surface->format, 255, 255, 255, 255);
+			rotated_pixels[pixelNb] = SDL_MapRGBA(new_surface->format,
+					255, 255, 255, 255);
 		}
 		else
 		{	
@@ -169,5 +155,3 @@ void rotate(SDL_Surface** surface_param, int angle)
 	if (LOG_LEVEL)
 		printf("Image successfully rotated !\n---------------\n");
 }
-
-

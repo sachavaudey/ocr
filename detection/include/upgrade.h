@@ -11,5 +11,6 @@
 #include "constant.h"
 
 SDL_Surface *enlarge_image(SDL_Surface *surface);
+SDL_Surface *reduce_image(SDL_Surface *surface);
 
 #endif

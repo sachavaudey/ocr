@@ -1,11 +1,4 @@
 #include "rotation_auto.h"
-#include "rotation.h"
-#include <SDL2/SDL_pixels.h>
-#include <SDL2/SDL_stdinc.h>
-#include <SDL2/SDL_surface.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
 #endif
@@ -14,7 +7,7 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
-/*
+/* OUTDATED, TODO
  * on trouve le 1er pixel noir (le + proche du coin haut gauche)
  * on trouve le dernier pixel noir ( le + proche du coin bas droit)
  * on calcule la taille (x, y) de l hypotenuse
@@ -117,8 +110,9 @@ long find_right_pixel_index(SDL_Surface *surface)
 }
 
 
-void rotate_auto(SDL_Surface *surface)
+void rotate_auto(SDL_Surface **surface_param)
 {
+	SDL_Surface* surface = *surface_param;
 	long index_temp = find_top_pixel_index(surface);
 	long y1 = (long)(index_temp / surface->w),
 		 x1 = (long)(index_temp % surface->w);
@@ -138,11 +132,11 @@ void rotate_auto(SDL_Surface *surface)
 		 a = x4 - x3,
 		 b = y4 - y3;
 
-	rotate(&surface, 
+	rotate(surface_param, 
 		MIN(
 			-atan2(y, x) * (180.0 / M_PI),
-			-atan2(a, b) * (180.0 / M_PI)
+			-atan2(b, a) * (180.0 / M_PI)
 			));
-	printf("\nx : %ld, y : %ld\n", x, y);
+	//printf("\nx : %ld, y : %ld\na : %ld, b : %ld\n", x, y, a, b);
 }
 
