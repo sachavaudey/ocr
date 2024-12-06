@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = `pkg-config --cflags gtk+-3.0`
-LIBS = `pkg-config --libs gtk+-3.0`
+LIBS = `pkg-config --libs gtk+-3.0` -lm -lSDL2 -lSDL2_image -g
 TARGET = ocr_interface
-SRC = main.c
+SRC = main.c processor.c
 
 all: $(TARGET)
 

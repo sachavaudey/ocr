@@ -1,12 +1,11 @@
 #include "main.h"
+#include "processor.h"
 
-#define BUTTON_COUNT 9
+#define BUTTON_COUNT 7
 
 const char* buttonLabels[BUTTON_COUNT] = 
 {
-    "Light Pretreatment",
-    "Medium Pretreatment",
-    "Heavy Pretreatment",
+    "Pretreatment",
     "Contrast Boost",
     "Rotation",
     "Automatic Rotation",
@@ -17,9 +16,7 @@ const char* buttonLabels[BUTTON_COUNT] =
 
 const char* imagePaths[BUTTON_COUNT] = 
 {
-    "../data/post_PRT.png",
-    "../data/post_PRT.png",
-    "../data/post_PRT.png",
+    "data/post_PRT.png",
     "contrastboost.png",
     "rotation.png", 
     "automaticrotation.png",
@@ -38,10 +35,134 @@ void quit_button(GtkWidget* widget, gpointer data)
 
 void image_button(GtkWidget* widget, gpointer data) 
 {
-    const char* imagePath = (const char*)data;
+    const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
+    const char* buttonLabel = (const char*)data;
 
-    gtk_image_set_from_file(GTK_IMAGE(imageWidget), imagePath);
-    g_print("Button clicked: %s\n", imagePath);
+    if(strcmp(buttonLabel, "Pretreatment") == 0) 
+    {
+        GtkWidget* dialog = gtk_dialog_new_with_buttons("Select Treatment Level",
+                                                        GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+                                                        GTK_DIALOG_MODAL,
+                                                        "Light", 1,
+                                                        "Medium", 2,
+                                                        "Heavy", 3,
+                                                        "Cancel", 0,
+                                                        NULL);
+
+        gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+        int treatmentLevel = 0;
+
+        if (response == 1) treatmentLevel = 1;  
+        else if (response == 2) treatmentLevel = 2;  
+        else if (response == 3) treatmentLevel = 3;  
+
+        gtk_widget_destroy(dialog);
+
+        if(treatmentLevel > 0) 
+        {
+
+            if(treatmentLevel == 1)
+            {
+                SDL_Surface* backgroundImage = IMG_Load(filename);
+                printf(".png to SDL surf work \n"); // Replace
+                if (backgroundImage) 
+                {
+                    run_pretreatment(backgroundImage, treatmentLevel,1); 
+                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
+                    g_print("Loaded image: %s\n", "data/post_PRT.png");
+                }
+            }
+            if(treatmentLevel == 2)
+            {
+                SDL_Surface* backgroundImage = IMG_Load(filename);
+                printf(".png to SDL surf work \n"); // Replace
+                if (backgroundImage) 
+                {
+                    run_pretreatment(backgroundImage, treatmentLevel,2); 
+                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
+                    g_print("Loaded image: %s\n", "data/post_PRT.png");
+                }
+            }
+            if(treatmentLevel == 3)
+            {
+                SDL_Surface* backgroundImage = IMG_Load(filename);
+                if (backgroundImage) 
+                {
+                    run_pretreatment(backgroundImage, treatmentLevel,3); 
+                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
+                    g_print("Loaded image: %s\n", "data/post_PRT.png");
+                }
+            }   
+        }
+    } 
+    // TODO ############################################
+    else if (strcmp(buttonLabel, "Rotation") == 0) 
+    {
+        printf("jrejrugieooforeoeof!!!!!!!!!");
+        SDL_Surface* backgroundImage = SDL_LoadBMP(filename); 
+        if (backgroundImage) 
+        {
+            run_pretreatment(backgroundImage, 4,0); 
+        }
+    }
+    //#########################################################
+
+    else if(strcmp(buttonLabel,"Automatic Rotation") == 0) 
+    {
+        printf("jrejrugieooforeoeof!!!!!!!!!");
+        SDL_Surface* backgroundImage = SDL_LoadBMP("data/post_PRT.png"); 
+        printf("it worked");
+        if (backgroundImage) 
+        {
+            run_pretreatment(backgroundImage, 4,0); 
+            gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
+            printf("Loaded image: %s\n", "data/post_PRT.png");
+        }
+    
+    } 
+    
+    
+    
+    
+    else if (strcmp(buttonLabel, "AUX") == 0) 
+    {
+        
+        const char* filePath = "../neuron_network/other/word";  //wrong path?  does not work ftm
+
+        
+        if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
+        {
+            char command[512]; 
+
+            // ca ca ne marche pas
+            snprintf(command, sizeof(command), "xdg-open \"%s\"", filePath);
+
+    
+            int result = system(command);
+            if (result == 0)
+            {
+                g_print("Opened AUX file: %s\n", filePath);
+            }
+            else
+            {
+                g_print("Failed to open AUX file: %s\n", filePath);
+            }
+        }
+        else
+        {
+            g_print("File does not exist: %s\n", filePath);
+        }
+    } 
+
+
+
+
+    else 
+    {
+    
+        gtk_image_set_from_file(GTK_IMAGE(imageWidget), buttonLabel);
+        g_print("Button clicked: %s\n", buttonLabel);
+    }
 }
 
 void load_button(GtkWidget* widget, gpointer data) 
@@ -55,7 +176,7 @@ void load_button(GtkWidget* widget, gpointer data)
             gtk_image_set_from_file(GTK_IMAGE(imageWidget), filename);
             g_print("Loaded image: %s\n", filename);
         }
-        else
+        else 
         {
             g_print("File does not exist: %s\n", filename);
         }
@@ -87,13 +208,13 @@ int main(int argc, char* argv[])
     gtk_widget_set_vexpand(buttonBox, TRUE);
     gtk_box_pack_start(GTK_BOX(topBox), buttonBox, FALSE, TRUE, 0);
 
-    for (int i = 0; i < BUTTON_COUNT; i++)
+    for (int i = 0; i < BUTTON_COUNT; i++) 
     {
         GtkWidget* button = gtk_button_new_with_label(buttonLabels[i]);
-        g_signal_connect(button,"clicked", G_CALLBACK(image_button),
-                         (gpointer)imagePaths[i]);
+        g_signal_connect(button, "clicked", G_CALLBACK(image_button), (gpointer)buttonLabels[i]);
         gtk_box_pack_start(GTK_BOX(buttonBox), button, TRUE, TRUE, 0);
     }
+
 
     GtkWidget* quitButton = gtk_button_new_with_label("Quit");
     g_signal_connect(quitButton, "clicked", 
@@ -129,4 +250,4 @@ int main(int argc, char* argv[])
     gtk_main();
 
     return 0;
-}
+} 

@@ -18,29 +18,37 @@ void run_pretreatment(SDL_Surface *surface, int set, int angle){
 
     case 2 :
         PRT_Medium(surface);
+        IMG_SavePNG(surface, "/data/post_PRT.png");
         break;
     
     case 3 :
         PRT_Heavy(surface);
+        IMG_SavePNG(surface, "/data/post_PRT.png");
         break;
 
     case 4:
         PRT_Rotate(&surface, angle);
+        IMG_SavePNG(surface, "/data/post_PRT.png");
         break;
 
     case 5 :
         PRT_Rotate_Auto(surface);
+        IMG_SavePNG(surface, "/data/post_PRT.png");
         break;
 
     case 6 :
         PRT_Contrast_Boost(surface);
+        IMG_SavePNG(surface, "/data/post_PRT.png");
         break;
     
     default:
         errx(EXIT_FAILURE, "Incorrect arg!");
     }
 
-    IMG_SavePNG(surface, "../data/post_PRT.png");
+
+    IMG_SavePNG(surface, "data/post_PRT.png");
+
+    
 }
 
 
@@ -50,7 +58,7 @@ void run_pretreatment(SDL_Surface *surface, int set, int angle){
  * @return VOID
  */
 void run_detection(){
-    DET_All("../data/post_PRT.png", "../data/post_DET.png");
+    DET_All("data/post_PRT.png", "data/post_DET.png");
 }
 
 
