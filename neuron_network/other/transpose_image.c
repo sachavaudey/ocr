@@ -97,17 +97,17 @@ void process_image(const char *input_path, const char *output_path) {
 
     SDL_LockSurface(image);
     
-    SDL_PixelFormat *format = image->format;
+    //SDL_PixelFormat *format = image->format;
     //Uint32 *pixels = (Uint32 *)image->pixels;
 
     
 
     SDL_Surface *cropped = crop_image(image);
 
-    Uint32 *cropped_pixels = (Uint32 *)cropped->pixels;
+    //Uint32 *cropped_pixels = (Uint32 *)cropped->pixels;
     for (int y = 0; y < cropped->h; y++) {
         for (int x = 0; x < cropped->w; x++) {
-            Uint32 *pixel = cropped_pixels + (y * cropped->w) + x;
+            //Uint32 *pixel = cropped_pixels + (y * cropped->w) + x;
             /*if (is_green(*pixel, format)) {
                 *pixel = SDL_MapRGB(format, 255, 255, 255); 
             } else {

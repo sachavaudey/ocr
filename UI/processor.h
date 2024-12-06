@@ -16,8 +16,8 @@
 
 void run_pretreatment(SDL_Surface *surface, int set, int angle);
 void run_detection();
-void run_neural(int set);
-void run_solver(int set);
+void run_neural();
+void run_solver();
 
 
 
