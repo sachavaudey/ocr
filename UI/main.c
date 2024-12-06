@@ -22,10 +22,8 @@ const char* buttonLabels[BUTTON_COUNT] =
     "Automatic Rotation",
     "Detection",
     "Solver", 
-    "AUX"
+    "Modify grid by hand"
 };
-
-
 
 GtkWidget* imageWidget;
 GtkWidget* searchEntry;
@@ -38,7 +36,6 @@ gboolean update_gui_after_detection(gpointer data)
     gtk_image_set_from_file(GTK_IMAGE(detectionData->imageWidget), displayedimage);
     g_print("Detection process completed successfully!\n");
     g_free(detectionData);
-
     return FALSE;
 }
 
@@ -63,11 +60,10 @@ void image_button(GtkWidget* widget, gpointer data)
     if (strcmp(buttonLabel, "Contrast Boost") == 0)
     {
         SDL_Surface* backgroundImage = IMG_Load(displayedimage);
-        printf("sachafait caca1");
+
         if (backgroundImage) 
         {
             run_pretreatment(&backgroundImage, 6, 0);
-            printf("sachafait caca");
             const char* outputPath = "data/post_PRT.png";
             
             if (backgroundImage) 
@@ -116,14 +112,10 @@ void image_button(GtkWidget* widget, gpointer data)
             SDL_Surface* backgroundImage = IMG_Load(filename);
             if (backgroundImage) 
             {
-                printf(".png to SDL surface loaded successfully\n");
-
-                run_pretreatment(&backgroundImage, treatmentLevel, 0); 
-
+               run_pretreatment(&backgroundImage, treatmentLevel, 0); 
                 const char* outputPath = "data/post_PRT.png";
                 if (backgroundImage) 
                 {
-                    printf("SDL surface saved to: %s\n", outputPath);
                     displayedimage = outputPath;
                     gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                     g_print("Displayed image updated to: %s\n", displayedimage);
@@ -167,7 +159,6 @@ void image_button(GtkWidget* widget, gpointer data)
             if (angleText != NULL && strlen(angleText) > 0)
             {
                 int angle = atoi(angleText);
-                printf("Rotating image by %d degrees\n", angle);
                 SDL_Surface* backgroundImage = IMG_Load(displayedimage);
                 if (backgroundImage) 
                 {
@@ -176,7 +167,6 @@ void image_button(GtkWidget* widget, gpointer data)
                     
                     if (backgroundImage) 
                     {
-                        printf("SDL surface saved to: %s\n", outputPath);
                         displayedimage = outputPath;
                         gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                         g_print("Displayed image updated to: %s\n", displayedimage);
@@ -266,7 +256,7 @@ void image_button(GtkWidget* widget, gpointer data)
             gtk_widget_destroy(errorDialog);
         }
     }
-    else if (strcmp(buttonLabel, "AUX") == 0) 
+    else if (strcmp(buttonLabel, "Modify grid by hand") == 0) 
     {
         
         const char* filePath = "neuron_network/other/grid";  
