@@ -60,29 +60,77 @@ void image_button(GtkWidget* widget, gpointer data)
 
         if (treatmentLevel > 0) 
         {
-            
 
+            if (treatmentLevel == 1)
+            {
                 SDL_Surface* backgroundImage = IMG_Load(filename);
                 printf(".png to SDL surf work \n"); // Replace
                 if (backgroundImage) 
                 {
-                    run_pretreatment(backgroundImage, treatmentLevel,0); // to fix bc ne reconnait pas
+                    run_pretreatment(backgroundImage, treatmentLevel,1); 
                     gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
                     g_print("Loaded image: %s\n", "data/post_PRT.png");
                 }
-
-            
+            }
+            if (treatmentLevel == 2)
+            {
+                SDL_Surface* backgroundImage = IMG_Load(filename);
+                printf(".png to SDL surf work \n"); // Replace
+                if (backgroundImage) 
+                {
+                    run_pretreatment(backgroundImage, treatmentLevel,2); 
+                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
+                    g_print("Loaded image: %s\n", "data/post_PRT.png");
+                }
+            }
+            if (treatmentLevel == 3)
+            {
+                SDL_Surface* backgroundImage = IMG_Load(filename);
+                if (backgroundImage) 
+                {
+                    run_pretreatment(backgroundImage, treatmentLevel,3); 
+                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
+                    g_print("Loaded image: %s\n", "data/post_PRT.png");
+                }
+            }   
         }
     } 
+    // TODO ############################################
     else if (strcmp(buttonLabel, "Rotation") == 0) 
     {
 
-        SDL_Surface* backgroundImage = SDL_LoadBMP("background_image.bmp"); // Replace
+        SDL_Surface* backgroundImage = SDL_LoadBMP(filename); 
         if (backgroundImage) 
         {
-            run_pretreatment(backgroundImage, 4,0); // to fix bc ne reconnait pas
+            run_pretreatment(backgroundImage, 4,0); 
+        }
+    }
+    //#########################################################
+
+    else if (strcmp(buttonLabel, "Automatic Rotation") == 0) 
+    {
+
+        SDL_Surface* backgroundImage = SDL_LoadBMP(filename);
+        if (backgroundImage) 
+        {
+            run_pretreatment(backgroundImage, 5,0);
         }
     } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {
         
