@@ -123,7 +123,7 @@ void draw()
     fin_coo(coord);
     SDL_Surface *image = IMG_Load("data/images/l11.png");
     Uint32 redColor = SDL_MapRGB(image->format, 255, 0, 0);
-    for (size_t i = 0; i < 3; i++)
+    for (size_t i = 0; i < 10; i++)
     {
         if (coord[i][0]==0 && coord[i][1]==0 && coord[i][2]==0 && coord[i][3]==0)
         {
@@ -140,7 +140,9 @@ void draw()
 
             printf("%d,%d  %d,%d\n",x1,y1,x2,y2);
             //drawRectangle(image,x1,y1,x2,y2,35,redColor);
-            
+
+            drawRectangle(image,x1,y1,x2,y2,35,redColor);
+
             
 
         }
