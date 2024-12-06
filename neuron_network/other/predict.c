@@ -159,7 +159,8 @@ int* search_size(int* res)
     
     while (1){
         char* var=malloc(FILENAME_SIZE*sizeof(char));
-        snprintf(var,FILENAME_SIZE,"../results_grid-2/0.%d.png",c);   
+        //snprintf(var,FILENAME_SIZE,"../results_grid-2/0.%d.png",c); 
+        snprintf(var,FILENAME_SIZE,"../../data/results_grid/0.%d.png",c); 
         FILE *file = fopen(var, "r");
         if (file==NULL) {
             res[0]=c;
