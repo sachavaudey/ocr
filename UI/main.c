@@ -3,6 +3,15 @@
 
 #define BUTTON_COUNT 7
 
+typedef struct {
+    GtkWidget *imageWidget;
+    GtkWidget *loadingDialog;
+} DetectionData;
+
+
+GtkWidget* window;
+GtkWidget* mainBox;
+
 const char* buttonLabels[BUTTON_COUNT] = 
 {
     "Pretreatment",
@@ -27,6 +36,27 @@ const char* imagePaths[BUTTON_COUNT] =
 
 GtkWidget* imageWidget;
 GtkWidget* searchEntry;
+
+gboolean update_gui_after_detection(gpointer data)
+{
+    DetectionData *detectionData = (DetectionData*) data;
+    gtk_widget_destroy(detectionData->loadingDialog);
+    gtk_image_set_from_file(GTK_IMAGE(detectionData->imageWidget), "data/post_DET.png");
+    g_print("Detection process completed successfully!\n");
+    g_free(detectionData);
+
+    return FALSE;
+}
+
+gpointer detection_thread_func(gpointer data)
+{
+    DetectionData *detectionData = (DetectionData*) data;
+    run_detection();
+    g_idle_add(update_gui_after_detection, detectionData);
+
+    return NULL;
+}
+
 
 void quit_button(GtkWidget* widget, gpointer data) 
 {
@@ -126,16 +156,23 @@ void image_button(GtkWidget* widget, gpointer data)
         SDL_Surface* processedImage = IMG_Load("data/post_PRT.png");
         if (processedImage) 
         {
-            run_detection();
+            // Crée une boîte de dialogue de chargement
+            GtkWidget* loadingDialog = gtk_message_dialog_new(GTK_WINDOW(window),
+                                                            GTK_DIALOG_MODAL,
+                                                            GTK_MESSAGE_INFO,
+                                                            GTK_BUTTONS_NONE,
+                                                            "Please wait a few minutes...");
+            gtk_widget_show_now(loadingDialog);
+            DetectionData *detectionData = g_new(DetectionData, 1);
+            detectionData->imageWidget = imageWidget;
+            detectionData->loadingDialog = loadingDialog;
+            GThread *thread = g_thread_new("detection_thread", detection_thread_func, detectionData);
 
-            gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_DET.png");
-            g_print("Detection process end successfully\n");
-            
             SDL_FreeSurface(processedImage);
         }
         else
         {
-            g_print("Fail to load image: %s\n", "data/post_PRT.png");
+            g_print("Failed to load image: %s\n", "data/post_PRT.png");
         }
     }
     
