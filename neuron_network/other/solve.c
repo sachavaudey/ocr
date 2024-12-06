@@ -143,7 +143,7 @@ int search_down_right(char** matrice, char* word ,int i,int j,int x)
 
 void solver(char *nom_fichier,char *word) 
 {   
-    printf("mamamamamammamama");
+   
     FILE *file = fopen("neural_network/other/coordo", "a");
     int lignes, colonnes;
     char (*ma)[100] = lire_grille("neural_network/other/grid", &lignes, &colonnes); 
@@ -357,7 +357,7 @@ int pro_solv()
 
     
 
-    process_solver(grid[0],word[0]);
+    //process_solver(grid[0],word[0]);
     /*for (int i = 0; i < n[0]; i++)
     {
         //printf("\n%s\n",word[i]);
