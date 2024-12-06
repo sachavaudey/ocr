@@ -1,4 +1,5 @@
 #include "rotation.h"
+#include <math.h>
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -94,7 +95,7 @@ void rotate(SDL_Surface** surface_param, int angle)
 	double newAngle = (double)angle / 180 * M_PI;
 	
 	SDL_LockSurface(surface);
-	
+
 	if (LOG_LEVEL > 1)	{printf("Radian angle: %f\n", newAngle);}
 
 	unsigned int initW = surface->w,	initH = surface->h;
@@ -138,8 +139,8 @@ void rotate(SDL_Surface** surface_param, int angle)
 		
 		if (pixelDepartNb == NOT_IN_IMAGE) 
 		{
-		rotated_pixels[pixelNb] = SDL_MapRGB(new_surface->format,
-					0,0,0);
+			rotated_pixels[pixelNb] = SDL_MapRGB(new_surface->format,
+				0,0,0);
 		}
 		else
 		{	
@@ -149,12 +150,16 @@ void rotate(SDL_Surface** surface_param, int angle)
 
 	for (unsigned long line = 0; line<newH; line++)
 	{
-		if (RgbAverageLine(new_surface, line) <= 5)
+		Uint8* retour = RgbAverageLine(new_surface, line);
+		Uint8 retour_int = *retour;
+		free(retour);
+		if (retour_int <= 3)
 		{
-			for(int i = 0; i<newW; i++)
-				rotated_pixels[i] = SDL_MapRGB(new_surface->format,
+			for(unsigned int i = 0; i<newW; i++)
+			{
+				rotated_pixels[i*line] = SDL_MapRGB(new_surface->format,
 					0,0,0);
-
+			}
 		}
 	}
 	
