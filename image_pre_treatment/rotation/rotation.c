@@ -146,6 +146,17 @@ void rotate(SDL_Surface** surface_param, int angle)
 			rotated_pixels[pixelNb] = pixelDepart[pixelDepartNb];
 		}
 	}
+
+	for (unsigned long line = 0; line<newH; line++)
+	{
+		if (RgbAverageLine(new_surface, line) <= 5)
+		{
+			for(int i = 0; i<newW; i++)
+				rotated_pixels[i] = SDL_MapRGB(new_surface->format,
+					0,0,0);
+
+		}
+	}
 	
 	SDL_Surface* temp = *surface_param;
 	*surface_param = new_surface;
