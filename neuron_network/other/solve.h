@@ -22,4 +22,5 @@ int compterLignes(const char *nomFichier);
 int process_solver(char* filename, char* word);
 int pro_solv();
 
+
 #endif
