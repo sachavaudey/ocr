@@ -229,6 +229,7 @@ void process(custIMG *img)
     }
     hysteresis_filter(img, edges, LOW_THRESH, HIGH_THRESH, edge_map);
 
+
     unsigned char **dilated_edge_map = (unsigned char **)malloc(img->height * sizeof(unsigned char *));
     for (unsigned int i = 0; i < img->height; i++)
     {
@@ -242,6 +243,9 @@ void process(custIMG *img)
 
     Color red = {255, 0, 0};
     Color blue = {0, 0, 255};
+    //Color green = {0, 255, 0};
+
+    //draw_rectangles(img, boxes, num_boxes, green, 0);
 
 
     BoundingBox *grid_boxes;
@@ -259,9 +263,7 @@ void process(custIMG *img)
     
     write_box_centers("data/resuls_grid", grid_boxes, num_grid_box);
 
-    
-
-    
+       
 
     draw_rectangles(img, grid_boxes, num_grid_box, red, 1);
     draw_rectangles(img, word_boxes, num_word_boxes, blue, 2);
