@@ -5,7 +5,7 @@
 //trouver le nombre de mots
 
 
-char (*lire_grille(char *nom_fichier, int *lignes, int *colonnes))[100] {
+char (*lire_grille(int *lignes, int *colonnes))[100] {
     FILE *fichier = fopen("neuron_network/other/grid", "r");
     
 
@@ -144,7 +144,7 @@ int search_down_right(char** matrice, char* word ,int i,int j,int x)
 
 
 
-void solver(char *nom_fichier,char *word) 
+void solver(char *word) 
 {   
     
     FILE *file = fopen("data/coordo", "a");
@@ -157,7 +157,7 @@ void solver(char *nom_fichier,char *word)
 }
     
     int lignes, colonnes;
-    char (*ma)[100] = lire_grille("neural_network/other/grid", &lignes, &colonnes); 
+    char (*ma)[100] = lire_grille(&lignes, &colonnes); 
     
     int x=0;
     while (word[x]!=0) 
@@ -300,7 +300,7 @@ void solver(char *nom_fichier,char *word)
 }   
     
     
-char **read_fichier(const char *nom_fichier, int *nombre_mots) {
+char **read_fichier( int *nombre_mots) {
     FILE *fichier = fopen("neuron_network/other/word", "r");
     if (!fichier) {
         perror("Erreur d'ouverture duuu fichier");
@@ -335,7 +335,7 @@ char **read_fichier(const char *nom_fichier, int *nombre_mots) {
     return mots;
 }
 
-int compterLignes(const char *nomFichier) {
+int compterLignes() {
     
     FILE *fichier = fopen("neuron_network/other/word", "r");
     if (fichier==NULL) g_print("eerr\n");
@@ -350,8 +350,8 @@ int compterLignes(const char *nomFichier) {
     return nbLignes;
 }
 
-int process_solver(char* filename, char* word) {   
-    solver(filename,word);
+int process_solver( char* word) {   
+    solver(word);
     return 0;
 }
 
@@ -373,10 +373,10 @@ int pro_solv()
     grid[1]=malloc(5*sizeof(char));
     sprintf(grid[1],"word");
 
-    n[0]=compterLignes(grid[1]);
+    n[0]=compterLignes();
     
 
-    char** word=read_fichier(grid[1],n);
+    char** word=read_fichier(n);
 
 
     
@@ -387,7 +387,7 @@ int pro_solv()
     {
         
         
-        process_solver(grid[0],word[i]);
+        process_solver(word[i]);
         
         
     }

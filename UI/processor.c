@@ -67,7 +67,7 @@ void run_detection(){
  * @param int
  * @return VOID
  */
-void run_neural(int set)
+void run_neural()
 {
     process_NOE(1);
 }
@@ -77,7 +77,7 @@ void run_neural(int set)
  * @param int
  * @return VOID
  */
-void run_solver(int set)
+void run_solver()
 {
     process_NOE(2);
 }
