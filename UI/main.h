@@ -10,9 +10,9 @@
 
 gboolean update_gui_after_detection(gpointer data);
 gpointer detection_thread_func(gpointer data);
-void quit_button(GtkWidget* widget, gpointer data);
+void quit_button();
 void image_button(GtkWidget* widget, gpointer data);
-void load_button(GtkWidget* widget, gpointer data);
+void load_button();
 int main(int argc, char* argv[]);
 
 #endif
