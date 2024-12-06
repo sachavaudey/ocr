@@ -38,7 +38,7 @@ void image_button(GtkWidget* widget, gpointer data)
     const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
     const char* buttonLabel = (const char*)data;
 
-    if (strcmp(buttonLabel, "Pretreatment") == 0) 
+    if(strcmp(buttonLabel, "Pretreatment") == 0) 
     {
         GtkWidget* dialog = gtk_dialog_new_with_buttons("Select Treatment Level",
                                                         GTK_WINDOW(gtk_widget_get_toplevel(widget)),
@@ -58,10 +58,10 @@ void image_button(GtkWidget* widget, gpointer data)
 
         gtk_widget_destroy(dialog);
 
-        if (treatmentLevel > 0) 
+        if(treatmentLevel > 0) 
         {
 
-            if (treatmentLevel == 1)
+            if(treatmentLevel == 1)
             {
                 SDL_Surface* backgroundImage = IMG_Load(filename);
                 printf(".png to SDL surf work \n"); // Replace
@@ -72,7 +72,7 @@ void image_button(GtkWidget* widget, gpointer data)
                     g_print("Loaded image: %s\n", "data/post_PRT.png");
                 }
             }
-            if (treatmentLevel == 2)
+            if(treatmentLevel == 2)
             {
                 SDL_Surface* backgroundImage = IMG_Load(filename);
                 printf(".png to SDL surf work \n"); // Replace
@@ -83,7 +83,7 @@ void image_button(GtkWidget* widget, gpointer data)
                     g_print("Loaded image: %s\n", "data/post_PRT.png");
                 }
             }
-            if (treatmentLevel == 3)
+            if(treatmentLevel == 3)
             {
                 SDL_Surface* backgroundImage = IMG_Load(filename);
                 if (backgroundImage) 
@@ -98,7 +98,7 @@ void image_button(GtkWidget* widget, gpointer data)
     // TODO ############################################
     else if (strcmp(buttonLabel, "Rotation") == 0) 
     {
-
+        printf("jrejrugieooforeoeof!!!!!!!!!");
         SDL_Surface* backgroundImage = SDL_LoadBMP(filename); 
         if (backgroundImage) 
         {
@@ -107,30 +107,23 @@ void image_button(GtkWidget* widget, gpointer data)
     }
     //#########################################################
 
-    else if (strcmp(buttonLabel, "Automatic Rotation") == 0) 
+    else if(strcmp(buttonLabel,"Automatic Rotation") == 0) 
     {
-
-        SDL_Surface* backgroundImage = SDL_LoadBMP(filename);
+        printf("jrejrugieooforeoeof!!!!!!!!!");
+        SDL_Surface* backgroundImage = SDL_LoadBMP("data/post_PRT.png"); 
+        printf("it worked");
         if (backgroundImage) 
         {
-            run_pretreatment(backgroundImage, 5,0);
+            run_pretreatment(backgroundImage, 4,0); 
+            gtk_image_set_from_file(GTK_IMAGE(imageWidget), "data/post_PRT.png");
+            printf("Loaded image: %s\n", "data/post_PRT.png");
         }
+    
     } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    
+    
+    
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {
         
@@ -160,6 +153,10 @@ void image_button(GtkWidget* widget, gpointer data)
             g_print("File does not exist: %s\n", filePath);
         }
     } 
+
+
+
+
     else 
     {
     
