@@ -144,9 +144,9 @@ int search_down_right(char** matrice, char* word ,int i,int j,int x)
 void solver(char *nom_fichier,char *word) 
 {   
     printf("mamamamamammamama");
-    FILE *file = fopen("../coordo", "a");
+    FILE *file = fopen("neural_network/other/coordo", "a");
     int lignes, colonnes;
-    char (*ma)[100] = lire_grille(nom_fichier, &lignes, &colonnes); 
+    char (*ma)[100] = lire_grille("neural_network/other/grid", &lignes, &colonnes); 
     int x=0;
     while (word[x]!=0) 
     {
@@ -277,7 +277,7 @@ void solver(char *nom_fichier,char *word)
     
     
 char **read_fichier(const char *nom_fichier, int *nombre_mots) {
-    FILE *fichier = fopen(nom_fichier, "r");
+    FILE *fichier = fopen("neuron_network/other/word", "r");
     if (!fichier) {
         perror("Erreur d'ouverture duuu fichier");
         return NULL;
@@ -305,15 +305,16 @@ char **read_fichier(const char *nom_fichier, int *nombre_mots) {
     
     for (int i = 0; i < nombre_mots[0]; i++)
     {
-        printf("%s\n",mots[i]);
+        //printf("%s\n",mots[i]);
     }
     
     return mots;
 }
 
 int compterLignes(const char *nomFichier) {
-    FILE *fichier = fopen("word", "r");
-    if (fichier==NULL) g_print("eerr");
+    g_print("la\n");
+    FILE *fichier = fopen("neuron_network/other/word", "r");
+    if (fichier==NULL) g_print("eerr\n");
     int nbLignes = 0;
     char caractere;
     while ((caractere = fgetc(fichier)) != EOF) {
@@ -333,10 +334,10 @@ int process_solver(char* filename, char* word) {
 
 int pro_solv()
 {
-    g_print("ici");
+    
     
     //process_solver(argv[1],argv[2]);
-    remove("../coordo");
+    //remove("../coordo");
     char** grid=malloc(2*sizeof(char*));
     grid[0]=malloc(5*sizeof(char));
     sprintf(grid[0],"grid");
@@ -347,16 +348,17 @@ int pro_solv()
     
     grid[1]=malloc(5*sizeof(char));
     sprintf(grid[1],"word");
-    //n[0]=compterLignes(grid[1]);
+
+    n[0],compterLignes(grid[1]);
     
 
-    //char** word=read_fichier(grid[1],n);
+    char** word=read_fichier(grid[1],n);
 
 
     
 
-    /*
-    for (int i = 0; i < n[0]; i++)
+    process_solver(grid[0],word[0]);
+    /*for (int i = 0; i < n[0]; i++)
     {
         //printf("\n%s\n",word[i]);
         printf("%s\n",word[i]);
