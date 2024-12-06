@@ -1,6 +1,4 @@
 #include "main.h"
-#include "processor.h"
-#include <gtk/gtk.h>
 
 #define BUTTON_COUNT 7
 
