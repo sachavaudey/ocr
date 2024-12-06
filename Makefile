@@ -16,6 +16,13 @@ $(EXEC): $(OBJ_FILES)
 
 clean:
 	rm -f $(EXEC) $(OBJ_FILES)
+	rm -rf data/coordo
+	rm -rf data/enlarged.png
+	rm -rf data/post_PRT.png
+	rm -rf data/post_DET.png
+	rm -rf data/result_grid
+	rm -rf data/results_grid/
+	rm -rf data/results_word/
 	clear
 
 .PHONY: all clean
