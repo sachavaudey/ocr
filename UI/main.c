@@ -1,4 +1,5 @@
 #include "main.h"
+#include "processor.h"
 
 #define BUTTON_COUNT 7
 
@@ -34,6 +35,7 @@ void quit_button(GtkWidget* widget, gpointer data)
 
 void image_button(GtkWidget* widget, gpointer data) 
 {
+    const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
     const char* buttonLabel = (const char*)data;
 
     if (strcmp(buttonLabel, "Pretreatment") == 0) 
@@ -58,23 +60,27 @@ void image_button(GtkWidget* widget, gpointer data)
 
         if (treatmentLevel > 0) 
         {
-            // Change the image to "../data/images/l11.png"
-            gtk_image_set_from_file(GTK_IMAGE(imageWidget), "../data/images/l11.png");
+            
 
-            SDL_Surface* backgroundImage = SDL_LoadBMP("../data/images/l11.png"); // Replace
-            if (backgroundImage) 
-            {
-                //run_pretreatment(backgroundImage, treatmentLevel); // to fix bc ne reconnait pas
-            }
+                SDL_Surface* backgroundImage = IMG_Load(filename);
+                printf(".png to SDL surf work \n"); // Replace
+                if (backgroundImage) 
+                {
+                    run_pretreatment(backgroundImage, treatmentLevel,0); // to fix bc ne reconnait pas
+                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), "/data/post_PRT.png");
+                    g_print("Loaded image: %s\n", "data/post_PRT.png");
+                }
+
+            
         }
     } 
     else if (strcmp(buttonLabel, "Rotation") == 0) 
     {
-        // Handle rotation button: Call run_rotation with parameter 4
+
         SDL_Surface* backgroundImage = SDL_LoadBMP("background_image.bmp"); // Replace
         if (backgroundImage) 
         {
-            //run_rotation(backgroundImage, 4); // to fix bc ne reconnait pas
+            run_pretreatment(backgroundImage, 4,0); // to fix bc ne reconnait pas
         }
     } 
     else if (strcmp(buttonLabel, "AUX") == 0) 
@@ -82,7 +88,7 @@ void image_button(GtkWidget* widget, gpointer data)
         
         const char* filePath = "../neuron_network/other/word";  //wrong path?  does not work ftm
 
-        // Check if the file exists
+        
         if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
         {
             char command[512]; 
@@ -125,7 +131,7 @@ void load_button(GtkWidget* widget, gpointer data)
             gtk_image_set_from_file(GTK_IMAGE(imageWidget), filename);
             g_print("Loaded image: %s\n", filename);
         }
-        else
+        else 
         {
             g_print("File does not exist: %s\n", filename);
         }
