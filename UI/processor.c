@@ -40,7 +40,7 @@ void run_pretreatment(SDL_Surface **surface, int set, int angle){
         errx(EXIT_FAILURE, "Incorrect arg!");
     }
 
-    IMG_SavePNG(surface, "data/post_PRT.png");
+    IMG_SavePNG(*surface, "data/post_PRT.png");
 
     
 }
