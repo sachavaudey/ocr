@@ -101,7 +101,7 @@ void rotate(SDL_Surface** surface_param, int angle)
 	unsigned int newW = initH * absf(sin(newAngle)) +
 		initW * absf(cos(newAngle));
 	unsigned int newH = initH + absf(cos(newAngle)) +
-		initW * absf(sin(newAngle));
+		initH * absf(sin(newAngle));
 	
 	if (LOG_LEVEL > 1){
 		printf("Initial width : %i, initial height : %i\n",
