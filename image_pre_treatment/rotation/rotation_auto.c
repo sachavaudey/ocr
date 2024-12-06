@@ -1,5 +1,4 @@
 #include "rotation_auto.h"
-#include <SDL2/SDL_surface.h>
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
 #endif
@@ -138,6 +137,6 @@ void rotate_auto(SDL_Surface **surface_param)
 			-atan2(y, x) * (180.0 / M_PI),
 			-atan2(b, a) * (180.0 / M_PI)
 			));
-	printf("\nx : %ld, y : %ld\na : %ld, b : %ld\n", x, y, a, b);
+	//printf("\nx : %ld, y : %ld\na : %ld, b : %ld\n", x, y, a, b);
 }
 
