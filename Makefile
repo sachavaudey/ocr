@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 $(shell pkg-config --cflags gtk+-3.0 sdl2 SDL2_image) -std=c17
+CFLAGS = -Wall -Wextra -O2 $(shell pkg-config --cflags gtk+-3.0 sdl2 SDL2_image) -std=c17 -fsanitize=address -static-libasan -g
 LDFLAGS = -lSDL2 -lSDL2_image -lm $(shell pkg-config --libs gtk+-3.0 sdl2 SDL2_image)
 EXEC = ocr
 
