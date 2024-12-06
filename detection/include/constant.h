@@ -14,6 +14,7 @@ typedef struct {
 } Color;
 
 // Constants definitions...
+#define M_PI            3.14159265358979323846
 #define PI              M_PI
 #define AVG_DIVISOR     1.0
 #define BORDER_WIDTH    3
