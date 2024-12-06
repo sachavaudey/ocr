@@ -27,12 +27,12 @@ void run_pretreatment(SDL_Surface *surface, int set, int angle){
         break;
 
     case 4:
-        PRT_Rotate(&surface, angle);
+        PRT_Rotate(surface, angle);
         IMG_SavePNG(surface, "/data/post_PRT.png");
         break;
 
     case 5 :
-        PRT_Rotate_Auto(surface);
+        PRT_Rotate_Auto(&surface);
         IMG_SavePNG(surface, "/data/post_PRT.png");
         break;
 

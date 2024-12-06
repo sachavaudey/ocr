@@ -95,10 +95,12 @@ void image_button(GtkWidget* widget, gpointer data)
             }   
         }
     } 
+    
     // TODO ############################################
     else if (strcmp(buttonLabel, "Rotation") == 0) 
     {
-        printf("jrejrugieooforeoeof!!!!!!!!!");
+
+        printf("jrejrugiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaf!!!!!!!!!\n");
         SDL_Surface* backgroundImage = SDL_LoadBMP(filename); 
         if (backgroundImage) 
         {
@@ -109,9 +111,9 @@ void image_button(GtkWidget* widget, gpointer data)
 
     else if(strcmp(buttonLabel,"Automatic Rotation") == 0) 
     {
-        printf("jrejrugieooforeoeof!!!!!!!!!");
+        printf("jrejrugieooforeoeof!!!!!!!!!\n");
         SDL_Surface* backgroundImage = SDL_LoadBMP("data/post_PRT.png"); 
-        printf("it worked");
+        printf("it worked\n");
         if (backgroundImage) 
         {
             run_pretreatment(backgroundImage, 4,0); 
@@ -127,15 +129,14 @@ void image_button(GtkWidget* widget, gpointer data)
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {
         
-        const char* filePath = "../neuron_network/other/word";  //wrong path?  does not work ftm
+        const char* filePath = "neuron_network/other/grid";  //wrong path?  does not work ftm
 
         
         if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
         {
             char command[512]; 
 
-            // ca ca ne marche pas
-            snprintf(command, sizeof(command), "xdg-open \"%s\"", filePath);
+            snprintf(command, sizeof(command), "vim %s", filePath);
 
     
             int result = system(command);
