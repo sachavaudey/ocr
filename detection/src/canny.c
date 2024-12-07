@@ -1,13 +1,15 @@
 #include "../include/canny.h"
 
 /**
- * This function apply a sobel filter on a given image and complete the gradient_magnitude and grandient_direction list
+ * This function apply a sobel filter on a given image
+ * and complete the gradient_magnitude and grandient_direction list
  * @param img img to process
  * @param gardient_magnitude the magnitude list to modify by ref
  * @param gradient_direction gradient direction list to modify by ref
  * @return VOID
  */
-void sobel_filter(custIMG *img, float **gradient_magnitude, float **gradient_direction)
+void sobel_filter(custIMG *img, float **gradient_magnitude,
+        float **gradient_direction)
 {
     for (unsigned int y = 1; y < img->height - 1; y++)
     {
@@ -21,14 +23,20 @@ void sobel_filter(custIMG *img, float **gradient_magnitude, float **gradient_dir
             {
                 for (int kx = -1; kx <= 1; kx++)
                 {
-                    gx_r += img->pixels[y + ky][x + kx].r * Gx[ky + 1][kx + 1];
-                    gy_r += img->pixels[y + ky][x + kx].r * Gy[ky + 1][kx + 1];
+                    gx_r += img->pixels[y + ky][x + kx].r *
+                        Gx[ky + 1][kx + 1];
+                    gy_r += img->pixels[y + ky][x + kx].r *
+                        Gy[ky + 1][kx + 1];
 
-                    gx_g += img->pixels[y + ky][x + kx].g * Gx[ky + 1][kx + 1];
-                    gy_g += img->pixels[y + ky][x + kx].g * Gy[ky + 1][kx + 1];
+                    gx_g += img->pixels[y + ky][x + kx].g *
+                        Gx[ky + 1][kx + 1];
+                    gy_g += img->pixels[y + ky][x + kx].g *
+                        Gy[ky + 1][kx + 1];
 
-                    gx_b += img->pixels[y + ky][x + kx].b * Gx[ky + 1][kx + 1];
-                    gy_b += img->pixels[y + ky][x + kx].b * Gy[ky + 1][kx + 1];
+                    gx_b += img->pixels[y + ky][x + kx].b *
+                        Gx[ky + 1][kx + 1];
+                    gy_b += img->pixels[y + ky][x + kx].b *
+                        Gy[ky + 1][kx + 1];
                 }
             }
 
@@ -36,22 +44,26 @@ void sobel_filter(custIMG *img, float **gradient_magnitude, float **gradient_dir
             float grad_g = sqrt(gx_g * gx_g + gy_g * gy_g);
             float grad_b = sqrt(gx_b * gx_b + gy_b * gy_b);
 
-            gradient_magnitude[y][x] = (grad_r + grad_g + grad_b) / AVG_DIVISOR;
+            gradient_magnitude[y][x] = (grad_r + grad_g + grad_b) /
+                AVG_DIVISOR;
 
-            gradient_direction[y][x] = atan2(gy_r + gy_g + gy_b, gx_r + gx_g + gx_b) * RAD_TO_DEG;
+            gradient_direction[y][x] = atan2(gy_r + gy_g + gy_b,
+                    gx_r + gx_g + gx_b) * RAD_TO_DEG;
         }
     }
 }
 
 /**
- * This function apply a non-maxima suppression on the result of the sobel filter
+ * This function apply a non-maxima suppression
+ * on the result of the sobel filter
  * @param img img to process
  * @param gradient_magnitude gradient_maginutde of the img to process
  * @param gradient_direction the gradient direction list of the img to process
  * @param edges a 2 dimension list of the edge of the img to process
  * @return VOID
  */
-void nm_filter(custIMG *img, float **gradient_magnitude, float **gradient_direction, float **edges)
+void nm_filter(custIMG *img, float **gradient_magnitude,
+        float **gradient_direction, float **edges)
 {
     for (unsigned int y = 1; y < img->height - 1; y++)
     {
@@ -61,17 +73,26 @@ void nm_filter(custIMG *img, float **gradient_magnitude, float **gradient_direct
             float magnitude = gradient_magnitude[y][x];
             float mag1, mag2;
 
-            if ((direction >= ANGLE_NEG_22_5 && direction <= ANGLE_POS_22_5) || (direction >= ANGLE_POS_157_5 || direction <= ANGLE_NEG_157_5))
+            if ((direction >= ANGLE_NEG_22_5 &&
+                        direction <= ANGLE_POS_22_5) ||
+                    (direction >= ANGLE_POS_157_5 ||
+                     direction <= ANGLE_NEG_157_5))
             {
                 mag1 = gradient_magnitude[y][x - 1];
                 mag2 = gradient_magnitude[y][x + 1];
             }
-            else if ((direction > ANGLE_POS_22_5 && direction <= ANGLE_POS_67_5) || (direction < ANGLE_NEG_112_5 && direction >= ANGLE_NEG_157_5))
+            else if ((direction > ANGLE_POS_22_5 &&
+                        direction <= ANGLE_POS_67_5) ||
+                    (direction < ANGLE_NEG_112_5 &&
+                     direction >= ANGLE_NEG_157_5))
             {
                 mag1 = gradient_magnitude[y - 1][x + 1];
                 mag2 = gradient_magnitude[y + 1][x - 1];
             }
-            else if ((direction > ANGLE_POS_67_5 && direction <= ANGLE_POS_112_5) || (direction < ANGLE_NEG_67_5 && direction >= ANGLE_NEG_112_5))
+            else if ((direction > ANGLE_POS_67_5 &&
+                        direction <= ANGLE_POS_112_5) ||
+                    (direction < ANGLE_NEG_67_5 &&
+                     direction >= ANGLE_NEG_112_5))
             {
                 mag1 = gradient_magnitude[y - 1][x];
                 mag2 = gradient_magnitude[y + 1][x];
@@ -95,14 +116,16 @@ void nm_filter(custIMG *img, float **gradient_magnitude, float **gradient_direct
 }
 
 /**
- * This function apply a dilate filter on the result img (after filter and algorithm)
+ * This function apply a dilate filter
+ * on the result img (after filter and algorithm)
  * @param input our input list (binary representation of our img)
  * @param output the ouput binarization of our img
  * @param height height of the image
  * @param width width of the image
  * @return VOID
  */
-void dilate_filter(unsigned char **input, unsigned char **output, unsigned int height, unsigned int width)
+void dilate_filter(unsigned char **input, unsigned char **output,
+        unsigned int height, unsigned int width)
 {
     for (unsigned int y = 0; y < height; y++)
     {
@@ -131,7 +154,8 @@ void dilate_filter(unsigned char **input, unsigned char **output, unsigned int h
 }
 
 /**
- * This function is an auxilary function of hysteresis filter to implement the recusion
+ * This function is an auxilary function of hysteresis filter
+ * to implement the recusion
  * @param edge_map the map of edge detected on image
  * @param y the y coordinate of reference pixel
  * @param x the x coordinate of reference pixel
@@ -139,7 +163,8 @@ void dilate_filter(unsigned char **input, unsigned char **output, unsigned int h
  * @param width the width of the imahe
  * @return VOID
  */
-void hyst_aux(unsigned char **edge_map, unsigned int y, unsigned int x, unsigned int height, unsigned int width)
+void hyst_aux(unsigned char **edge_map, unsigned int y, unsigned int x,
+        unsigned int height, unsigned int width)
 {
     for (int dy = -1; dy <= 1; dy++)
         for (int dx = -1; dx <= 1; dx++)
@@ -148,7 +173,8 @@ void hyst_aux(unsigned char **edge_map, unsigned int y, unsigned int x, unsigned
                 continue;
             int ny = y + dy;
             int nx = x + dx;
-            if (ny >= 0 && (unsigned int)ny < height && nx >= 0 && (unsigned int)nx < width)
+            if (ny >= 0 && (unsigned int)ny < height &&
+                    nx >= 0 && (unsigned int)nx < width)
             {
                 if (edge_map[ny][nx] == 1)
                 {
@@ -167,7 +193,8 @@ void hyst_aux(unsigned char **edge_map, unsigned int y, unsigned int x, unsigned
  * @param edge_map the map of the img already process on the img
  * @return VOID
  */
-void hysteresis_filter(custIMG *img, float **edges, float low_thresh, float high_thresh, unsigned char **edge_map)
+void hysteresis_filter(custIMG *img, float **edges, float low_thresh,
+        float high_thresh, unsigned char **edge_map)
 {
     for (unsigned int y = 0; y < img->height; y++)
         for (unsigned int x = 0; x < img->width; x++)
@@ -207,11 +234,24 @@ void process(custIMG *img)
 {
     float **gradient_magnitude = malloc(img->height * sizeof(float *));
     float **gradient_direction = malloc(img->height * sizeof(float *));
-    if (!gradient_magnitude || !gradient_direction) errx(EXIT_FAILURE, "Memory allocation failed for gradient_magnitude or gradient_direction");
+    
+    if (!gradient_magnitude || !gradient_direction) 
+    {
+    errx(EXIT_FAILURE,
+    "Memory allocation failed for gradient_magnitude or gradient_direction");
+    }
     for (unsigned int i = 0; i < img->height; i++) {
         gradient_magnitude[i] = malloc(img->width * sizeof(float));
         gradient_direction[i] = malloc(img->width * sizeof(float));
-        if (!gradient_magnitude[i] || !gradient_direction[i]) errx(EXIT_FAILURE, "Memory allocation failed for gradient_magnitude[%d] or gradient_direction[%d]", i, i);
+        
+        if (!gradient_magnitude[i] || !gradient_direction[i]) 
+        {
+        errx(
+                EXIT_FAILURE,
+                "Memory allocation failed for gradient_magnitude[%d]
+                or gradient_direction[%d]", i, i);
+        
+        }
     }
     sobel_filter(img, gradient_magnitude, gradient_direction);
 
@@ -222,24 +262,29 @@ void process(custIMG *img)
     }
     nm_filter(img, gradient_magnitude, gradient_direction, edges);
 
-    unsigned char **edge_map = (unsigned char **)malloc(img->height * sizeof(unsigned char *));
+    unsigned char **edge_map = (unsigned char **)malloc(img->height *
+            sizeof(unsigned char *));
     for (unsigned int i = 0; i < img->height; i++)
     {
-        edge_map[i] = (unsigned char *)malloc(img->width * sizeof(unsigned char));
+        edge_map[i] = (unsigned char *)malloc(img->width *
+                sizeof(unsigned char));
     }
     hysteresis_filter(img, edges, LOW_THRESH, HIGH_THRESH, edge_map);
 
 
-    unsigned char **dilated_edge_map = (unsigned char **)malloc(img->height * sizeof(unsigned char *));
+    unsigned char **dilated_edge_map = (unsigned char **)malloc(img->height *
+            sizeof(unsigned char *));
     for (unsigned int i = 0; i < img->height; i++)
     {
-        dilated_edge_map[i] = (unsigned char *)malloc(img->width * sizeof(unsigned char));
+        dilated_edge_map[i] = (unsigned char *)malloc(img->width *
+                sizeof(unsigned char));
     }
     //dilate_filter(edge_map, dilated_edge_map, img->height, img->width);
 
     BoundingBox *boxes;
     int num_boxes;
-    find_bounding_boxes(img, edge_map, img->height, img->width, &boxes, &num_boxes);
+    find_bounding_boxes(img, edge_map, img->height, img->width,
+            &boxes, &num_boxes);
 
     Color red = {255, 0, 0};
     Color blue = {0, 0, 255};
@@ -255,11 +300,14 @@ void process(custIMG *img)
     int num_word_boxes;
 
     filter_grid_boxes(boxes, num_boxes, &grid_boxes, &num_grid_box);
-    detect_word_boxes(boxes, num_boxes, grid_boxes, num_grid_box, &word_boxes, &num_word_boxes);
-    remove_adjacent_grid_boxes(grid_boxes, &num_grid_box, &word_boxes, &num_word_boxes);
+    detect_word_boxes(boxes, num_boxes, grid_boxes, num_grid_box,
+            &word_boxes, &num_word_boxes);
+    remove_adjacent_grid_boxes(grid_boxes, &num_grid_box, &word_boxes,
+            &num_word_boxes);
     remove_outlier_boxes(&grid_boxes, &num_grid_box);
     remove_outlier_boxes(&word_boxes, &num_word_boxes);
-    replace_grid_boxes(&grid_boxes, &num_grid_box, &word_boxes, &num_word_boxes);
+    replace_grid_boxes(&grid_boxes, &num_grid_box,
+            &word_boxes, &num_word_boxes);
     
     write_box_centers("data/results_grid", grid_boxes, num_grid_box);
 
