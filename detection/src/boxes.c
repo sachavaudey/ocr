@@ -219,7 +219,8 @@ void draw_rectangles(custIMG *img, BoundingBox *boxes, int num_boxes, Color colo
         if (stat(folder_name, &st) == -1) {
         char command[256];
         snprintf(command, sizeof(command), "mkdir %s", folder_name);
-        system(command);
+        if (system(command) != 0)
+            errx(EXIT_FAILURE, "Command execution failed\n");
         }
         else {
             DIR *dir = opendir(folder_name);

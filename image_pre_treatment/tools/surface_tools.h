@@ -10,6 +10,6 @@ Uint8* RgbAveragePixelsAround(SDL_Surface* surface, unsigned int index);
 Uint8* RgbAverageSurface(SDL_Surface* surface);
 Uint8* RgbAveragePixelsRange2(SDL_Surface* surafce, unsigned int index);
 Uint8* RgbAverageLine(SDL_Surface* surface, unsigned int line);
-Uint8* RgbAverageRow(SDL_Surface* surface, unsigned int row);
+Uint8* RgbAverageCol(SDL_Surface* surface, unsigned int col);
 
 #endif

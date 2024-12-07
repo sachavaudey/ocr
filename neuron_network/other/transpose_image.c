@@ -169,7 +169,8 @@ int* search_size_word()
     const char *directory_name = "neuron_network/other/words/";
     char command[256];
     snprintf(command, sizeof(command), "mkdir %s", directory_name);
-    system(command);
+    if (system(command) != 0)
+        errx(EXIT_FAILURE, "Command execution failed\n");
     int p=0;
     while (1)
     {
