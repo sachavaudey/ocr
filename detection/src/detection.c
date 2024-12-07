@@ -32,11 +32,13 @@ int process_letterdetection(char* filepath) {
 
     process(img);
 
-    SDL_Surface *result_surface = SDL_CreateRGBSurfaceWithFormat(0, 
-                                                                img->width, 
-                                                                img->height, 
-                                                                32, 
-                                                                SDL_PIXELFORMAT_RGBA32);
+    SDL_Surface *result_surface =
+        SDL_CreateRGBSurfaceWithFormat(0, 
+                img->width, 
+                img->height, 
+                32, 
+                SDL_PIXELFORMAT_RGBA32);
+
     if (!result_surface) {
         free_image(img);
         errx(EXIT_FAILURE, "Error creating result surface!");
@@ -48,7 +50,8 @@ int process_letterdetection(char* filepath) {
                                     img->pixels[y][x].r, 
                                     img->pixels[y][x].g, 
                                     img->pixels[y][x].b);
-            ((Uint32*)result_surface->pixels)[y * result_surface->w + x] = pixel;
+            ((Uint32*)result_surface->pixels)[y * result_surface->w + x] = 
+                pixel;
         }
     }
 
