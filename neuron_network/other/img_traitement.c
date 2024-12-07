@@ -3,13 +3,16 @@
 // Function which load an image
 SDL_Surface* load_image(const char* filename) {
     if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) == 0) {
-        printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+        printf(
+            "SDL_image could not initialize! SDL_image Error: %s\n",
+            IMG_GetError());
         return NULL;
     }
 
     SDL_Surface* surface = IMG_Load(filename);
     if (!surface) {
-        printf("Failed to load image %s! SDL_image Error: %s\n", filename, IMG_GetError());
+        printf("Failed to load image %s! SDL_image Error: %s\n",
+                filename, IMG_GetError());
         return NULL;
     }
 
@@ -29,7 +32,8 @@ void delete_green(SDL_Surface *image)
     for (int y = 0; y < width; ++y) {
         for (int x = 0; x < height; ++x) {
             
-            unsigned char *pixel = (unsigned char *)image->pixels + (x * width + y) * channels;
+            unsigned char *pixel = (unsigned char *)image->pixels +
+                (x * width + y) * channels;
             if (pixel[1]== 255 && pixel[0]==0 && pixel[2]==0) {
                 pixel[1]=0;
                 //printf("1");
@@ -61,9 +65,12 @@ double* traitements_test(char* filename) {
    
     for (int y = 0; y < width; ++y) {
         for (int x = 0; x < height; ++x) {
-            //unsigned char *pixel = (unsigned char *)image->pixels + (y * width + x) * channels;
-            unsigned char *pixel = (unsigned char *)image->pixels + (x * width + y) * channels;
-            if (pixel[0] > 50 || pixel[1] > 50 || pixel[2] > 50) {
+            //unsigned char *pixel = (unsigned char *)image->pixels +
+            //(y * width + x) * channels;
+            unsigned char *pixel = (unsigned char *)image->pixels +
+                (x * width + y) * channels;
+            if (pixel[0] > 50 || pixel[1] > 50 || pixel[2] > 50)
+            {
                 if (x < min_x) min_x = x;
                 if (x > max_x) max_x = x;
                 if (y < min_y) min_y = y;
@@ -84,7 +91,8 @@ double* traitements_test(char* filename) {
     }
 
    
-    unsigned char *resized_image = (unsigned char *)malloc(30 * 30 * channels);
+    unsigned char *resized_image =
+        (unsigned char *)malloc(30 * 30 * channels);
     int pixel_table[30][30];
 
    
@@ -94,8 +102,10 @@ double* traitements_test(char* filename) {
             int src_x = min_x + x * crop_width / 30;
             int src_y = min_y + y * crop_height / 30;
 
-            unsigned char *src_pixel = (unsigned char *)image->pixels + (src_y * width + src_x) * channels;
-            unsigned char *dst_pixel = resized_image + (y * 30 + x) * channels;
+            unsigned char *src_pixel = (unsigned char *)image->pixels +
+                (src_y * width + src_x) * channels;
+            unsigned char *dst_pixel = resized_image +
+                (y * 30 + x) * channels;
 
             
             for (int i = 0; i < channels; ++i) {
@@ -103,7 +113,10 @@ double* traitements_test(char* filename) {
             }
 
             
-            int is_black = (dst_pixel[0] < 50 && dst_pixel[1] < 50 && dst_pixel[2] < 50) ? 0 : 1;
+            int is_black = 
+                (dst_pixel[0] < 50 &&
+                 dst_pixel[1] < 50 &&
+                 dst_pixel[2] < 50) ? 0 : 1;
             pixel_table[y][x] = is_black;
         }
     }
@@ -145,9 +158,12 @@ double* traitements(char* filename) {
    
     for (int y = 0; y < width; ++y) {
         for (int x = 0; x < height; ++x) {
-            //unsigned char *pixel = (unsigned char *)image->pixels + (y * width + x) * channels;
-            unsigned char *pixel = (unsigned char *)image->pixels + (x * width + y) * channels;
-            if (pixel[0] > 50 || pixel[1] > 50 || pixel[2] > 50) {
+            //unsigned char *pixel = (unsigned char *)image->pixels +
+            //(y * width + x) * channels;
+            unsigned char *pixel = (unsigned char *)image->pixels +
+                (x * width + y) * channels;
+            if (pixel[0] > 50 || pixel[1] > 50 || pixel[2] > 50)
+            {
                 if (x < min_x) min_x = x;
                 if (x > max_x) max_x = x;
                 if (y < min_y) min_y = y;
@@ -168,7 +184,8 @@ double* traitements(char* filename) {
     }
 
    
-    unsigned char *resized_image = (unsigned char *)malloc(30 * 30 * channels);
+    unsigned char *resized_image = 
+        (unsigned char *)malloc(30 * 30 * channels);
     int pixel_table[30][30];
 
    
@@ -178,16 +195,20 @@ double* traitements(char* filename) {
             int src_x = min_x + x * crop_width / 30;
             int src_y = min_y + y * crop_height / 30;
 
-            unsigned char *src_pixel = (unsigned char *)image->pixels + (src_y * width + src_x) * channels;
-            unsigned char *dst_pixel = resized_image + (y * 30 + x) * channels;
-
+            unsigned char *src_pixel = (unsigned char *)image->pixels +
+                (src_y * width + src_x) * channels;
+            unsigned char *dst_pixel = resized_image +
+                (y * 30 + x) * channels;
             
-            for (int i = 0; i < channels; ++i) {
+            for (int i = 0; i < channels; ++i)
+            {
                 dst_pixel[i] = src_pixel[i];
             }
 
             
-            int is_black = (dst_pixel[0] < 50 && dst_pixel[1] < 50 && dst_pixel[2] < 50) ? 1 : 0;
+            int is_black = (dst_pixel[0] < 50 &&
+                    dst_pixel[1] < 50 &&
+                    dst_pixel[2] < 50) ? 1 : 0;
             pixel_table[y][x] = is_black;
         }
     }
@@ -211,23 +232,3 @@ double* traitements(char* filename) {
 
     return res;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

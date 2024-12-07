@@ -14,7 +14,9 @@ int size(int** coordo)
 }
 
 
-void drawLine(SDL_Surface *surface, int x1, int y1, int x2, int y2, Uint32 color) {
+void drawLine(SDL_Surface *surface, int x1, int y1, int x2, int y2,
+        Uint32 color) 
+{
     if (!surface) return;
 
     int dx = abs(x2 - x1);
@@ -41,7 +43,9 @@ void drawLine(SDL_Surface *surface, int x1, int y1, int x2, int y2, Uint32 color
     }
 }
 
-void drawRectangle(SDL_Surface *surface, int x1, int y1, int x2, int y2, int width, Uint32 color) {
+void drawRectangle(SDL_Surface *surface, int x1, int y1, int x2, int y2,
+        int width, Uint32 color)
+{
     if (!surface) return;
 
     float dx = x2 - x1;
@@ -84,7 +88,8 @@ void fin_co_lettre(int** tableau)
     int i = 0;
     while (i < 300 && !feof(file)) {
         int val1, val2;
-        if (fscanf(file, "%d,%d", &val1, &val2) == 2) { // Lecture et extraction
+        if (fscanf(file, "%d,%d", &val1, &val2) == 2) 
+        { // Lecture et extraction
             tableau[i][0] = val1;
             tableau[i][1] = val2;
             i++;
@@ -105,7 +110,8 @@ void fin_coo(int** co_mots)
     int i = 0;
     while (i < 1000 && !feof(file)) {
         int val1, val2,val3,val4;
-        if (fscanf(file, "%d,%d %d,%d", &val1, &val2,&val3,&val4) == 4) { // Lecture et extraction
+        if (fscanf(file, "%d,%d %d,%d", &val1, &val2,&val3,&val4) == 4)
+        { // Lecture et extraction
             co_mots[i][0] = val1;
             co_mots[i][1] = val2;
             co_mots[i][2] = val3;
@@ -151,7 +157,8 @@ void draw(char* image_path)
 
     for (size_t i = 0; i < 13; i++)
     {
-        if (co_lettre[i][0]==0 && co_lettre[i][1]==0 && co_lettre[i][2]==0 && co_lettre[i][3]==0)
+        if (co_lettre[i][0]==0 && co_lettre[i][1]==0 &&
+                co_lettre[i][2]==0 && co_lettre[i][3]==0)
         {
             
         }
@@ -168,13 +175,19 @@ void draw(char* image_path)
             int x2=co_mots[co_lettre[i][2]+co_lettre[i][3]*t][0]/5;
             //drawRectangle(image,x1,y1,x2,y2,35,redColor);
 
-            if (x1<x2 && y1==y2) drawRectangle(image,x1-10,y1,x2+10,y2,35,redColor);
-            else if (x1>x2 && y1==y2) drawRectangle(image,x1+10,y1,x2-10,y2,35,redColor);
+            if (x1<x2 && y1==y2) 
+                drawRectangle(image,x1-10,y1,x2+10,y2,35,redColor);
+            else if (x1>x2 && y1==y2)
+                drawRectangle(image,x1+10,y1,x2-10,y2,35,redColor);
 
-            else if (y1<y2 && x1==x2) drawRectangle(image,x1,y1-15,x2,y2+15,35,redColor);
-            else if (y1>y2 && x1==x2) drawRectangle(image,x1,y1+15,x2,y2-15,35,redColor);
-            else if (x1-x2>-10 && x1-x2<10 && y1<y2) drawRectangle(image,x1,y1-15,x2,y2+15,35,redColor);
-            else if (x1-x2>-10 && x1-x2<10 && y1>y2) drawRectangle(image,x1,y1+15,x2,y2-15,35,redColor);
+            else if (y1<y2 && x1==x2)
+                drawRectangle(image,x1,y1-15,x2,y2+15,35,redColor);
+            else if (y1>y2 && x1==x2)
+                drawRectangle(image,x1,y1+15,x2,y2-15,35,redColor);
+            else if (x1-x2>-10 && x1-x2<10 && y1<y2)
+                drawRectangle(image,x1,y1-15,x2,y2+15,35,redColor);
+            else if (x1-x2>-10 && x1-x2<10 && y1>y2)
+                drawRectangle(image,x1,y1+15,x2,y2-15,35,redColor);
             
             else drawRectangle(image,x1,y1,x2,y2,35,redColor);
 
@@ -198,8 +211,5 @@ void draw(char* image_path)
     {
         free(co_lettre[i]);
     }
-    free(co_lettre);
-    
+    free(co_lettre);   
 }
-
-

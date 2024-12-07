@@ -42,7 +42,8 @@ void forward_batch(double** batch_input, double** weights_input_hidden,
         for (int i = 0; i < HIDDEN_SIZE; i++) {
             batch_hidden[img][i] = hidden_bias[i];
             for (int j = 0; j < INPUT_SIZE; j++) {
-                batch_hidden[img][i] += batch_input[img][j] * weights_input_hidden[j][i];
+                batch_hidden[img][i] += batch_input[img][j] *
+                    weights_input_hidden[j][i];
             }
             batch_hidden[img][i] = sigmoid_aux(batch_hidden[img][i]);
         }
@@ -51,7 +52,8 @@ void forward_batch(double** batch_input, double** weights_input_hidden,
         for (int i = 0; i < OUTPUT_SIZE; i++) {
             batch_output[img][i] = output_bias[i];
             for (int j = 0; j < HIDDEN_SIZE; j++) {
-                batch_output[img][i] += batch_hidden[img][j] * weights_hidden_output[j][i];
+                batch_output[img][i] += batch_hidden[img][j] *
+                    weights_hidden_output[j][i];
             }
             batch_output[img][i] = sigmoid_aux(batch_output[img][i]);
         }
@@ -61,9 +63,11 @@ void forward_batch(double** batch_input, double** weights_input_hidden,
 // Rétropropagation avec des tableaux dynamiques
 void backpropagation_batch(double** batch_input, double** batch_hidden, 
                            double** batch_output, double** batch_target, 
-                           double** weights_input_hidden, double** weights_hidden_output, 
-                           double* hidden_bias, double* output_bias, int batch_size) {
-
+                           double** weights_input_hidden,
+                           double** weights_hidden_output, 
+                           double* hidden_bias, double* output_bias,
+                           int batch_size)
+{
     double** output_errors = malloc(batch_size * sizeof(double*));
     double** hidden_errors = malloc(batch_size * sizeof(double*));
     for (int i = 0; i < batch_size; i++) {
@@ -74,7 +78,8 @@ void backpropagation_batch(double** batch_input, double** batch_hidden,
     // Calcul des erreurs de sortie
     for (int img = 0; img < batch_size; img++) {
         for (int i = 0; i < OUTPUT_SIZE; i++) {
-            output_errors[img][i] = (batch_target[img][i] - batch_output[img][i]) 
+            output_errors[img][i] = (batch_target[img][i] -
+                    batch_output[img][i]) 
             * sigmoid_derivative_aux(batch_output[img][i]);
         }
     }
@@ -84,23 +89,31 @@ void backpropagation_batch(double** batch_input, double** batch_hidden,
         for (int i = 0; i < HIDDEN_SIZE; i++) {
             hidden_errors[img][i] = 0;
             for (int j = 0; j < OUTPUT_SIZE; j++) {
-                hidden_errors[img][i] += output_errors[img][j] * weights_hidden_output[i][j];
+                hidden_errors[img][i] += output_errors[img][j] *
+                    weights_hidden_output[i][j];
             }
-            hidden_errors[img][i] *= sigmoid_derivative_aux(batch_hidden[img][i]);
+            hidden_errors[img][i] *= 
+                sigmoid_derivative_aux(batch_hidden[img][i]);
         }
     }
 
     // Mise à jour des poids et des biais
-    for (int img = 0; img < batch_size; img++) {
-        for (int i = 0; i < HIDDEN_SIZE; i++) {
-            for (int j = 0; j < OUTPUT_SIZE; j++) {
-                weights_hidden_output[i][j] += LEARNING_RATE * output_errors[img][j] * batch_hidden[img][i];
+    for (int img = 0; img < batch_size; img++)
+    {
+        for (int i = 0; i < HIDDEN_SIZE; i++)
+        {
+            for (int j = 0; j < OUTPUT_SIZE; j++)
+            {
+                weights_hidden_output[i][j] += LEARNING_RATE *
+                    output_errors[img][j] * batch_hidden[img][i];
             }
         }
     }
 
-    for (int img = 0; img < batch_size; img++) {
-        for (int j = 0; j < OUTPUT_SIZE; j++) {
+    for (int img = 0; img < batch_size; img++)
+    {
+        for (int j = 0; j < OUTPUT_SIZE; j++)
+        {
             output_bias[j] += LEARNING_RATE * output_errors[img][j];
         }
     }
@@ -108,7 +121,8 @@ void backpropagation_batch(double** batch_input, double** batch_hidden,
     for (int img = 0; img < batch_size; img++) {
         for (int i = 0; i < INPUT_SIZE; i++) {
             for (int j = 0; j < HIDDEN_SIZE; j++) {
-                weights_input_hidden[i][j] += LEARNING_RATE * hidden_errors[img][j] * batch_input[img][i];
+                weights_input_hidden[i][j] += LEARNING_RATE *
+                    hidden_errors[img][j] * batch_input[img][i];
             }
         }
     }
@@ -146,8 +160,10 @@ void softmax_aux(double* input, double* output, size_t length) {
 }
 
 // function which predict the letter
-void predict_aux(double* input, double** hiddenWeight, double** outPutWeight, double* hiddenLayerBias, 
-             double* outputLayerBias, double* outputLayer) {
+void predict_aux(double* input, double** hiddenWeight, double** outPutWeight,
+        double* hiddenLayerBias, 
+        double* outputLayerBias, double* outputLayer)
+{
     double* hiddenLayer = (double*)malloc(HIDDEN_SIZE * sizeof(double));
 
     for (size_t j = 0; j < HIDDEN_SIZE; j++) {
@@ -187,20 +203,28 @@ void remplirTestAvecImages_black(double** test, char** images) {
 
 //create the way of file
 void remplir_chemins_images(char** images, const char* prefixe, const char* suffixe) {
-    char* lettres_min[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-                           "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", 
-                           "aa", "bb", "cc", "dd", "ee", "ff", "gg", "hh", "ii", "jj", "kk", 
-                           "ll", "mm", "nn", "oo", "pp", "qq", "rr", "ss", "tt", "uu", "vv", 
+    char* lettres_min[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+                            "k", "l", "m","n", "o", "p", "q", "r", "s", "t",
+                            "u", "v", "w", "x", "y", "z", 
+                            "aa", "bb", "cc", "dd", "ee", "ff", "gg", "hh",
+                            "ii", "jj", "kk","ll", "mm", "nn", "oo", "pp",
+                            "qq", "rr", "ss", "tt", "uu", "vv", 
                            "ww", "xx", "yy", "zz"};
     
-    char lettres[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-                      'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-                      'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-                      'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+    char lettres[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+                        'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+                        'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+                        'Z',
+                      'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+                      'i', 'j', 'k', 'l', 'm',
+                      'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
+                      'v', 'w', 'x', 'y', 'z'};
 
     for (size_t i = 0; i < BATCH_SIZE; i++) {
         images[i] = (char*)malloc(FILENAME_SIZE * sizeof(char));
-        snprintf(images[i], FILENAME_SIZE, "%s/%s/%c%s.PNG", prefixe, lettres_min[i], lettres[i], suffixe);
+        snprintf(images[i], FILENAME_SIZE,
+                "%s/%s/%c%s.PNG",
+                prefixe, lettres_min[i], lettres[i], suffixe);
     }
 }
 
@@ -217,9 +241,12 @@ void shuffle(int *array, size_t n) {
 }
 
 //function which save the result in file
-void save_weights(double** hiddenoutput, double** outPutWeight, double* hiddenLayerBias, 
-                  double* outputLayerBias) {
-    FILE *file = fopen("../save_value/weight_hidden_output.txt", "w");
+void save_weights(double** hiddenoutput, double** outPutWeight,
+        double* hiddenLayerBias, 
+                  double* outputLayerBias)
+{
+    FILE *file = fopen(
+            "../save_value/weight_hidden_output.txt", "w");
     if (file == NULL) {
         perror("Error opening file for hidden-output weights");
         return;
@@ -232,7 +259,8 @@ void save_weights(double** hiddenoutput, double** outPutWeight, double* hiddenLa
     }
     fclose(file);
 
-    FILE *file2 = fopen("../save_value/weight_hidden_input.txt", "w");
+    FILE *file2 = fopen(
+            "../save_value/weight_hidden_input.txt", "w");
     if (file2 == NULL) {
         perror("Error opening file for hidden-input weights");
         return;
@@ -245,7 +273,8 @@ void save_weights(double** hiddenoutput, double** outPutWeight, double* hiddenLa
     }
     fclose(file2);
 
-    FILE *file3 = fopen("../save_value/hiddenLayerBias.txt", "w");
+    FILE *file3 = fopen(
+            "../save_value/hiddenLayerBias.txt", "w");
     if (file3 == NULL) {
         perror("Error opening file for hidden layer bias");
         return;
@@ -350,10 +379,14 @@ int process_train() {
         if (epoch % 10 == 0) printf("%d\n", EPOCHS - epoch);
 
         for (int i = 0; i < NBTEST; i++) {
-            forward_batch(batch_inputs[i], weights_input_hidden, hidden_bias, batch_hidden,
-                          weights_hidden_output, output_bias, batch_output, BATCH_SIZE);
-            backpropagation_batch(batch_inputs[i], batch_hidden, batch_output, batch_target,
-                                  weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, BATCH_SIZE);
+            forward_batch(batch_inputs[i], weights_input_hidden, hidden_bias,
+                    batch_hidden,
+                    weights_hidden_output, output_bias, batch_output,
+                    BATCH_SIZE);
+            backpropagation_batch(batch_inputs[i], batch_hidden,
+                    batch_output, batch_target,
+                    weights_input_hidden, weights_hidden_output,
+                    hidden_bias, output_bias, BATCH_SIZE);
         }
 
         // Libération de batch_hidden et batch_output après utilisation
@@ -382,7 +415,8 @@ int process_train() {
             new_input[j] = resultats[j];
         }
         double* prediction = malloc(OUTPUT_SIZE * sizeof(double));
-        predict_aux(new_input, weights_input_hidden, weights_hidden_output, hidden_bias, output_bias, prediction);
+        predict_aux(new_input, weights_input_hidden, weights_hidden_output,
+                hidden_bias, output_bias, prediction);
 
         char lettre[52] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 
         'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
@@ -405,7 +439,8 @@ int process_train() {
         free(new_input);
         free(prediction);
     }
-    printf("Le pourcentage de réussite est de %d\n", pourc * 100 / OUTPUT_SIZE);
+    printf("Le pourcentage de réussite est de %d\n",
+            pourc * 100 / OUTPUT_SIZE);
 
 printf("\n\n\n\n");
 char* res2[4];
@@ -434,9 +469,10 @@ char* res2[4];
             {
                 new_input[j] = resultats[j];
             }               
-            double prediction[4];
-            predict_aux(new_input, weights_input_hidden, weights_hidden_output, 
-            hidden_bias, output_bias, prediction);
+            double prediction[OUTPUT_SIZE];
+            predict_aux(new_input, weights_input_hidden,
+                    weights_hidden_output, 
+                    hidden_bias, output_bias, prediction);
             char lettre[52]={'A','B','C','D','E','F','G','H','I','J','K',
             'L','M','N','O','P','Q','R','S','T','U','V','W','X'
             ,'Y','Z','a','b','c','d','e','f','g','h','i','j','q','l','m',
@@ -457,8 +493,7 @@ char* res2[4];
         }
         for (int i = 0; i < OUTPUT_SIZE; i++) 
         {
-            printf("Prediction for class %c: %f\n", lettre[i], prediction[i]);
-            
+            printf("Prediction for class %c: %f\n", lettre[i], prediction[i]); 
         }
         //printf("La lettre %c = %c\n",lettre[i],lettre[j]);
         printf("La lettre %c\n",lettre[j]);
@@ -474,7 +509,8 @@ char* res2[4];
     }
     free(res);
 
-    save_weights(weights_hidden_output, weights_input_hidden, hidden_bias, output_bias);
+    save_weights(weights_hidden_output, weights_input_hidden, hidden_bias,
+            output_bias);
 
     // Libération de la mémoire
     for (int i = 0; i < INPUT_SIZE; i++) {
