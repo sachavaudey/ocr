@@ -65,6 +65,11 @@ void drawRectangle(SDL_Surface *surface, int x1, int y1, int x2, int y2, int wid
     drawLine(surface, xD, yD, xC, yC, color);
     drawLine(surface, xC, yC, xA, yA, color);
 
+    drawLine(surface, xA-1, yA-1, xB-1, yB-1, color);
+    drawLine(surface, xB-1, yB-1, xD-1, yD-1, color);
+    drawLine(surface, xD-1, yD-1, xC-1, yC-1, color);
+    drawLine(surface, xC-1, yC-1, xA-1, yA-1, color);
+
     
 }
 
