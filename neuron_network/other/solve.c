@@ -39,8 +39,12 @@ int search_right(char** matrice, char* word ,int i,int j,int x)
         int q=j;
         for (int t = 0; t < x; t++)
         {
-            if (matrice[i][q]==word[t] || matrice[i][q]=='0' ||word[t]=='0') q++;
-            else break;
+            if (matrice[i][q]==word[t] ||
+                    matrice[i][q]=='0' ||
+                    word[t]=='0') 
+                q++;
+            else
+                break;
             c++;
         }
         if (c==x) return 1;
@@ -65,7 +69,9 @@ int c=0;
                     int q=i;
                     for (int t = 0; t < x; t++)
                     {
-                        if (matrice[q][j]==word[t] || matrice[q][j]=='0' ||word[t]=='0') q--;
+                        if (matrice[q][j]==word[t] ||
+                                matrice[q][j]=='0' ||
+                                word[t]=='0') q--;
                         else break;
                         c++;
                     }
@@ -78,7 +84,9 @@ int c=0;
                     int q=i;
                     for (int t = 0; t < x; t++)
                     {
-                        if (matrice[q][j]==word[t] || matrice[q][j]=='0' ||word[t]=='0') q++;
+                        if (matrice[q][j]==word[t] ||
+                                matrice[q][j]=='0' ||
+                                word[t]=='0') q++;
                         else break;
                         c++;
                     }
@@ -92,7 +100,10 @@ int search_up_left(char** matrice, char* word ,int i,int j,int x)
                     int l=j;
                     for (int t = 0; t < x; t++)
                     {
-                        if (matrice[q][l]==word[t] || matrice[q][l]=='0' ||word[t]=='0') q--,l--;
+                        if (matrice[q][l]==word[t] ||
+                                matrice[q][l]=='0' ||
+                                word[t]=='0')
+                            q--,l--;
                         else break;
                         c++;
                     }
@@ -106,7 +117,10 @@ int search_up_right(char** matrice, char* word ,int i,int j,int x)
                     int l=j;
                     for (int t = 0; t < x; t++)
                     {
-                        if (matrice[q][l]==word[t] || matrice[q][l]=='0' ||word[t]=='0') q--,l++;
+                        if (matrice[q][l]==word[t] ||
+                                matrice[q][l]=='0' ||
+                                word[t]=='0') 
+                            q--,l++;
                         else break;
                         c++;
                     }
@@ -120,7 +134,9 @@ int c=0;
                     int l=j;
                     for (int t = 0; t < x; t++)
                     {
-                        if (matrice[q][l]==word[t] || matrice[q][l]=='0' ||word[t]=='0') q++,l--;
+                        if (matrice[q][l]==word[t] ||
+                                matrice[q][l]=='0' ||
+                                word[t]=='0') q++,l--;
                         else break;
                         c++;
                     }
@@ -134,7 +150,9 @@ int search_down_right(char** matrice, char* word ,int i,int j,int x)
                     int l=j;
                     for (int t = 0; t < x; t++)
                     {
-                        if (matrice[q][l]==word[t] || matrice[q][l]=='0' ||word[t]=='0') q++,l++;
+                        if (matrice[q][l]==word[t] ||
+                                matrice[q][l]=='0' ||
+                                word[t]=='0') q++,l++;
                         else break;
                         c++;
                     }
@@ -193,7 +211,8 @@ void solver(char *word)
        for (int j = 0; j < m; j++)
         {
             
-             if (matrice[i][j]==word[0] || matrice[i][j]=='0'||matrice[i][j]+32==word[0] || word[0]=='0')
+             if (matrice[i][j]==word[0] || matrice[i][j]=='0'||
+                     matrice[i][j]+32==word[0] || word[0]=='0')
             {        
                 if (j-x+1>=0) //search_left
                 {       
@@ -374,22 +393,12 @@ int pro_solv()
     sprintf(grid[1],"word");
 
     n[0]=compterLignes();
-    
 
     char** word=read_fichier(n);
 
-
-    
-    
-    
-
     for (int i = 0; i < n[0]; i++)
     {
-        
-        
         process_solver(word[i]);
-        
-        
     }
     
     free(grid[0]);
@@ -403,10 +412,5 @@ int pro_solv()
     
     free(n);
     
-
-    
-
     return 0;
-    
-
 }
