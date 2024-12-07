@@ -29,20 +29,25 @@ void forward_batch(double** batch_input, double** weights_input_hidden,
 
 void backpropagation_batch(double** batch_input, double** batch_hidden, 
                            double** batch_output, double** batch_target, 
-                           double** weights_input_hidden, double** weights_hidden_output, 
-                           double* hidden_bias, double* output_bias, int batch_size);
+                           double** weights_input_hidden,
+                           double** weights_hidden_output, 
+                           double* hidden_bias, double* output_bias,
+                           int batch_size);
 
 void softmax_aux(double* input, double* output, size_t length);
 
-void predict_aux(double* input, double** hiddenWeight, double** outPutWeight, double* hiddenLayerBias, 
+void predict_aux(double* input, double** hiddenWeight, double** outPutWeight,
+                double* hiddenLayerBias, 
                  double* outputLayerBias, double* outputLayer);
 
 void remplirTestAvecImages_black(double** test, char** images);
-void remplir_chemins_images(char** images, const char* prefixe, const char* suffixe);
+void remplir_chemins_images(char** images, const char* prefixe,
+                const char* suffixe);
 
 void shuffle(int *array, size_t n);
 
-void save_weights(double** hiddenoutput, double** outPutWeight, double* hiddenLayerBias, 
+void save_weights(double** hiddenoutput, double** outPutWeight,
+                double* hiddenLayerBias, 
                   double* outputLayerBias);
 
 int process_train();

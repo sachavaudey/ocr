@@ -402,7 +402,7 @@ void image_button(GtkWidget* widget, gpointer data)
 
            
             run_solver(2);
-	        run_draw(filename);
+	        run_draw((char*)filename);
 
             
 

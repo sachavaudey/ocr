@@ -4,6 +4,7 @@
 
 #include "grayscale/grayscale.h"
 #include "black_white/black_white.h"
+#include "black_white/black_white_light.h"
 #include "rotation/rotation.h"
 #include "noise_reduction/noise_reduction.h"
 #include "tools/contrast_boost.h"

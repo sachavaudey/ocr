@@ -27,9 +27,12 @@ void load_weight_hidden_output(char *filename);
 void load_weight_hidden_input(char *filename);
 double sigmoid(double x);
 void softmax(double* input, double* output, size_t length);
-void predict(double input[INPUT_SIZE], double hiddenWeight[INPUT_SIZE][HIDDEN_SIZE], 
-             double outPutWeight[HIDDEN_SIZE][OUTPUT_SIZE], double hiddenLayerBias[HIDDEN_SIZE], 
-             double outputLayerBias[OUTPUT_SIZE], double* outputLayer);
+void predict(double input[INPUT_SIZE],
+                double hiddenWeight[INPUT_SIZE][HIDDEN_SIZE], 
+                double outPutWeight[HIDDEN_SIZE][OUTPUT_SIZE],
+                double hiddenLayerBias[HIDDEN_SIZE], 
+                double outputLayerBias[OUTPUT_SIZE],
+                double* outputLayer);
 void read_grid(char* res[4]);
 int* search_size(int* res);
 void create_grid(char* tab, int a, int b);

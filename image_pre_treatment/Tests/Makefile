@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -O2 -std=c17 -fsanitize=address -static-libasan -g
 LDFLAGS = -lSDL2 -lSDL2_image -lm 
 TARGET = pre-treatment
-SRC = main.c ../black_white/black_white.c \
+SRC = main.c ../black_white/black_white.c ../black_white/black_white_light.c \
 ../grayscale/grayscale.c \
 ../noise_reduction/average_denoising.c ../noise_reduction/simple_denoising.c \
 ../noise_reduction/patterns.c ../noise_reduction/noise_reduction.c\

@@ -60,7 +60,7 @@ void PRT_Medium(SDL_Surface* surface)
 void PRT_Light(SDL_Surface* surface)
 {
 	PRT_Grayscaling(surface);
-	PRT_BlackWhite(surface);
+	PRT_BlackWhite_Light(surface);
 	//PRT_AverageDenoisingBlackWhite(surface);
 	//PRT_SimpleDenoising(surface);
 	//PRT_xy_denoising(surface);
