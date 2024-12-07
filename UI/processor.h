@@ -37,7 +37,7 @@ void run_pretreatment(SDL_Surface **surface, int set, int angle);
 void run_detection();
 void run_neural();
 void run_solver();
-void run_draw();
+void run_draw(char* image_path);
 
 
 

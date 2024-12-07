@@ -119,7 +119,7 @@ void fin_coo(int** co_mots)
 
 
 
-void draw()
+void draw(char* image_path)
 {
     int** co_mots=malloc(1000*sizeof(int*));
     for (size_t i = 0; i < 1000; i++)
@@ -135,7 +135,7 @@ void draw()
     
     fin_co_lettre( co_mots);
     fin_coo(co_lettre);
-    SDL_Surface *image = IMG_Load("data/images/l11.png");
+    SDL_Surface *image = IMG_Load(image_path);
     int r,g,b=0;
      r = rand() % 255;
      g = rand() % 255;
@@ -198,18 +198,3 @@ void draw()
 }
 
 
-int process_draw() {
-    
-
-
-    draw();
-
-
-
-
-    
-    return 0;
-
-
-   
-}
