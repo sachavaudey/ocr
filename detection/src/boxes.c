@@ -80,6 +80,7 @@ int check_white_pixel_proportion(custIMG *img, BoundingBox *box)
     float proportion = (float)white_pixel_count / (float)total_pixels;
 
     if (proportion < MIN_WHITE_PROP || proportion > MAX_WHITE_PROP) {
+	    printf("invalid prop");
         return 0;
     }
        
@@ -101,14 +102,17 @@ int check_box(BoundingBox *box)
 
     if (surface < MIN_SURFACE || surface > MAX_SURFACE)
     {
+	printf("surf : %d\n", surface);
         return 0;
     }
     else if (height < MIN_HEIGHT || height > MAX_HEIGHT)
     {
+	printf("height : %d\n", height);
         return 0;
     }
     else if (width < MIN_WIDTH || width > MAX_WIDTH)
     {
+	printf("width . %d\n", width);
         return 0;
     }
     
