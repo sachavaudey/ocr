@@ -202,7 +202,8 @@ void remplirTestAvecImages_black(double** test, char** images) {
 
 
 //create the way of file
-void remplir_chemins_images(char** images, const char* prefixe, const char* suffixe) {
+void remplir_chemins_images(char** images, const char* prefixe,
+        const char* suffixe) {
     char* lettres_min[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
                             "k", "l", "m","n", "o", "p", "q", "r", "s", "t",
                             "u", "v", "w", "x", "y", "z", 
