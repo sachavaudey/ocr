@@ -11,12 +11,15 @@ void load_hidden_bias(const char* filename)
 {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        //errx(EXIT_FAILURE, "Erreur lors de l'ouverture du fichier %s", filename);
+        errx(EXIT_FAILURE,
+            "Erreur lors de l'ouverture du fichier %s", filename);
     }
 
     for (int i = 0; i < HIDDEN_SIZE; i++) {
         if (fscanf(file, "%lf ", &hidden_bias[i]) != 1) {
-            fprintf(stderr, "Erreur : lecture insuffisante dans le fichier %s.\n", filename);
+            fprintf(stderr,
+                "Erreur : lecture insuffisante dans le fichier %s.\n",
+                filename);
             fclose(file);
 
             errx(EXIT_FAILURE, "Error %s", filename);
@@ -35,8 +38,10 @@ void load_output_bias(char* filename)
 
     
     for (int i = 0; i < OUTPUT_SIZE; i++) {
-        if (fscanf(file, "%lf", &output_bias[i]) != 1) {  // Lecture en tant que double
-            printf("Erreur: fichier %s contient moins de %d valeurs.\n", filename, HIDDEN_SIZE);
+        if (fscanf(file, "%lf", &output_bias[i]) != 1)
+        {  // Lecture en tant que double
+            printf("Erreur: fichier %s contient moins de %d valeurs.\n",
+                    filename, HIDDEN_SIZE);
             fclose(file);
             return;
         }
@@ -51,15 +56,19 @@ void load_weight_hidden_output(char *filename)
     FILE *file = fopen(filename, "r");
     
     if (file == NULL) {
-        printf("Erreur: impossible d'ouvrir le fichier %s.\n", filename);
+        printf("Erreur: impossible d'ouvrir le fichier %s.\n",
+                filename);
         return;
     }
 
     
     for (int i = 0; i < HIDDEN_SIZE; i++) {
         for (int j = 0; j < OUTPUT_SIZE; j++) {
-            if (fscanf(file, "%lf", &weights_hidden_output[i][j]) != 1) {  // Lecture en tant que double
-                printf("Erreur: fichier %s contient moins de %d valeurs à la ligne %d.\n", filename, HIDDEN_SIZE, i + 1);
+            if (fscanf(file, "%lf",
+                        &weights_hidden_output[i][j]) != 1)
+            {  // Lecture en tant que double
+printf("Erreur: fichier %s contient moins de %d valeurs à la ligne %d.\n",
+                    filename, HIDDEN_SIZE, i + 1);
                 fclose(file);
                 return;
             }
@@ -83,8 +92,10 @@ void load_weight_hidden_input(char *filename)
     // et que chaque ligne a exactement HIDDEN_SIZE valeurs.
     for (int i = 0; i < INPUT_SIZE; i++) {
         for (int j = 0; j < HIDDEN_SIZE; j++) {
-            if (fscanf(file, "%lf", &weights_input_hidden[i][j]) != 1) {  // Lecture en tant que double
-                printf("Erreur: fichier %s contient moins de %d valeurs à la ligne %d.\n", filename, HIDDEN_SIZE, i + 1);
+            if (fscanf(file, "%lf", &weights_input_hidden[i][j]) != 1)
+            {  // Lecture en tant que double
+    printf("Erreur: fichier %s contient moins de %d valeurs à la ligne %d.\n",
+            filename, HIDDEN_SIZE, i + 1);
                 fclose(file);
                 return;
             }
@@ -118,9 +129,12 @@ void softmax(double* input, double* output, size_t length) {
 }
 
 //function which predict the output
-void predict(double input[INPUT_SIZE], double hiddenWeight[INPUT_SIZE][HIDDEN_SIZE], 
-             double outPutWeight[HIDDEN_SIZE][OUTPUT_SIZE], double hiddenLayerBias[HIDDEN_SIZE], 
-             double outputLayerBias[OUTPUT_SIZE], double* outputLayer) {
+void predict(double input[INPUT_SIZE],
+            double hiddenWeight[INPUT_SIZE][HIDDEN_SIZE], 
+            double outPutWeight[HIDDEN_SIZE][OUTPUT_SIZE],
+            double hiddenLayerBias[HIDDEN_SIZE], 
+            double outputLayerBias[OUTPUT_SIZE], double* outputLayer)
+{
     double hiddenLayer[HIDDEN_SIZE];
 
     // Propagation avant : Couche cachée
@@ -232,8 +246,10 @@ int pro_word()
 
     load_hidden_bias("neuron_network/save_value_prime/hiddenLayerBias.txt");
     load_output_bias("neuron_network/save_value_prime/OutputLayerBias.txt");
-    load_weight_hidden_output("neuron_network/save_value_prime/weight_hidden_output.txt");
-    load_weight_hidden_input("neuron_network/save_value_prime/weight_hidden_input.txt");
+    load_weight_hidden_output(
+            "neuron_network/save_value_prime/weight_hidden_output.txt");
+    load_weight_hidden_input(
+            "neuron_network/save_value_prime/weight_hidden_input.txt");
     
     int* wor=search_size_word();
     
@@ -265,7 +281,8 @@ int pro_word()
             
             res[c]=malloc(100*sizeof(char));
            
-            snprintf(res[c++], FILENAME_SIZE,"neuron_network/other/words/%d.%d.png",i,t++);
+            snprintf(res[c++], FILENAME_SIZE,
+                    "neuron_network/other/words/%d.%d.png",i,t++);
             printf("%s\n",res[c-1]);
         }
     }
@@ -341,8 +358,10 @@ int pro_grid()
 {
     load_hidden_bias("neuron_network/save_value_prime/hiddenLayerBias.txt");
     load_output_bias("neuron_network/save_value_prime/OutputLayerBias.txt");
-    load_weight_hidden_output("neuron_network/save_value_prime/weight_hidden_output.txt");
-    load_weight_hidden_input("neuron_network/save_value_prime/weight_hidden_input.txt");
+    load_weight_hidden_output(
+            "neuron_network/save_value_prime/weight_hidden_output.txt");
+    load_weight_hidden_input(
+            "neuron_network/save_value_prime/weight_hidden_input.txt");
     
 
     
@@ -361,7 +380,8 @@ int pro_grid()
         {
             res[c]=malloc(100*sizeof(char));
            
-            snprintf(res[c++], FILENAME_SIZE,"neuron_network/other/output/%d.%d.png",i,j);
+            snprintf(res[c++], FILENAME_SIZE,
+                    "neuron_network/other/output/%d.%d.png",i,j);
             printf("%s\n",res[c-1]);
         }
     } 
@@ -411,7 +431,3 @@ int pro_grid()
     free(r);
     return 0;
 }
-
-
-
-

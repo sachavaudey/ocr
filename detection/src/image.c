@@ -18,7 +18,8 @@ custIMG* create_image(unsigned int width, unsigned int height) {
             }
             free(img->pixels);
             free(img);
-            errx(EXIT_FAILURE, "Memory allocation failed for img->pixels[%d]", i);
+            errx(EXIT_FAILURE,
+                "Memory allocation failed for img->pixels[%d]", i);
         }
     }
     return img;
