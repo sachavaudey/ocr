@@ -161,7 +161,6 @@ void predict(double input[INPUT_SIZE],
 }
 
 
-//function which create the binary table
 
 
 
@@ -283,7 +282,7 @@ int pro_word()
            
             snprintf(res[c++], FILENAME_SIZE,
                     "neuron_network/other/words/%d.%d.png",i,t++);
-            printf("%s\n",res[c-1]);
+            //printf("%s\n",res[c-1]);
         }
     }
     
@@ -386,7 +385,7 @@ int pro_grid()
            
             snprintf(res[c++], FILENAME_SIZE,
                     "neuron_network/other/output/%d.%d.png",i,j);
-            printf("%s\n",res[c-1]);
+            //printf("%s\n",res[c-1]);
         }
     } 
     char* r=malloc(taille*sizeof(char));

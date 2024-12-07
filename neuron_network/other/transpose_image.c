@@ -158,7 +158,7 @@ int process_transforme_grid(int a,int b){
             snprintf(out[t],100,
                     "neuron_network/other/output/%d.%d.png",i,j);
             t++;
-            printf("%d\n",t);
+            //printf("%d\n",t);
         }
     }
     //printf("%s",res[0]);

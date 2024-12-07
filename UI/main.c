@@ -48,7 +48,7 @@ gpointer detection_thread_func(gpointer data)
 {
     DetectionData *detectionData = (DetectionData*) data;
     run_detection();
-    run_neural();
+    
     g_idle_add(update_gui_after_detection, detectionData);
 
     return NULL;
@@ -282,7 +282,7 @@ void image_button(GtkWidget* widget, gpointer data)
 
             g_thread_new("detection_thread",
                     detection_thread_func, detectionData);
-
+            run_neural();
             SDL_FreeSurface(processedImage);
         }
         else 
