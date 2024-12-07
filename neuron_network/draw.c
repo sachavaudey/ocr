@@ -1,5 +1,19 @@
 #include "draw.h"
 
+int size(int** coordo)
+{
+    int var=coordo[0][1];
+    int i=0;
+    while(coordo[i][1]==var) {
+        i++;
+    }
+
+    return i;
+
+
+}
+
+
 void drawLine(SDL_Surface *surface, int x1, int y1, int x2, int y2, Uint32 color) {
     if (!surface) return;
 
@@ -55,15 +69,15 @@ void drawRectangle(SDL_Surface *surface, int x1, int y1, int x2, int y2, int wid
 }
 
 
-void fin_coord(int** tableau)
+void fin_co_lettre(int** tableau)
 {
-    FILE *file = fopen("data/placement", "r");
+    FILE *file = fopen("data/results_grid", "r");
     if (file == NULL) {
         perror("Erreur lors de l'ouverture du fichier");
        
     }
     int i = 0;
-    while (i < 200 && !feof(file)) {
+    while (i < 300 && !feof(file)) {
         int val1, val2;
         if (fscanf(file, "%d,%d", &val1, &val2) == 2) { // Lecture et extraction
             tableau[i][0] = val1;
@@ -79,7 +93,7 @@ void fin_coord(int** tableau)
     
 }
 
-void fin_coo(int** tableau)
+void fin_coo(int** co_mots)
 {
     FILE *file = fopen("data/coordo", "r");
     
@@ -87,10 +101,10 @@ void fin_coo(int** tableau)
     while (i < 1000 && !feof(file)) {
         int val1, val2,val3,val4;
         if (fscanf(file, "%d,%d %d,%d", &val1, &val2,&val3,&val4) == 4) { // Lecture et extraction
-            tableau[i][0] = val1;
-            tableau[i][1] = val2;
-            tableau[i][2] = val3;
-            tableau[i][3] = val4;
+            co_mots[i][0] = val1;
+            co_mots[i][1] = val2;
+            co_mots[i][2] = val3;
+            co_mots[i][3] = val4;
             i++;
         } else {
             
@@ -107,95 +121,85 @@ void fin_coo(int** tableau)
 
 void draw()
 {
-    int** tableau=malloc(1000*sizeof(int*));
+    int** co_mots=malloc(1000*sizeof(int*));
     for (size_t i = 0; i < 1000; i++)
     {
-        tableau[i]=malloc(1*sizeof(int));
+        co_mots[i]=malloc(1*sizeof(int));
     }
 
-    int** coord=malloc(1000*sizeof(int*));
-    for (size_t i = 0; i < 1000; i++)
+    int** co_lettre=malloc(10000*sizeof(int*));
+    for (size_t i = 0; i < 10000; i++)
     {
-        coord[i]=malloc(1*sizeof(int));
+        co_lettre[i]=malloc(1*sizeof(int));
     }
     
-    fin_coord( tableau);
-    fin_coo(coord);
+    fin_co_lettre( co_mots);
+    fin_coo(co_lettre);
     SDL_Surface *image = IMG_Load("data/images/l11.png");
-    Uint32 redColor = SDL_MapRGB(image->format, 255, 0, 0);
-    for (size_t i = 0; i < 12; i++)
+    int r,g,b=0;
+     r = rand() % 255;
+     g = rand() % 255;
+     b = rand() % 255;
+    
+    int t=size(co_mots);
+    
+
+    for (size_t i = 0; i < 13; i++)
     {
-        if (coord[i][0]==0 && coord[i][1]==0 && coord[i][2]==0 && coord[i][3]==0)
+        if (co_lettre[i][0]==0 && co_lettre[i][1]==0 && co_lettre[i][2]==0 && co_lettre[i][3]==0)
         {
             
         }
         else 
         {
-            int t=12;
-            printf("%d\n",coord[i][1]);
-            int y1=tableau[coord[i][0]*t+coord[i][1]][0]/5;
-            int x1=tableau[coord[i][0]*t+coord[i][1]][1]/5;
-            int y2=tableau[coord[i][2]*t+coord[i][3]][0]/5;
-            int x2=tableau[coord[i][2]*t+coord[i][3]][1]/5;
-
-            printf("%d,%d  %d,%d\n",x1,y1,x2,y2);
+            r = rand() % 255;
+        g = rand() % 255;
+        b = rand() % 255;
+        Uint32 redColor = SDL_MapRGB(image->format, r, g, b);
+        
+            int y1=co_mots[co_lettre[i][0]+co_lettre[i][1]*t][1]/5;
+            int x1=co_mots[co_lettre[i][0]+co_lettre[i][1]*t][0]/5;
+            int y2=co_mots[co_lettre[i][2]+co_lettre[i][3]*t][1]/5;
+            int x2=co_mots[co_lettre[i][2]+co_lettre[i][3]*t][0]/5;
             //drawRectangle(image,x1,y1,x2,y2,35,redColor);
 
-            //drawRectangle(image,x1,y1,x2,y2,35,redColor);
+            if (x1<x2 && y1==y2) drawRectangle(image,x1-10,y1,x2+10,y2,35,redColor);
+            else if (x1>x2 && y1==y2) drawRectangle(image,x1+10,y1,x2-10,y2,35,redColor);
 
-            if (y1==y2){
-                 if (x1<x2) drawRectangle(image,x1,y1,x2+55,y2,35,redColor);
-            }
+            else if (y1<y2 && x1==x2) drawRectangle(image,x1,y1-15,x2,y2+15,35,redColor);
+            else if (y1>y2 && x1==x2) drawRectangle(image,x1,y1+15,x2,y2-15,35,redColor);
+            else if (x1-x2>-10 && x1-x2<10 && y1<y2) drawRectangle(image,x1,y1-15,x2,y2+15,35,redColor);
+            else if (x1-x2>-10 && x1-x2<10 && y1>y2) drawRectangle(image,x1,y1+15,x2,y2-15,35,redColor);
+            
             else drawRectangle(image,x1,y1,x2,y2,35,redColor);
 
 
 
 
-            
+
 
         }
-
-
-
-
     }
     IMG_SavePNG(image, "image_sauvegardee.png"); 
+
+    for (size_t i = 0; i < 1000; i++)
+    {
+        free(co_mots[i]);
+    }
+    free(co_mots);
+
     
+    for (size_t i = 0; i < 10000; i++)
+    {
+        free(co_lettre[i]);
+    }
+    free(co_lettre);
     
 }
 
 
-int process_draw(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("Usage: %s <image_path>\n", argv[0]);
-        return 1;
-    }
-
-    const char *imagePath = argv[1];
-
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        printf("SDL_Init Error: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        printf("IMG_Init Error: %s\n", IMG_GetError());
-        SDL_Quit();
-        return 1;
-    }
-
-    SDL_Surface *image = IMG_Load(imagePath);
-    if (!image) {
-        printf("Failed to load image: %s\n", IMG_GetError());
-        IMG_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    Uint32 redColor = SDL_MapRGB(image->format, 255, 0, 0);
-
-    int x1 = 120, y1 = 120;
-    int x2 = 310, y2 = 80;
+int process_draw() {
+    
 
 
     draw();
@@ -203,89 +207,9 @@ int process_draw(int argc, char *argv[]) {
 
 
 
-    //drawRectangle(image, x1, y1, x2, y2, 30, redColor);
     
-
-    SDL_Window *window = SDL_CreateWindow("Image with Rectangle", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                          image->w, image->h, SDL_WINDOW_SHOWN);
-    if (!window) {
-        printf("Failed to create window: %s\n", SDL_GetError());
-        SDL_FreeSurface(image);
-        IMG_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    SDL_Surface *windowSurface = SDL_GetWindowSurface(window);
-    if (!windowSurface) {
-        printf("Failed to get window surface: %s\n", SDL_GetError());
-        SDL_DestroyWindow(window);
-        SDL_FreeSurface(image);
-        IMG_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    SDL_BlitScaled(image, NULL, windowSurface, NULL);
-    SDL_UpdateWindowSurface(window);
-
-    SDL_Event event;
-    int running = 1;
-    while (running) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                running = 0;
-            }
-        }
-    }
-
-    SDL_FreeSurface(image);
-    SDL_DestroyWindow(window);
-    IMG_Quit();
-    SDL_Quit();
     return 0;
 
 
-    /*int** tableau=malloc(1000*sizeof(int*));
-    for (size_t i = 0; i < 1000; i++)
-    {
-        tableau[i]=malloc(1*sizeof(int));
-    }
-
-    int** coord=malloc(1000*sizeof(int*));
-    for (size_t i = 0; i < 1000; i++)
-    {
-        coord[i]=malloc(1*sizeof(int));
-    }
-    
-    fin_coord( tableau);
-    fin_coo(coord);
-    SDL_Surface *image = IMG_Load("lv1.png");
-    Uint32 redColor = SDL_MapRGB(image->format, 255, 0, 0);
-    for (size_t i = 0; i < 4; i++)
-    {
-        if (coord[i][0]==0 && coord[i][1]==0 && coord[i][2]==0 && coord[i][3]==0)
-        {
-            
-        }
-        else 
-        {
-            int t=3;
-
-            int x1=tableau[coord[i][0]*t+coord[i][1]][0];
-            int y1=tableau[coord[i][0]*t+coord[i][1]][1];
-            int x2=tableau[coord[i][2]*t+coord[i][3]][0];
-            int y2=tableau[coord[i][2]*t+coord[i][3]][1];
-            drawRectangle(image,100,100,200,200,30,redColor);
-            
-
-        }
-
-
-
-
-    }
-    
-    
-    return 0;*/
+   
 }

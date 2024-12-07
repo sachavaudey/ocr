@@ -11,14 +11,16 @@ void load_hidden_bias(const char* filename)
 {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        errx(EXIT_FAILURE, "Erreur lors de l'ouverture du fichier %s", filename);
+        //errx(EXIT_FAILURE, "Erreur lors de l'ouverture du fichier %s", filename);
     }
 
     for (int i = 0; i < HIDDEN_SIZE; i++) {
         if (fscanf(file, "%lf ", &hidden_bias[i]) != 1) {
             fprintf(stderr, "Erreur : lecture insuffisante dans le fichier %s.\n", filename);
             fclose(file);
+
             errx(EXIT_FAILURE, "Error %s", filename);
+
         }
     }
 
