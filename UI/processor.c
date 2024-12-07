@@ -84,7 +84,7 @@ void run_solver()
     process_NOE(2);
 }
 
-void run_draw()
+void run_draw(char* image_path)
 {
-    draw();
+    draw(image_path);
 }
