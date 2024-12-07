@@ -13,6 +13,6 @@ void drawRectangle(SDL_Surface *surface, int x1, int y1, int x2, int y2, int wid
 void fin_coord(int **tableau);
 void fin_coo(int **tableau);
 void draw();
-int process_draw(int argc, char *argv[]);
+int process_draw();
 
 #endif 
