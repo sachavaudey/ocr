@@ -1,9 +1,9 @@
 #include "processor.h"
 
 
-
 /**
- * This function run the pre-treatment function according to the setting given in parameter
+ * This function run the pre-treatment function according
+ * to the setting given in parameter
  * @param surface the surface to process with pre-treatment
  * @param set the setting function to run
  * @param angle the possibile angle for the rotation
@@ -11,8 +11,10 @@
  */
 void run_pretreatment(SDL_Surface **surface, int set, int angle){
    char command[1024];
-   snprintf(command, sizeof(command), "rm -rf neuron_network/other/words/");
-   system(command);
+   snprintf(command, sizeof(command),
+           "rm -rf neuron_network/other/words/");
+   if (system(command) != 0)
+       errx(EXIT_FAILURE, "error");
     switch (set)
     {
     case 1:
@@ -50,7 +52,8 @@ void run_pretreatment(SDL_Surface **surface, int set, int angle){
 
 
 /**
- * This function run the detection function according to the image out of pre-treatment (auto detect)
+ * This function run the detection function according
+ * to the image out of pre-treatment (auto detect)
  * @param VOID
  * @return VOID
  */
@@ -60,7 +63,8 @@ void run_detection(){
 
 
 /**
- * This function run the detection function according to the image out of pre-treatment (auto detect)
+ * This function run the detection function according
+ * to the image out of pre-treatment (auto detect)
  * @param int
  * @return VOID
  */
@@ -70,7 +74,8 @@ void run_neural()
 }
 
 /**
- * This function run the detection function according to the image out of pre-treatment (auto detect)
+ * This function run the detection function according
+ * to the image out of pre-treatment (auto detect)
  * @param int
  * @return VOID
  */
