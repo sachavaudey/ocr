@@ -20,7 +20,7 @@ const char* buttonLabels[BUTTON_COUNT] =
     "Automatic Rotation",
     "Detection",
     "Solver", 
-    "AUX"
+    "HELP"
 };
 
 
@@ -54,6 +54,7 @@ gpointer detection_thread_func(gpointer data)
 
 void quit_button() 
 {
+    remove("data/post_PRT.png");
     gtk_main_quit();
 }
 
@@ -62,15 +63,14 @@ void image_button(GtkWidget* widget, gpointer data)
     const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
     const char* buttonLabel = (const char*)data;
     const char* output_path_PRT = "data/post_PRT.png";
-
+   
     if (strcmp(buttonLabel, "Contrast Boost") == 0)
     {
         SDL_Surface* backgroundImage = IMG_Load(displayedimage);
-        printf("sachafait caca1");
+        
         if (backgroundImage) 
         {
             run_pretreatment(&backgroundImage, 6, 0);
-            printf("sachafait caca");
             
             if (backgroundImage) 
             {
@@ -93,7 +93,6 @@ void image_button(GtkWidget* widget, gpointer data)
             g_print("Failed to load image for automatic rotation");
         }
     }
-
 
     else if (strcmp(buttonLabel, "Pretreatment") == 0) 
     {
@@ -118,7 +117,10 @@ void image_button(GtkWidget* widget, gpointer data)
 
         if (treatmentLevel > 0) 
         {
-            SDL_Surface* backgroundImage = IMG_Load(filename);
+            
+            SDL_Surface* backgroundImage = IMG_Load("data/post_PRT.png");
+            if (backgroundImage==NULL) backgroundImage=IMG_Load(filename);
+            
             if (backgroundImage) 
             {
                 printf(".png to SDL surface loaded successfully\n");
@@ -294,48 +296,107 @@ void image_button(GtkWidget* widget, gpointer data)
             gtk_widget_destroy(errorDialog);
         }
     }
-    else if (strcmp(buttonLabel, "AUX") == 0) 
+    else if (strcmp(buttonLabel, "HELP") == 0) 
     {
         
-        const char* filePath = "data/grid";  
+        GtkWidget* dialog = 
+            gtk_dialog_new_with_buttons("Select file",
+                    GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+                    GTK_DIALOG_MODAL,
+                    "Grid", 1,
+                    "Word", 2,
+                    "Cancel", 0,
+                    NULL);
 
-        if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
+        gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+        int treatmentLevel = 0;
+
+        if (response == 1) treatmentLevel = 1;  
+        else if (response == 2) treatmentLevel = 2;  
+        else if (response == 3) treatmentLevel = 3;  
+
+        gtk_widget_destroy(dialog);
+        
+        if (response == 1) treatmentLevel = 1;  
+        else if (response == 2) treatmentLevel = 2;  
+        else if (response == 3) treatmentLevel = 3;  
+
+        if (treatmentLevel==1)
         {
-            char command[512]; 
+            const char* filePath = "data/grid";  
+            if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
+            {
+                char command[512]; 
 
-            snprintf(command, sizeof(command), "vim %s", filePath);
+                snprintf(command, sizeof(command), "vim %s", filePath);
 
-            int result = system(command);
-            if (result != 0)
+                int result = system(command);
+                if (result != 0)
+                {
+                    GtkWidget *errorDialog = 
+                        gtk_message_dialog_new(GTK_WINDOW(window),
+                                GTK_DIALOG_MODAL,
+                                GTK_MESSAGE_ERROR,
+                                GTK_BUTTONS_OK,
+                                "Failed to open AUX file: %s", filePath);
+                    gtk_dialog_run(GTK_DIALOG(errorDialog));
+                    gtk_widget_destroy(errorDialog);
+                }
+            }
+            else
             {
                 GtkWidget *errorDialog = 
                     gtk_message_dialog_new(GTK_WINDOW(window),
                             GTK_DIALOG_MODAL,
                             GTK_MESSAGE_ERROR,
                             GTK_BUTTONS_OK,
-                            "Failed to open AUX file: %s", filePath);
+                            "File does not exist: %s", filePath);
                 gtk_dialog_run(GTK_DIALOG(errorDialog));
                 gtk_widget_destroy(errorDialog);
             }
         }
-        else
+        if (treatmentLevel==2)
         {
-            GtkWidget *errorDialog = 
-                gtk_message_dialog_new(GTK_WINDOW(window),
-                        GTK_DIALOG_MODAL,
-                        GTK_MESSAGE_ERROR,
-                        GTK_BUTTONS_OK,
-                        "File does not exist: %s", filePath);
-            gtk_dialog_run(GTK_DIALOG(errorDialog));
-            gtk_widget_destroy(errorDialog);
+            const char* filePath = "data/word";  
+            if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
+            {
+                char command[512]; 
+
+                snprintf(command, sizeof(command), "vim %s", filePath);
+
+                int result = system(command);
+                if (result != 0)
+                {
+                    GtkWidget *errorDialog = 
+                        gtk_message_dialog_new(GTK_WINDOW(window),
+                                GTK_DIALOG_MODAL,
+                                GTK_MESSAGE_ERROR,
+                                GTK_BUTTONS_OK,
+                                "Failed to open AUX file: %s", filePath);
+                    gtk_dialog_run(GTK_DIALOG(errorDialog));
+                    gtk_widget_destroy(errorDialog);
+                }
+            }
+            else
+            {
+                GtkWidget *errorDialog = 
+                    gtk_message_dialog_new(GTK_WINDOW(window),
+                            GTK_DIALOG_MODAL,
+                            GTK_MESSAGE_ERROR,
+                            GTK_BUTTONS_OK,
+                            "File does not exist: %s", filePath);
+                gtk_dialog_run(GTK_DIALOG(errorDialog));
+                gtk_widget_destroy(errorDialog);
+            }
         }
+        
     } 
     else if (strcmp(buttonLabel, "Solver") == 0) 
     {
 
            
             run_solver(2);
-	    run_draw();
+	        run_draw(filename);
 
             
 
