@@ -33,7 +33,9 @@ gboolean update_gui_after_detection(gpointer data)
     DetectionData *detectionData = (DetectionData*) data;
     gtk_widget_destroy(detectionData->loadingDialog);
     displayedimage = "data/post_DET.png";
-    gtk_image_set_from_file(GTK_IMAGE(detectionData->imageWidget), displayedimage);
+    gtk_image_set_from_file(
+            GTK_IMAGE(detectionData->imageWidget),
+            displayedimage);
     g_print("Detection process completed successfully!\n");
     g_free(detectionData);
 
@@ -74,7 +76,9 @@ void image_button(GtkWidget* widget, gpointer data)
             {
                 printf("SDL surface saved to: %s\n", output_path_PRT);
                 displayedimage = (char *)output_path_PRT;
-                gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
+                gtk_image_set_from_file(
+                        GTK_IMAGE(imageWidget),
+                        displayedimage);
                 g_print("Displayed image updated to: ");
             } 
             else 
@@ -93,14 +97,15 @@ void image_button(GtkWidget* widget, gpointer data)
 
     else if (strcmp(buttonLabel, "Pretreatment") == 0) 
     {
-        GtkWidget* dialog = gtk_dialog_new_with_buttons("Select Treatment Level",
-                                                        GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-                                                        GTK_DIALOG_MODAL,
-                                                        "Light", 1,
-                                                        "Medium", 2,
-                                                        "Heavy", 3,
-                                                        "Cancel", 0,
-                                                        NULL);
+        GtkWidget* dialog = 
+            gtk_dialog_new_with_buttons("Select Treatment Level",
+                    GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+                    GTK_DIALOG_MODAL,
+                    "Light", 1,
+                    "Medium", 2,
+                    "Heavy", 3,
+                    "Cancel", 0,
+                    NULL);
 
         gint response = gtk_dialog_run(GTK_DIALOG(dialog));
         int treatmentLevel = 0;
@@ -118,18 +123,23 @@ void image_button(GtkWidget* widget, gpointer data)
             {
                 printf(".png to SDL surface loaded successfully\n");
 
-                run_pretreatment(&backgroundImage, treatmentLevel, 0); 
+                run_pretreatment(&backgroundImage,
+                        treatmentLevel, 0); 
 
                 if (backgroundImage) 
                 {
-                    printf("SDL surface saved to: %s\n", output_path_PRT);
+                    printf("SDL surface saved to: %s\n",
+                            output_path_PRT);
                     displayedimage = (char *)output_path_PRT;
-                    gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
-                    g_print("Displayed image updated to: %s\n", displayedimage);
+                    gtk_image_set_from_file(
+                            GTK_IMAGE(imageWidget), displayedimage);
+                    g_print("Displayed image updated to: %s\n",
+                            displayedimage);
                 } 
                 else 
                 {
-                    g_print("Failed to save SDL surface: %s\n", SDL_GetError());
+                    g_print("Failed to save SDL surface
+                                : %s\n", SDL_GetError());
                 }
 
                 SDL_FreeSurface(backgroundImage);
@@ -151,10 +161,13 @@ void image_button(GtkWidget* widget, gpointer data)
             "Cancel", GTK_RESPONSE_CANCEL,
             NULL);
 
-        GtkWidget *contentArea = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+        GtkWidget *contentArea = gtk_dialog_get_content_area(
+                GTK_DIALOG(dialog));
         GtkWidget *entry = gtk_entry_new();
-        gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Enter angle in degrees");
-        gtk_box_pack_start(GTK_BOX(contentArea), entry, TRUE, TRUE, 0);
+        gtk_entry_set_placeholder_text(
+                GTK_ENTRY(entry), "Enter angle in degrees");
+        gtk_box_pack_start(
+                GTK_BOX(contentArea), entry, TRUE, TRUE, 0);
 
         gtk_widget_show_all(dialog);
 
@@ -166,34 +179,45 @@ void image_button(GtkWidget* widget, gpointer data)
             if (angleText != NULL && strlen(angleText) > 0)
             {
                 int angle = atoi(angleText);
+                
                 printf("Rotating image by %d degrees\n", angle);
-                SDL_Surface* backgroundImage = IMG_Load(displayedimage);
+                
+                SDL_Surface* backgroundImage = IMG_Load(
+                        displayedimage);
                 if (backgroundImage) 
                 {
-                    run_pretreatment(&backgroundImage, 4, angle);
+                    run_pretreatment(
+                            &backgroundImage, 4, angle);
                     
                     if (backgroundImage) 
                     {
-                        printf("SDL surface saved to: %s\n", output_path_PRT);
+                        printf("SDL surface saved to: %s\n",
+                                output_path_PRT);
                         displayedimage = (char*)output_path_PRT;
-                        gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
-                        g_print("Displayed image updated to: %s\n", displayedimage);
+                        gtk_image_set_from_file(
+                                GTK_IMAGE(imageWidget), displayedimage);
+                        g_print("Displayed image updated to: %s\n",
+                                displayedimage);
                     } 
                     else 
                     {
-                        g_print("Failed to save SDL surface: %s\n", SDL_GetError());
+                        g_print("Failed to save SDL surface: %s\n", 
+                                SDL_GetError());
                     }
 
                     SDL_FreeSurface(backgroundImage);
                 } 
                 else 
                 {
-                    g_print("Failed to load image for rotation: %s\n", displayedimage);
+                    g_print("Failed to load image for rotation: %s\n",
+                            displayedimage);
                 }
             } 
             else 
             {
-                g_print("Invalid input or no angle provided. Rotation canceled.\n");
+                g_print(
+                "Invalid input or no angle provided. Rotation canceled.\n"
+                );
             }
         }
 
@@ -212,7 +236,8 @@ void image_button(GtkWidget* widget, gpointer data)
                 printf("SDL surface saved to: %s\n", output_path_PRT);
 
                 displayedimage = (char*)output_path_PRT;
-                gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
+                gtk_image_set_from_file(
+                        GTK_IMAGE(imageWidget), displayedimage);
                 g_print("Displayed image updated to: ");
             } 
             else 
@@ -234,13 +259,17 @@ void image_button(GtkWidget* widget, gpointer data)
         SDL_Surface* processedImage = IMG_Load("data/post_PRT.png");
         if (processedImage) 
         {
-            GtkWidget* loadingDialog = gtk_message_dialog_new(GTK_WINDOW(window),
-                                                              GTK_DIALOG_MODAL,
-                                                              GTK_MESSAGE_INFO,
-                                                              GTK_BUTTONS_NONE,
-                                                              "Please wait a few minutes...");
-            gtk_window_set_transient_for(GTK_WINDOW(loadingDialog), GTK_WINDOW(window));
-            gtk_window_set_position(GTK_WINDOW(loadingDialog), GTK_WIN_POS_CENTER_ON_PARENT);
+            GtkWidget* loadingDialog = 
+                gtk_message_dialog_new(GTK_WINDOW(window),
+                        GTK_DIALOG_MODAL,
+                        GTK_MESSAGE_INFO,
+                        GTK_BUTTONS_NONE,
+                        "Please wait a few minutes...");
+            
+            gtk_window_set_transient_for(
+                    GTK_WINDOW(loadingDialog), GTK_WINDOW(window));
+            gtk_window_set_position(
+                    GTK_WINDOW(loadingDialog), GTK_WIN_POS_CENTER_ON_PARENT);
 
             gtk_widget_show_now(loadingDialog);
 
@@ -248,17 +277,19 @@ void image_button(GtkWidget* widget, gpointer data)
             detectionData->imageWidget = imageWidget;
             detectionData->loadingDialog = loadingDialog;
 
-            g_thread_new("detection_thread", detection_thread_func, detectionData);
+            g_thread_new("detection_thread",
+                    detection_thread_func, detectionData);
 
             SDL_FreeSurface(processedImage);
         }
         else 
         {
-            GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
-                                                            GTK_DIALOG_MODAL,
-                                                            GTK_MESSAGE_ERROR,
-                                                            GTK_BUTTONS_OK,
-                                                            "Failed to load image: %s", "data/post_PRT.png");
+            GtkWidget *errorDialog = 
+                gtk_message_dialog_new(GTK_WINDOW(window),
+                    GTK_DIALOG_MODAL,
+                    GTK_MESSAGE_ERROR,
+                    GTK_BUTTONS_OK,
+                    "Failed to load image: %s", "data/post_PRT.png");
             gtk_dialog_run(GTK_DIALOG(errorDialog));
             gtk_widget_destroy(errorDialog);
         }
@@ -277,22 +308,24 @@ void image_button(GtkWidget* widget, gpointer data)
             int result = system(command);
             if (result != 0)
             {
-                GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
-                                                                GTK_DIALOG_MODAL,
-                                                                GTK_MESSAGE_ERROR,
-                                                                GTK_BUTTONS_OK,
-                                                                "Failed to open AUX file: %s", filePath);
+                GtkWidget *errorDialog = 
+                    gtk_message_dialog_new(GTK_WINDOW(window),
+                            GTK_DIALOG_MODAL,
+                            GTK_MESSAGE_ERROR,
+                            GTK_BUTTONS_OK,
+                            "Failed to open AUX file: %s", filePath);
                 gtk_dialog_run(GTK_DIALOG(errorDialog));
                 gtk_widget_destroy(errorDialog);
             }
         }
         else
         {
-            GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
-                                                            GTK_DIALOG_MODAL,
-                                                            GTK_MESSAGE_ERROR,
-                                                            GTK_BUTTONS_OK,
-                                                            "File does not exist: %s", filePath);
+            GtkWidget *errorDialog = 
+                gtk_message_dialog_new(GTK_WINDOW(window),
+                        GTK_DIALOG_MODAL,
+                        GTK_MESSAGE_ERROR,
+                        GTK_BUTTONS_OK,
+                        "File does not exist: %s", filePath);
             gtk_dialog_run(GTK_DIALOG(errorDialog));
             gtk_widget_destroy(errorDialog);
         }
@@ -306,7 +339,8 @@ void image_button(GtkWidget* widget, gpointer data)
 
             
 
-         gtk_image_set_from_file(GTK_IMAGE(imageWidget), "image_sauvegardee.png");
+         gtk_image_set_from_file(
+                 GTK_IMAGE(imageWidget), "image_sauvegardee.png");
     } 
     else 
     {
@@ -329,22 +363,24 @@ void load_button()
         }
         else 
         {
-            GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
-                                                            GTK_DIALOG_MODAL,
-                                                            GTK_MESSAGE_ERROR,
-                                                            GTK_BUTTONS_OK,
-                                                            "File does not exist: %s", filename);
+            GtkWidget *errorDialog = 
+                gtk_message_dialog_new(GTK_WINDOW(window),
+                        GTK_DIALOG_MODAL,
+                        GTK_MESSAGE_ERROR,
+                        GTK_BUTTONS_OK,
+                        "File does not exist: %s", filename);
             gtk_dialog_run(GTK_DIALOG(errorDialog));
             gtk_widget_destroy(errorDialog);
         }
     }
     else
     {
-        GtkWidget *errorDialog = gtk_message_dialog_new(GTK_WINDOW(window),
-                                                        GTK_DIALOG_MODAL,
-                                                        GTK_MESSAGE_ERROR,
-                                                        GTK_BUTTONS_OK,
-                                                        "Invalid file type: %s", filename);
+        GtkWidget *errorDialog =
+            gtk_message_dialog_new(GTK_WINDOW(window),
+                    GTK_DIALOG_MODAL,
+                    GTK_MESSAGE_ERROR,
+                    GTK_BUTTONS_OK,
+                    "Invalid file type: %s", filename);
         gtk_dialog_run(GTK_DIALOG(errorDialog));
         gtk_widget_destroy(errorDialog);
     }
@@ -374,7 +410,8 @@ int main(int argc, char* argv[])
     for (int i = 0; i < BUTTON_COUNT; i++) 
     {
         GtkWidget* button = gtk_button_new_with_label(buttonLabels[i]);
-        g_signal_connect(button, "clicked", G_CALLBACK(image_button), (gpointer)buttonLabels[i]);
+        g_signal_connect(button, "clicked",
+                G_CALLBACK(image_button), (gpointer)buttonLabels[i]);
         gtk_box_pack_start(GTK_BOX(buttonBox), button, TRUE, TRUE, 0);
     }
 
@@ -412,4 +449,4 @@ int main(int argc, char* argv[])
     gtk_main();
 
     return 0;
-}
+
