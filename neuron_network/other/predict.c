@@ -330,7 +330,9 @@ int pro_word()
         }
         printf("La lettre %d est %c\n",i+1,lettre[j]);
         printf("\n\n");
-        if (prediction[j]<0.9 || lettre[j] == 'O' || lettre[j] == 'G')
+        if (prediction[j]<0.65 || lettre[j] == 'O' ||
+                (lettre[j] == 'E' && prediction[j] < 0.9) || 
+                (lettre[j] == 'D' && prediction[j] < 0.85))
             r[i]='0';
         else
             r[i]=lettre[j];        
@@ -423,7 +425,9 @@ int pro_grid()
         printf("La lettre %zu est %c\n",i+1,lettre[j]);
         printf("\n\n");
         
-        if (prediction[j]<0.9 || lettre[j] == 'O' || lettre[j] == 'G')
+        if (prediction[j]<0.65 || lettre[j] == 'O' ||
+                (lettre[j] == 'E' && prediction[j] < 0.9) || 
+                (lettre[j] == 'D' && prediction[j] < 0.85))
             r[i]='0';
         else
             r[i]=lettre[j];       
