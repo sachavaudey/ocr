@@ -6,6 +6,8 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <err.h>
+
 
 int is_green(Uint32 pixel, SDL_PixelFormat *format);
 int is_letter_pixel(Uint32 pixel, SDL_PixelFormat *format);

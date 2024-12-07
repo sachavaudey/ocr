@@ -6,6 +6,7 @@
 #include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <err.h>
 #include "transpose_image.h"
 #include "img_traitement.h"
 
