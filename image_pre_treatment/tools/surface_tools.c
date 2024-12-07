@@ -217,7 +217,7 @@ Uint8* RgbAverageLine(SDL_Surface* surface, unsigned int line)
  *
  *	returns	: void 
  */
-Uint8* RgbAverageRow(SDL_Surface* surface, unsigned int row)
+Uint8* RgbAverageCol(SDL_Surface* surface, unsigned int col)
 {
 	long* avg = malloc(sizeof(long) * 3);
 	Uint8 temp[3] = {0,0,0};
@@ -226,10 +226,10 @@ Uint8* RgbAverageRow(SDL_Surface* surface, unsigned int row)
 	avg[0] = 0;
 	avg[1] = 0;
 	avg[2] = 0;
-	for (int line =0; line < H; line++)
+	for (int line = 0; line < H; line++)
 	{
 		
-		SDL_GetRGB(pixels[line * W + row],
+		SDL_GetRGB(pixels[line * W + col],
 				surface->format,
 				&(temp[0]),&(temp[1]), &(temp[2]));
 			avg[0] += temp[0];

@@ -94,7 +94,7 @@ void rotate(SDL_Surface** surface_param, int angle)
 	double newAngle = (double)angle / 180 * M_PI;
 	
 	SDL_LockSurface(surface);
-	
+
 	if (LOG_LEVEL > 1)	{printf("Radian angle: %f\n", newAngle);}
 
 	unsigned int initW = surface->w,	initH = surface->h;
@@ -138,8 +138,8 @@ void rotate(SDL_Surface** surface_param, int angle)
 		
 		if (pixelDepartNb == NOT_IN_IMAGE) 
 		{
-		rotated_pixels[pixelNb] = SDL_MapRGB(new_surface->format,
-					0,0,0);
+			rotated_pixels[pixelNb] = SDL_MapRGB(new_surface->format,
+				0,0,0);
 		}
 		else
 		{	
@@ -147,22 +147,89 @@ void rotate(SDL_Surface** surface_param, int angle)
 		}
 	}
 
-	for (unsigned long line = 0; line<newH; line++)
+	unsigned int line_top = 0;
+	while (line_top < newH)
 	{
-		if (RgbAverageLine(new_surface, line) <= 5)
+		Uint8* retour = RgbAverageLine(new_surface, line_top);
+		Uint8 retour_int = *retour;
+		free(retour);
+		if (retour_int > 3)
 		{
-			for(int i = 0; i<newW; i++)
-				rotated_pixels[i] = SDL_MapRGB(new_surface->format,
-					0,0,0);
-
+			break;
 		}
+		line_top++;
+	}
+
+	unsigned int line_bottom = 0;
+	while (line_bottom < newH)
+	{
+		Uint8* retour = RgbAverageLine(new_surface, newH-line_bottom-1);
+		Uint8 retour_int = *retour;
+		free(retour);
+		if (retour_int > 3)
+		{
+			break;
+		}
+		line_bottom++;
 	}
 	
+	unsigned int col_left = 0;
+	while (col_left < newW)
+	{
+		Uint8* retour = RgbAverageCol(new_surface, col_left);
+		Uint8 retour_int = *retour;
+		free(retour);
+		if (retour_int > 3)
+		{
+			break;
+		}
+		col_left++;
+	}
+
+	unsigned int col_right = 0;
+	while (col_right < newW)
+	{
+		Uint8* retour = RgbAverageCol(new_surface, newW -col_right-1);
+		Uint8 retour_int = *retour;
+		free(retour);
+		if (retour_int > 3)
+		{
+			break;
+		}
+		col_right++;
+	}
+
+	long final_w = newW - col_left - col_right,
+		 final_h = newH - line_top - line_bottom;
+
+	SDL_Surface* trimmed_surface = SDL_CreateRGBSurfaceWithFormat(0,
+				final_w,
+				final_h, 32,
+				(surface->format)->format);
+
+	Uint32* trimmed_pixels = trimmed_surface->pixels;
+	unsigned long trimmed_count = 
+		(final_w) 
+		* (final_h);
+
+	for (unsigned long pixel_index = 0;
+			pixel_index < trimmed_count;
+			pixel_index++) 
+	{
+		trimmed_pixels[pixel_index] =
+			rotated_pixels[
+			col_left + (line_top * newW) +
+			(newW * (pixel_index / final_w)) +
+			(pixel_index % final_w)
+			];
+	}
+
+	
 	SDL_Surface* temp = *surface_param;
-	*surface_param = new_surface;
+	*surface_param = trimmed_surface;
 	SDL_UnlockSurface(temp);
 	SDL_FreeSurface(temp);
-	
+	SDL_FreeSurface(new_surface);
 	if (LOG_LEVEL)
 		printf("Image successfully rotated !\n---------------\n");
 }

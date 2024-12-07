@@ -1,6 +1,4 @@
 #include "main.h"
-#include "processor.h"
-#include <gtk/gtk.h>
 
 #define BUTTON_COUNT 7
 
@@ -10,7 +8,7 @@ typedef struct {
     GtkWidget *loadingDialog;
 } DetectionData;
 
-GtkImage* displayedimage;
+char* displayedimage;
 GtkWidget* window;
 GtkWidget* mainBox;
 
@@ -52,7 +50,7 @@ gpointer detection_thread_func(gpointer data)
     return NULL;
 }
 
-void quit_button(GtkWidget* widget, gpointer data) 
+void quit_button() 
 {
     gtk_main_quit();
 }
@@ -61,6 +59,8 @@ void image_button(GtkWidget* widget, gpointer data)
 {
     const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
     const char* buttonLabel = (const char*)data;
+    const char* output_path_PRT = "data/post_PRT.png";
+
     if (strcmp(buttonLabel, "Contrast Boost") == 0)
     {
         SDL_Surface* backgroundImage = IMG_Load(displayedimage);
@@ -69,12 +69,11 @@ void image_button(GtkWidget* widget, gpointer data)
         {
             run_pretreatment(&backgroundImage, 6, 0);
             printf("sachafait caca");
-            const char* outputPath = "data/post_PRT.png";
             
             if (backgroundImage) 
             {
-                printf("SDL surface saved to: %s\n", outputPath);
-                displayedimage = outputPath;
+                printf("SDL surface saved to: %s\n", output_path_PRT);
+                displayedimage = (char *)output_path_PRT;
                 gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                 g_print("Displayed image updated to: ");
             } 
@@ -121,11 +120,10 @@ void image_button(GtkWidget* widget, gpointer data)
 
                 run_pretreatment(&backgroundImage, treatmentLevel, 0); 
 
-                const char* outputPath = "data/post_PRT.png";
                 if (backgroundImage) 
                 {
-                    printf("SDL surface saved to: %s\n", outputPath);
-                    displayedimage = outputPath;
+                    printf("SDL surface saved to: %s\n", output_path_PRT);
+                    displayedimage = (char *)output_path_PRT;
                     gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                     g_print("Displayed image updated to: %s\n", displayedimage);
                 } 
@@ -173,12 +171,11 @@ void image_button(GtkWidget* widget, gpointer data)
                 if (backgroundImage) 
                 {
                     run_pretreatment(&backgroundImage, 4, angle);
-                    const char* outputPath = "data/post_PRT.png";
                     
                     if (backgroundImage) 
                     {
-                        printf("SDL surface saved to: %s\n", outputPath);
-                        displayedimage = outputPath;
+                        printf("SDL surface saved to: %s\n", output_path_PRT);
+                        displayedimage = (char*)output_path_PRT;
                         gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                         g_print("Displayed image updated to: %s\n", displayedimage);
                     } 
@@ -209,13 +206,12 @@ void image_button(GtkWidget* widget, gpointer data)
         if (backgroundImage) 
         {
             run_pretreatment(&backgroundImage, 5, 0);
-            const char* outputPath = "data/post_PRT.png";
-            
+                       
             if (backgroundImage) 
             {
-                printf("SDL surface saved to: %s\n", outputPath);
+                printf("SDL surface saved to: %s\n", output_path_PRT);
 
-                displayedimage = outputPath;
+                displayedimage = (char*)output_path_PRT;
                 gtk_image_set_from_file(GTK_IMAGE(imageWidget), displayedimage);
                 g_print("Displayed image updated to: ");
             } 
@@ -252,7 +248,7 @@ void image_button(GtkWidget* widget, gpointer data)
             detectionData->imageWidget = imageWidget;
             detectionData->loadingDialog = loadingDialog;
 
-            GThread *thread = g_thread_new("detection_thread", detection_thread_func, detectionData);
+            g_thread_new("detection_thread", detection_thread_func, detectionData);
 
             SDL_FreeSurface(processedImage);
         }
@@ -319,7 +315,7 @@ void image_button(GtkWidget* widget, gpointer data)
     }
 }
 
-void load_button(GtkWidget* widget, gpointer data) 
+void load_button() 
 {
     const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
     if(strlen(filename) > 4 && 
@@ -328,7 +324,7 @@ void load_button(GtkWidget* widget, gpointer data)
         if (g_file_test(filename, G_FILE_TEST_EXISTS))
         {
             gtk_image_set_from_file(GTK_IMAGE(imageWidget), filename);
-            displayedimage = filename;
+            displayedimage = (char*)filename;
             g_print("Loaded image: %s\n", filename);
         }
         else 

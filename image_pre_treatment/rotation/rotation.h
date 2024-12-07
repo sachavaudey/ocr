@@ -5,7 +5,8 @@
 	#include <SDL2/SDL.h>
 	#include <SDL2/SDL_image.h>
 	#include <math.h>
-	
+	#include <SDL2/SDL_surface.h>
+
 	#include "../tools/surface_tools.h"
 	#include "../../Common/ocr.h"
 

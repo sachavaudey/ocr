@@ -18,7 +18,9 @@ void load_hidden_bias(const char* filename)
         if (fscanf(file, "%lf ", &hidden_bias[i]) != 1) {
             fprintf(stderr, "Erreur : lecture insuffisante dans le fichier %s.\n", filename);
             fclose(file);
-            //errx(EXIT_FAILURE, "Error", filename);
+
+            errx(EXIT_FAILURE, "Error %s", filename);
+
         }
     }
 
