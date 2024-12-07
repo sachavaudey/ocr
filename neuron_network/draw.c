@@ -124,13 +124,13 @@ void draw(char* image_path)
     int** co_mots=malloc(1000*sizeof(int*));
     for (size_t i = 0; i < 1000; i++)
     {
-        co_mots[i]=malloc(1*sizeof(int));
+        co_mots[i]=malloc(2*sizeof(int));
     }
 
     int** co_lettre=malloc(10000*sizeof(int*));
     for (size_t i = 0; i < 10000; i++)
     {
-        co_lettre[i]=malloc(1*sizeof(int));
+        co_lettre[i]=malloc(4*sizeof(int));
     }
     
     fin_co_lettre( co_mots);
@@ -161,9 +161,9 @@ void draw(char* image_path)
             int x1=co_mots[co_lettre[i][0]+co_lettre[i][1]*t][0]/5;
             int y2=co_mots[co_lettre[i][2]+co_lettre[i][3]*t][1]/5;
             int x2=co_mots[co_lettre[i][2]+co_lettre[i][3]*t][0]/5;
-            //drawRectangle(image,x1,y1,x2,y2,35,redColor);
+            drawRectangle(image,x1,y1,x2,y2,35,redColor);
 
-            if (x1<x2 && y1==y2) drawRectangle(image,x1-10,y1,x2+10,y2,35,redColor);
+            /*if (x1<x2 && y1==y2) drawRectangle(image,x1-10,y1,x2+10,y2,35,redColor);
             else if (x1>x2 && y1==y2) drawRectangle(image,x1+10,y1,x2-10,y2,35,redColor);
 
             else if (y1<y2 && x1==x2) drawRectangle(image,x1,y1-15,x2,y2+15,35,redColor);
@@ -171,7 +171,7 @@ void draw(char* image_path)
             else if (x1-x2>-10 && x1-x2<10 && y1<y2) drawRectangle(image,x1,y1-15,x2,y2+15,35,redColor);
             else if (x1-x2>-10 && x1-x2<10 && y1>y2) drawRectangle(image,x1,y1+15,x2,y2-15,35,redColor);
             
-            else drawRectangle(image,x1,y1,x2,y2,35,redColor);
+            else drawRectangle(image,x1,y1,x2,y2,35,redColor);*/
 
 
 

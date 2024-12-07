@@ -1,4 +1,5 @@
 #include "main.h"
+#include <stdio.h>
 
 #define BUTTON_COUNT 7
 
@@ -11,6 +12,7 @@ typedef struct {
 char* displayedimage;
 GtkWidget* window;
 GtkWidget* mainBox;
+const char* output_path_PRT = "data/post_PRT.png";
 
 const char* buttonLabels[BUTTON_COUNT] = 
 {
@@ -54,15 +56,14 @@ gpointer detection_thread_func(gpointer data)
 
 void quit_button() 
 {
-    remove("data/post_PRT.png");
+    remove("output_path_PRT");
     gtk_main_quit();
 }
 
 void image_button(GtkWidget* widget, gpointer data) 
 {
     const char* filename = gtk_entry_get_text(GTK_ENTRY(searchEntry));
-    const char* buttonLabel = (const char*)data;
-    const char* output_path_PRT = "data/post_PRT.png";
+    const char* buttonLabel = (const char*)data;    
    
     if (strcmp(buttonLabel, "Contrast Boost") == 0)
     {
@@ -449,6 +450,7 @@ void load_button()
 
 int main(int argc, char* argv[])
 {
+    remove(output_path_PRT);
     gtk_init(&argc, &argv);
 
     GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
