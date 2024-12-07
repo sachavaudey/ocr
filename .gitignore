@@ -49,3 +49,9 @@ post_DET.png
 post_PRT.png
 results.grid
 resuls_grid
+
+neuron_network/other/output/**.png
+data/results_grid
+data/results_gride/**
+image_sauvegardee.png
+neuron_network/other/words/**

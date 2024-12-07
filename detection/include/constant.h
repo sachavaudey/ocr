@@ -46,7 +46,7 @@ static const int Gy[3][3] = {
 #define RAD_TO_DEG     (180.0 / PI)
 
 // Box dimension constants
-#define MIN_SURFACE    700
+#define MIN_SURFACE    500
 #define MAX_SURFACE    11700
 #define MIN_HEIGHT     10
 #define MAX_HEIGHT     200

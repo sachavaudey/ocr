@@ -330,8 +330,12 @@ int pro_word()
         }
         printf("La lettre %d est %c\n",i+1,lettre[j]);
         printf("\n\n");
-        if (prediction[j]<0.9) r[i]='0';
-        else r[i]=lettre[j];        
+        if (prediction[j]<0.65 || lettre[j] == 'O' ||
+                (lettre[j] == 'E' && prediction[j] < 0.9) || 
+                (lettre[j] == 'D' && prediction[j] < 0.85))
+            r[i]='0';
+        else
+            r[i]=lettre[j];        
     }
     create_word(r,wor,taille1);
 
@@ -421,13 +425,14 @@ int pro_grid()
         printf("La lettre %zu est %c\n",i+1,lettre[j]);
         printf("\n\n");
         
-        if (prediction[j]<0.9 || lettre[j] == 'O' || lettre[j] == 'G')
+        if (prediction[j]<0.65 || lettre[j] == 'O' ||
+                (lettre[j] == 'E' && prediction[j] < 0.9) || 
+                (lettre[j] == 'D' && prediction[j] < 0.85))
             r[i]='0';
         else
             r[i]=lettre[j];       
     }
     create_grid(r,size[1],size[0]);
-    //create_grid(r,5,5);
     free(r);
     return 0;
 }
