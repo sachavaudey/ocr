@@ -248,8 +248,8 @@ void process(custIMG *img)
         {
         errx(
                 EXIT_FAILURE,
-                "Memory allocation failed for gradient_magnitude[%d]
-                or gradient_direction[%d]", i, i);
+"Memory allocation failed for gradient_magnitude[%d]or gradient_direction[%d]",
+i, i);
         
         }
     }

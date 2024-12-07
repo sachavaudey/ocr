@@ -128,7 +128,7 @@ int check_box(BoundingBox *box)
  * @return VOID
  */
 void flood_fill(unsigned char **edge_map, int **label_map,
-        unsigned int x, unsigned int y
+        unsigned int x, unsigned int y,
         unsigned int height, unsigned int width,
         int label, BoundingBox *box)
 {

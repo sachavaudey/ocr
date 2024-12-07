@@ -67,15 +67,20 @@ SDL_Surface* crop_image(SDL_Surface *image) {
 
     int new_width = right - left + 1;
     int new_height = bottom - top + 1;
-    SDL_Surface *cropped = SDL_CreateRGBSurface(0, new_width, new_height, 32,
-                                                format->Rmask, format->Gmask, format->Bmask, format->Amask);
+    SDL_Surface *cropped = SDL_CreateRGBSurface(0, new_width,
+            new_height, 32,
+            format->Rmask, format->Gmask,
+            format->Bmask, format->Amask);
 
 
     SDL_LockSurface(cropped);
     Uint32 *cropped_pixels = (Uint32 *)cropped->pixels;
-    for (int y = 0; y < new_height; y++) {
-        for (int x = 0; x < new_width; x++) {
-            cropped_pixels[y * new_width + x] = pixels[(top + y) * image->w + (left + x)];
+    for (int y = 0; y < new_height; y++)
+    {
+        for (int x = 0; x < new_width; x++)
+        {
+            cropped_pixels[y * new_width + x] =
+                pixels[(top + y) * image->w + (left + x)];
         }
     }
     SDL_UnlockSurface(cropped);
@@ -86,12 +91,16 @@ SDL_Surface* crop_image(SDL_Surface *image) {
 
 
 void process_image(const char *input_path, const char *output_path) {
+    
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
     
     SDL_Surface *image = IMG_Load(input_path);
     if (!image) {
-        printf("Erreur de chargement de l'image : %s\n", IMG_GetError());
+        printf(
+                "Erreur de chargement de l'image : %s\n",
+                IMG_GetError()
+                );
         return;
     }
 
@@ -144,8 +153,10 @@ int process_transforme_grid(int a,int b){
         {
             res[t]=malloc(100*sizeof(char));
             out[t]=malloc(100*sizeof(char));
-            snprintf(res[t],100,"data/results_gride/%d.%d.png",i,j);
-            snprintf(out[t],100,"neuron_network/other/output/%d.%d.png",i,j);
+            snprintf(res[t],100,
+                    "data/results_gride/%d.%d.png",i,j);
+            snprintf(out[t],100,
+                    "neuron_network/other/output/%d.%d.png",i,j);
             t++;
             printf("%d\n",t);
         }
@@ -168,7 +179,8 @@ int* search_size_word()
     int* word=malloc(100*sizeof(int));
     const char *directory_name = "neuron_network/other/words/";
     char command[256];
-    snprintf(command, sizeof(command), "mkdir %s", directory_name);
+    snprintf(command, sizeof(command),
+            "mkdir %s", directory_name);
     if (system(command) != 0)
         errx(EXIT_FAILURE, "Command execution failed\n");
     int p=0;
@@ -178,9 +190,12 @@ int* search_size_word()
         char file_path[256];
         while (1) 
         {
-            char* var=malloc(100*sizeof(char));
-            snprintf(file_path, sizeof(file_path), "data/results_word/%d.%d.png", p,counter);
-            snprintf(var, sizeof(file_path), "neuron_network/other/words/%d.%d.png", p,counter);
+            char* var=malloc(256*sizeof(char));
+            snprintf(file_path, sizeof(file_path),
+                    "data/results_word/%d.%d.png", p,counter);
+            snprintf(var, 256 * sizeof(char),
+                    "neuron_network/other/words/%d.%d.png",
+                    p, counter);
             FILE *file = fopen(file_path, "r");
             if (file == NULL) {
                 
@@ -198,15 +213,8 @@ int* search_size_word()
         
     }
 
-return word;
-    
-    
-
-    
-
-    
+return word; 
 }
-
 /*int main()
 {
     char* wor=malloc(1*sizeof(char));
@@ -215,12 +223,3 @@ return word;
 
     return 1;
 }*/
-
-
-
-
-
-
-
-
-

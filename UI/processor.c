@@ -1,7 +1,6 @@
 #include "processor.h"
 
 
-
 /**
  * This function run the pre-treatment function according
  * to the setting given in parameter
@@ -14,7 +13,8 @@ void run_pretreatment(SDL_Surface **surface, int set, int angle){
    char command[1024];
    snprintf(command, sizeof(command),
            "rm -rf neuron_network/other/words/");
-   system(command);
+   if (system(command) != 0)
+       errx(EXIT_FAILURE, "error");
     switch (set)
     {
     case 1:

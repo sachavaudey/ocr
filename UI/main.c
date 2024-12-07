@@ -138,8 +138,8 @@ void image_button(GtkWidget* widget, gpointer data)
                 } 
                 else 
                 {
-                    g_print("Failed to save SDL surface
-                                : %s\n", SDL_GetError());
+                    g_print("Failed to save SDL surface: %s\n",
+                            SDL_GetError());
                 }
 
                 SDL_FreeSurface(backgroundImage);
@@ -449,4 +449,4 @@ int main(int argc, char* argv[])
     gtk_main();
 
     return 0;
-
+}
