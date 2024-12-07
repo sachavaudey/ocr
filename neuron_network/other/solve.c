@@ -197,10 +197,10 @@ void solver(char *word)
         for (int j = 0; j < m; j++)
         {
             matrice[i][j]=ma[i][j];
-            printf("%c",matrice[i][j]);
+            //printf("%c",matrice[i][j]);
 
         }
-        printf("\n");
+        //printf("\n");
         
     }
     
@@ -218,7 +218,7 @@ void solver(char *word)
                 {       
                     if (search_left(matrice, word ,i, j, x)==1)
                     {
-                        printf("(%d,%d),(%d,%d)",j,i,j-x+1,i);
+                        printf("(%d,%d),(%d,%d)\n",j,i,j-x+1,i);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i);
                         fclose(file);
                         return;
@@ -228,7 +228,7 @@ void solver(char *word)
                 {
                     if (search_right(matrice, word ,i, j, x)==1)
                     {
-                        printf("(%d,%d),(%d,%d)",j,i,j+x-1,i);
+                        printf("(%d,%d),(%d,%d)\n",j,i,j+x-1,i);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j+x-1,i);
                         fclose(file);
                         return;
@@ -240,7 +240,7 @@ void solver(char *word)
                     
                     if (search_up(matrice, word ,i, j, x)==1)
                     {
-                        printf("(%d,%d),(%d,%d)",j,i,j,i+1-x);
+                        printf("(%d,%d),(%d,%d)\n",j,i,j,i+1-x);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j,i+1-x);
                         fclose(file);
                         return;
@@ -253,7 +253,7 @@ void solver(char *word)
                 {
                     if (search_down(matrice, word ,i, j, x)==1)
                     {
-                        printf("(%d,%d),(%d,%d)",j,i,j,i+x-1);
+                        printf("(%d,%d),(%d,%d)\n",j,i,j,i+x-1);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j,i+x-1);
                         fclose(file);
                         return;
@@ -264,7 +264,7 @@ void solver(char *word)
                 {
                     if (search_up_left(matrice, word ,i, j, x)==1)
                     {
-                        printf("(%d,%d),(%d,%d)",j,i,j-x+1,i-x+1);
+                        printf("(%d,%d),(%d,%d)\n",j,i,j-x+1,i-x+1);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i-x+1);
                         fclose(file);
                         return;
@@ -275,7 +275,7 @@ void solver(char *word)
                 {
                     if (search_up_right(matrice, word ,i, j, x)==1)
                     {
-                        printf("(%d,%d),(%d,%d)",j,i,j+x-1,i-x+1);
+                        printf("(%d,%d),(%d,%d)\n",j,i,j+x-1,i-x+1);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j+x-1,i-x+1);
                         fclose(file);
                         return;
@@ -286,7 +286,7 @@ void solver(char *word)
                 {
                     if (search_down_left(matrice, word ,i, j, x)==1)
                     {
-                        printf("(%d,%d),(%d,%d)",j,i,j-x+1,i+x-1);
+                        printf("(%d,%d),(%d,%d)\n",j,i,j-x+1,i+x-1);
                         fprintf(file, "%d,%d %d,%d\n", j,i,j-x+1,i+x-1);
                         fclose(file);
                         return;
@@ -296,7 +296,7 @@ void solver(char *word)
                 {
                     if (search_down_right(matrice, word ,i, j, x)==1)
                     {
-                        printf("(%d,%d),(%d,%d)",j,i,(j+x-1),(i+x-1));
+                        printf("(%d,%d),(%d,%d)\n",j,i,(j+x-1),(i+x-1));
                         fprintf(file, "%d,%d %d,%d\n", j,i,(j+x-1),(i+x-1));
                         fclose(file);
                         return;
@@ -322,7 +322,7 @@ void solver(char *word)
 char **read_fichier( int *nombre_mots) {
     FILE *fichier = fopen("data/word", "r");
     if (!fichier) {
-        perror("Erreur d'ouverture duuu fichier");
+        perror("Erreur d'ouverture du fichier");
         return NULL;
     }
 

@@ -47,7 +47,7 @@ static const int Gy[3][3] = {
 
 // Box dimension constants
 #define MIN_SURFACE    500
-#define MAX_SURFACE    11700
+#define MAX_SURFACE    200000
 #define MIN_HEIGHT     10
 #define MAX_HEIGHT     200
 #define MIN_WIDTH      10

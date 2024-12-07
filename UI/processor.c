@@ -71,6 +71,7 @@ void run_detection(){
 void run_neural()
 {
     process_NOE(1);
+    printf("Neural network run sucessfully\n");
 }
 
 /**

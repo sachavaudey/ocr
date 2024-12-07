@@ -95,7 +95,7 @@ void fin_co_lettre(int** tableau)
             i++;
         } else {
             
-            fprintf(stderr, "Erreur de format à la ligne %d\n", i + 1);
+            //fprintf(stderr, "Erreur de format à la ligne %d\n", i + 1);
             break;
         }
     }
@@ -119,7 +119,7 @@ void fin_coo(int** co_mots)
             i++;
         } else {
             
-            fprintf(stderr, "Erreur de format à la ligne %d\n", i + 1);
+            //fprintf(stderr, "Erreur de format à la ligne %d\n", i + 1);
             break;
         }
     }
