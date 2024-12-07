@@ -35,8 +35,9 @@ int main(int argc, char *argv[]) {
 		PRT_Light(surface);
 	if (!strcmp(argv[1],"heavyr"))
 		PRT_Heavy(surface);
-	if (!strcmp(argv[1],"mediumr"))
+	if(!strcmp(argv[1],"mediumr"))
 	{
+		PRT_Contrast_Boost(surface);
 		PRT_Medium(surface);
 		PRT_Rotate_Auto(&surface);
 	}
