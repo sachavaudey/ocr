@@ -9,6 +9,7 @@
 #include "transpose_image.h"
 #include "img_traitement.h"
 
+
 #define FILENAME_SIZE 100 
 #define INPUT_SIZE 900         
 #define HIDDEN_SIZE 60       
@@ -18,12 +19,8 @@
 #define NBTEST 70    
 #define EPOCHS 10000
 
-extern double weights_input_hidden[INPUT_SIZE][HIDDEN_SIZE];
-extern double weights_hidden_output[HIDDEN_SIZE][OUTPUT_SIZE];
-extern double hidden_bias[HIDDEN_SIZE];
-extern double output_bias[OUTPUT_SIZE];
 
-void load_hidden_bias(char* filename);
+void load_hidden_bias(const char* filename);
 void load_output_bias(char* filename);
 void load_weight_hidden_output(char *filename);
 void load_weight_hidden_input(char *filename);

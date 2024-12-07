@@ -46,6 +46,7 @@ gpointer detection_thread_func(gpointer data)
 {
     DetectionData *detectionData = (DetectionData*) data;
     run_detection();
+    run_neural();
     g_idle_add(update_gui_after_detection, detectionData);
 
     return NULL;
@@ -269,7 +270,7 @@ void image_button(GtkWidget* widget, gpointer data)
     else if (strcmp(buttonLabel, "AUX") == 0) 
     {
         
-        const char* filePath = "neuron_network/other/grid";  
+        const char* filePath = "data/grid";  
 
         if (g_file_test(filePath, G_FILE_TEST_EXISTS)) 
         {
@@ -303,14 +304,13 @@ void image_button(GtkWidget* widget, gpointer data)
     else if (strcmp(buttonLabel, "Solver") == 0) 
     {
 
-            //run_draw();
-
            
             run_solver(2);
+	    run_draw();
 
+            
 
-
-        
+         gtk_image_set_from_file(GTK_IMAGE(imageWidget), "image_sauvegardee.png");
     } 
     else 
     {

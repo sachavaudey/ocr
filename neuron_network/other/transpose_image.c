@@ -144,8 +144,8 @@ int process_transforme_grid(int a,int b){
         {
             res[t]=malloc(100*sizeof(char));
             out[t]=malloc(100*sizeof(char));
-            snprintf(res[t],100,"../../data/results_words/%d.%d.png",i,j);
-            snprintf(out[t],100,"output/%d.%d.png",i,j);
+            snprintf(res[t],100,"data/results_gride/%d.%d.png",i,j);
+            snprintf(out[t],100,"neuron_network/other/output/%d.%d.png",i,j);
             t++;
             printf("%d\n",t);
         }
@@ -166,7 +166,7 @@ int* search_size_word()
 {
     remove("coordo");
     int* word=malloc(100*sizeof(int));
-    const char *directory_name = "words";
+    const char *directory_name = "neuron_network/other/words/";
     char command[256];
     snprintf(command, sizeof(command), "mkdir %s", directory_name);
     system(command);
@@ -178,8 +178,8 @@ int* search_size_word()
         while (1) 
         {
             char* var=malloc(100*sizeof(char));
-            snprintf(file_path, sizeof(file_path), "../../data/results_word/%d.%d.png", p,counter);
-            snprintf(var, sizeof(file_path), "words/%d.%d.png", p,counter);
+            snprintf(file_path, sizeof(file_path), "data/results_word/%d.%d.png", p,counter);
+            snprintf(var, sizeof(file_path), "neuron_network/other/words/%d.%d.png", p,counter);
             FILE *file = fopen(file_path, "r");
             if (file == NULL) {
                 

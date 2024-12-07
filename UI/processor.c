@@ -10,6 +10,9 @@
  * @return VOID
  */
 void run_pretreatment(SDL_Surface **surface, int set, int angle){
+   char command[1024];
+   snprintf(command, sizeof(command), "rm -rf neuron_network/other/words/");
+   system(command);
     switch (set)
     {
     case 1:

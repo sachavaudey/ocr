@@ -6,7 +6,7 @@
 
 
 char (*lire_grille(int *lignes, int *colonnes))[100] {
-    FILE *fichier = fopen("neuron_network/other/grid", "r");
+    FILE *fichier = fopen("data/grid", "r");
     
 
     static char grille[100][100];
@@ -150,7 +150,7 @@ void solver(char *word)
     FILE *file = fopen("data/coordo", "a");
     //fprintf(file,"hello");
     if (file == NULL) {
-    perror("Erreur d'ouverture du fichier");
+    perror("Erreur d'ouverture du fichier COORD");
     g_print("lmlm\n");
     
       
@@ -301,7 +301,7 @@ void solver(char *word)
     
     
 char **read_fichier( int *nombre_mots) {
-    FILE *fichier = fopen("neuron_network/other/word", "r");
+    FILE *fichier = fopen("data/word", "r");
     if (!fichier) {
         perror("Erreur d'ouverture duuu fichier");
         return NULL;
@@ -337,7 +337,7 @@ char **read_fichier( int *nombre_mots) {
 
 int compterLignes() {
     
-    FILE *fichier = fopen("neuron_network/other/word", "r");
+    FILE *fichier = fopen("data/word", "r");
     if (fichier==NULL) g_print("eerr\n");
     int nbLignes = 0;
     char caractere;
