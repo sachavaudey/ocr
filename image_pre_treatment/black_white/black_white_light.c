@@ -2,7 +2,7 @@
 
 
 
-/*	Function : PRT_BlackWhite
+/*	Function : PRT_BlackWhite_Light
  *
  *	--------------------------
  *
@@ -13,12 +13,12 @@
  *
  *	returns	: void 
  */
-void PRT_BlackWhite(SDL_Surface *surface) 
+void PRT_BlackWhite_Light(SDL_Surface *surface) 
 {
 	SDL_LockSurface(surface);
 
 	if (LOG_LEVEL)
-		printf("%s\nStarting conversion to black or white...\n",
+		printf("%s\nStarting conversion to black or white (light)...\n",
 				LOG_SEPARATOR);
    
 	const int pixelCount = (surface->w * surface->h);
@@ -35,7 +35,7 @@ void PRT_BlackWhite(SDL_Surface *surface)
 		printf("avg before : %i", avg);
 
 	if (avg >= 220)
-		avg = avg * 0.9;
+		avg = avg * 0.6;
 	
 	if (LOG_LEVEL >= 2)
 		printf("avg after : %i", avg);
@@ -58,7 +58,7 @@ void PRT_BlackWhite(SDL_Surface *surface)
 	SDL_UnlockSurface(surface);
 	
 	if (LOG_LEVEL)
-		printf("Surface successfully converted to Black&White !\n%s\n",
+		printf("Surface successfully converted to Black&White (light)!\n%s\n",
 				LOG_SEPARATOR);
 }
 
