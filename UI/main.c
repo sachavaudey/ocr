@@ -1,7 +1,7 @@
 #include "main.h"
 #include <stdio.h>
 
-#define BUTTON_COUNT 7
+#define BUTTON_COUNT 8
 
 
 typedef struct {
@@ -21,6 +21,7 @@ const char* buttonLabels[BUTTON_COUNT] =
     "Rotation",
     "Automatic Rotation",
     "Detection",
+    "Neural Network",
     "Solver", 
     "HELP"
 };
@@ -282,7 +283,7 @@ void image_button(GtkWidget* widget, gpointer data)
 
             g_thread_new("detection_thread",
                     detection_thread_func, detectionData);
-            run_neural();
+            //run_neural();
             SDL_FreeSurface(processedImage);
         }
         else 
@@ -296,6 +297,10 @@ void image_button(GtkWidget* widget, gpointer data)
             gtk_dialog_run(GTK_DIALOG(errorDialog));
             gtk_widget_destroy(errorDialog);
         }
+    }
+    else if (strcmp(buttonLabel, "Neural Network") == 0)
+    {
+        run_neural();
     }
     else if (strcmp(buttonLabel, "HELP") == 0) 
     {
